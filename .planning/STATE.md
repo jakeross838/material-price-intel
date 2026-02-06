@@ -8,17 +8,17 @@
 ## Current Position
 
 Phase: 1 of 8 (Project Foundation + Database Schema)
-Plan: 2 of 3 in Phase 1
+Plan: 01-01 and 01-02 complete, 01-03 pending
 Status: In progress
-Last activity: 2026-02-06 - Completed 01-02-PLAN.md
+Last activity: 2026-02-06 - Completed 01-01-PLAN.md (React App Scaffold)
 
-Progress: [#--] 1/3 Phase 1 plans complete
+Progress: [##-] 2/3 Phase 1 plans complete
 
 ## Phase Progress
 
 | Phase | Name | Status | Plans |
 |-------|------|--------|-------|
-| 1 | Project Foundation + Database Schema | In Progress | 01-02 complete, 01-01 and 01-03 pending |
+| 1 | Project Foundation + Database Schema | In Progress | 01-01 complete, 01-02 complete, 01-03 pending |
 | 2 | File Upload + Storage Pipeline | Not Started | -- |
 | 3 | AI Quote Extraction | Not Started | -- |
 | 4 | Human Review UI | Not Started | -- |
@@ -38,6 +38,9 @@ Progress: [#--] 1/3 Phase 1 plans complete
 | 2026-02-06 | TIMESTAMPTZ for all timestamps, gen_random_uuid() for UUIDs | Timezone-aware, native PostgreSQL 13+ |
 | 2026-02-06 | line_items RLS via JOIN to quotes (no direct org_id) | Inherits organization scope from parent quote |
 | 2026-02-06 | category_attributes JSONB on materials for extensibility | Non-lumber categories (windows, cabinets) use JSONB for custom fields |
+| 2026-02-06 | shadcn v3.8 uses shadcn/tailwind.css import pattern | Runtime dep required, newer than traditional cn()-only setup |
+| 2026-02-06 | Path alias @/ for all imports | Configured in tsconfig + vite.config for clean imports |
+| 2026-02-06 | React Query staleTime 5 minutes, retry 1 | Balance between freshness and network efficiency |
 
 ## Blockers
 
@@ -46,7 +49,7 @@ None currently.
 ## Session Continuity
 
 Last session: 2026-02-06
-Stopped at: Completed 01-02-PLAN.md
+Stopped at: Completed 01-01-PLAN.md (React App Scaffold)
 Resume file: None
 
 ---
