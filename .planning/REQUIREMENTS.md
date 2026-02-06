@@ -123,37 +123,37 @@ Which phases cover which requirements. Updated by create-roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INGEST-01 | — | Pending |
-| INGEST-02 | — | Pending |
-| INGEST-03 | — | Pending |
-| INGEST-04 | — | Pending |
-| INGEST-05 | — | Pending |
-| EXTRACT-01 | — | Pending |
-| EXTRACT-02 | — | Pending |
-| EXTRACT-03 | — | Pending |
-| EXTRACT-04 | — | Pending |
-| MAT-01 | — | Pending |
-| MAT-02 | — | Pending |
-| MAT-03 | — | Pending |
-| MAT-04 | — | Pending |
-| MAT-05 | — | Pending |
-| SEARCH-01 | — | Pending |
-| SEARCH-02 | — | Pending |
-| SEARCH-03 | — | Pending |
-| SEARCH-04 | — | Pending |
-| PRICE-01 | — | Pending |
-| PRICE-02 | — | Pending |
-| PRICE-03 | — | Pending |
-| PLAT-01 | — | Pending |
-| PLAT-02 | — | Pending |
-| PLAT-03 | — | Pending |
-| PLAT-04 | — | Pending |
+| INGEST-01 | 3 | Pending |
+| INGEST-02 | 2, 7 | Pending |
+| INGEST-03 | 4 | Pending |
+| INGEST-04 | 3, 4 | Pending |
+| INGEST-05 | 3 | Pending |
+| EXTRACT-01 | 3 | Pending |
+| EXTRACT-02 | 3 | Pending |
+| EXTRACT-03 | 3 | Pending |
+| EXTRACT-04 | 3 | Pending |
+| MAT-01 | 5 | Pending |
+| MAT-02 | 1 | Pending |
+| MAT-03 | 1 | Pending |
+| MAT-04 | 5 | Pending |
+| MAT-05 | 5 | Pending |
+| SEARCH-01 | 6 | Pending |
+| SEARCH-02 | 6 | Pending |
+| SEARCH-03 | 6 | Pending |
+| SEARCH-04 | 6 | Pending |
+| PRICE-01 | 1 | Pending |
+| PRICE-02 | 1 | Pending |
+| PRICE-03 | 6 | Pending |
+| PLAT-01 | 1 | Pending |
+| PLAT-02 | 1, 7, 8 | Pending |
+| PLAT-03 | 2, 8 | Pending |
+| PLAT-04 | 1 | Pending |
 
 **Coverage:**
 - v1 requirements: 25 total
-- Mapped to phases: 0
-- Unmapped: 25 ⚠️ (will be mapped by create-roadmap)
+- Mapped to phases: 25 ✅
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-06*
-*Last updated: 2026-02-06 after initial definition*
+*Last updated: 2026-02-06 after create-roadmap*
