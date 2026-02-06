@@ -12,11 +12,11 @@
 
 **Requirements:** PLAT-01, PLAT-02, PLAT-04, MAT-02, MAT-03, PRICE-01, PRICE-02
 **Success Criteria:**
-1. Supabase project has all tables created (suppliers, quotes, quote_line_items, materials, material_aliases) with proper indexes and foreign keys
+1. Supabase project has all tables created (organizations, user_profiles, suppliers, material_categories, materials, documents, quotes, line_items) with proper indexes and foreign keys
 2. pg_trgm extension enabled and GIN indexes created on material name fields
 3. RLS policies enforce row-level security on all tables, prepared for multi-user
 4. React app boots with Vite, routes to login/dashboard, authenticates via Supabase Auth
-5. Material schema supports structured fields (species, dimensions, grade, treatment, UOM) with JSONB for category-specific extensions
+5. Material schema supports structured fields (species, dimensions, grade, treatment, UOM) with category_attributes JSONB column for category-specific extensions (e.g., windows: frame_material, glass_type)
 6. Delivery cost and tax fields exist as separate quote-level columns (not embedded in line items)
 
 **Research needed:** No — standard Supabase setup patterns, well-documented
