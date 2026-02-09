@@ -5,6 +5,8 @@ import { LoginPage } from "./pages/LoginPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { UploadPage } from "./pages/UploadPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { QuoteDetailPage } from "./pages/QuoteDetailPage";
+import { MaterialsPage } from "./pages/MaterialsPage";
 
 function App() {
   return (
@@ -14,7 +16,9 @@ function App() {
         <Route element={<AppLayout />}>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/upload" element={<UploadPage />} />
-          {/* Future routes: /quotes, /quotes/:id, /search */}
+          <Route path="/quotes/:id" element={<QuoteDetailPage />} />
+          <Route path="/materials" element={<MaterialsPage />} />
+          {/* Future routes: /quotes, /search */}
         </Route>
       </Route>
       <Route path="*" element={<NotFoundPage />} />
