@@ -34,7 +34,7 @@
 3. Document record created in database with status `pending` and storage reference
 4. Upload returns immediately to user (async — no blocking)
 5. Processing status visible in UI via Supabase Realtime subscription
-6. pg_cron job queue infrastructure polls for pending documents
+6. Job queue infrastructure with atomic claim/complete/fail functions for pending documents
 
 **Research needed:** No — standard Supabase Storage + Realtime patterns
 

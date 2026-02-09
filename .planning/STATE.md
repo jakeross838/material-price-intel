@@ -1,25 +1,25 @@
 # Project State: Material Price Intelligence System
 
 **Milestone:** v1 — Core Price Intelligence
-**Current Phase:** 1 (Project Foundation + Database Schema)
-**Status:** Complete
+**Current Phase:** 2 (File Upload + Storage Pipeline)
+**Status:** Planned
 **Last Updated:** 2026-02-06
 
 ## Current Position
 
-Phase: 1 of 8 (Project Foundation + Database Schema)
-Plan: All 3 plans complete
-Status: Complete
-Last activity: 2026-02-06 - Completed 01-03-PLAN.md (Supabase Auth Integration)
+Phase: 2 of 8 (File Upload + Storage Pipeline)
+Plan: 0/2 executed
+Status: Planned (ready for execution)
+Last activity: 2026-02-06 - Phase 2 plans created and verified
 
-Progress: [###] 3/3 Phase 1 plans complete
+Progress: [#####-----] Phase 1 complete, Phase 2 planned
 
 ## Phase Progress
 
 | Phase | Name | Status | Plans |
 |-------|------|--------|-------|
 | 1 | Project Foundation + Database Schema | Complete | 3/3 |
-| 2 | File Upload + Storage Pipeline | Not Started | -- |
+| 2 | File Upload + Storage Pipeline | Planned | 0/2 |
 | 3 | AI Quote Extraction | Not Started | -- |
 | 4 | Human Review UI | Not Started | -- |
 | 5 | Material Normalization Engine | Not Started | -- |
@@ -42,6 +42,8 @@ Progress: [###] 3/3 Phase 1 plans complete
 | 2026-02-06 | Path alias @/ for all imports | Configured in tsconfig + vite.config for clean imports |
 | 2026-02-06 | React Query staleTime 5 minutes, retry 1 | Balance between freshness and network efficiency |
 | 2026-02-06 | Connected to Ross Built Price Analyzer Supabase project | xgpjwpwhtfmbvoqtvete.supabase.co |
+| 2026-02-06 | Edge Function trigger instead of pg_cron for v1 job processing | Simpler for single-user; claim_pending_document() still supports concurrent workers if needed later |
+| 2026-02-06 | No react-dropzone — native HTML5 drag events | Minimizes dependencies; drag-and-drop is simple enough without a library |
 
 ## Blockers
 
