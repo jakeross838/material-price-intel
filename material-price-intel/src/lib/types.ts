@@ -1,22 +1,24 @@
 // ===========================================
 // Database row types -- mirror the SQL schema exactly
+// Using `type` aliases (not `interface`) so they satisfy
+// Record<string, unknown> for Supabase client generics.
 // ===========================================
 
-export interface Organization {
+export type Organization = {
   id: string;
   name: string;
   created_at: string;
-}
+};
 
-export interface UserProfile {
+export type UserProfile = {
   id: string;
   organization_id: string;
   display_name: string;
   role: "admin" | "editor" | "viewer";
   created_at: string;
-}
+};
 
-export interface Supplier {
+export type Supplier = {
   id: string;
   organization_id: string;
   name: string;
@@ -28,16 +30,16 @@ export interface Supplier {
   notes: string | null;
   created_at: string;
   updated_at: string;
-}
+};
 
-export interface MaterialCategory {
+export type MaterialCategory = {
   id: string;
   name: string;
   display_name: string;
   sort_order: number;
-}
+};
 
-export interface Material {
+export type Material = {
   id: string;
   organization_id: string;
   category_id: string;
@@ -53,7 +55,7 @@ export interface Material {
   is_active: boolean;
   created_at: string;
   updated_at: string;
-}
+};
 
 export type DocumentFileType = "pdf" | "xlsx" | "csv" | "email_text";
 export type DocumentSource = "upload" | "email";
@@ -64,7 +66,7 @@ export type DocumentStatus =
   | "failed"
   | "review_needed";
 
-export interface Document {
+export type Document = {
   id: string;
   organization_id: string;
   file_path: string | null;
@@ -83,9 +85,9 @@ export interface Document {
   started_at: string | null;
   completed_at: string | null;
   created_at: string;
-}
+};
 
-export interface Quote {
+export type Quote = {
   id: string;
   organization_id: string;
   document_id: string | null;
@@ -106,9 +108,9 @@ export interface Quote {
   is_verified: boolean;
   created_at: string;
   updated_at: string;
-}
+};
 
-export interface LineItem {
+export type LineItem = {
   id: string;
   quote_id: string;
   material_id: string | null;
@@ -123,7 +125,7 @@ export interface LineItem {
   notes: string | null;
   sort_order: number;
   created_at: string;
-}
+};
 
 // ===========================================
 // Supabase Database type helper
@@ -131,49 +133,63 @@ export interface LineItem {
 //   const supabase = createClient<Database>(url, key);
 //   // Now supabase.from('quotes').select() returns typed Quote rows
 // ===========================================
-export interface Database {
+export type Database = {
   public: {
     Tables: {
       organizations: {
         Row: Organization;
         Insert: Omit<Organization, "id" | "created_at">;
         Update: Partial<Omit<Organization, "id">>;
+        Relationships: [];
       };
       user_profiles: {
         Row: UserProfile;
         Insert: Omit<UserProfile, "created_at">;
         Update: Partial<Omit<UserProfile, "id">>;
+        Relationships: [];
       };
       suppliers: {
         Row: Supplier;
         Insert: Omit<Supplier, "id" | "created_at" | "updated_at">;
         Update: Partial<Omit<Supplier, "id" | "created_at">>;
+        Relationships: [];
       };
       material_categories: {
         Row: MaterialCategory;
         Insert: Omit<MaterialCategory, "id">;
         Update: Partial<Omit<MaterialCategory, "id">>;
+        Relationships: [];
       };
       materials: {
         Row: Material;
         Insert: Omit<Material, "id" | "created_at" | "updated_at">;
         Update: Partial<Omit<Material, "id" | "created_at">>;
+        Relationships: [];
       };
       documents: {
         Row: Document;
         Insert: Omit<Document, "id" | "created_at">;
         Update: Partial<Omit<Document, "id" | "created_at">>;
+        Relationships: [];
       };
       quotes: {
         Row: Quote;
         Insert: Omit<Quote, "id" | "created_at" | "updated_at">;
         Update: Partial<Omit<Quote, "id" | "created_at">>;
+        Relationships: [];
       };
       line_items: {
         Row: LineItem;
         Insert: Omit<LineItem, "id" | "created_at">;
         Update: Partial<Omit<LineItem, "id" | "created_at">>;
+        Relationships: [];
       };
     };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      [_ in never]: never;
+    };
   };
-}
+};

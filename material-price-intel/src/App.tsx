@@ -3,6 +3,7 @@ import { AppLayout } from "./components/layout/AppLayout";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { LoginPage } from "./pages/LoginPage";
 import { DashboardPage } from "./pages/DashboardPage";
+import { UploadPage } from "./pages/UploadPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 
 function App() {
@@ -12,7 +13,8 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="/" element={<DashboardPage />} />
-          {/* Future routes: /upload, /quotes, /quotes/:id, /search */}
+          <Route path="/upload" element={<UploadPage />} />
+          {/* Future routes: /quotes, /quotes/:id, /search */}
         </Route>
       </Route>
       <Route path="*" element={<NotFoundPage />} />
