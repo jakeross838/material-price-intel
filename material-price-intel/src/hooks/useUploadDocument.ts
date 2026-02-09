@@ -98,15 +98,9 @@ export function useUploadDocument() {
         throw new Error("Failed to create document record: " + (dbError?.message ?? "unknown error"));
       }
 
-      // Fire-and-forget: trigger the extraction pipeline.
-      // The user doesn't wait for extraction -- status updates flow
-      // back via Realtime subscriptions (RecentUploads already shows them).
-      supabase.functions.invoke('process-document', {
-        body: { document_id: doc.id },
-      }).catch((err) => {
-        // Log but don't fail the upload -- extraction can be retried
-        console.error('Failed to trigger extraction:', err);
-      });
+      // Extraction is triggered automatically by the database trigger
+      // (007_extraction_trigger.sql) via pg_net when the document is inserted.
+      // Status updates flow back via Realtime subscriptions.
 
       return doc;
     },
