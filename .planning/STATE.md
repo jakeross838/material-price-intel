@@ -1,18 +1,18 @@
 # Project State: Material Price Intelligence System
 
 **Milestone:** v1 — Core Price Intelligence
-**Current Phase:** 2 (File Upload + Storage Pipeline)
-**Status:** Phase Complete
+**Current Phase:** 3 (AI Quote Extraction)
+**Status:** In Progress
 **Last Updated:** 2026-02-09
 
 ## Current Position
 
-Phase: 2 of 8 (File Upload + Storage Pipeline)
-Plan: 2/2 executed
-Status: Phase complete
-Last activity: 2026-02-09 - Completed 02-02-PLAN.md (Processing Status + Realtime)
+Phase: 3 of 8 (AI Quote Extraction)
+Plan: 1/? executed
+Status: In progress
+Last activity: 2026-02-09 - Completed 03-01-PLAN.md (Core Extraction Edge Function)
 
-Progress: [########--] Phase 1 complete (3/3), Phase 2 complete (2/2)
+Progress: [##########████----] Phase 1 complete (3/3), Phase 2 complete (2/2), Phase 3 in progress (1/?)
 
 ## Phase Progress
 
@@ -20,7 +20,7 @@ Progress: [########--] Phase 1 complete (3/3), Phase 2 complete (2/2)
 |-------|------|--------|-------|
 | 1 | Project Foundation + Database Schema | Complete | 3/3 |
 | 2 | File Upload + Storage Pipeline | Complete | 2/2 |
-| 3 | AI Quote Extraction | Not Started | -- |
+| 3 | AI Quote Extraction | In Progress | 1/? |
 | 4 | Human Review UI | Not Started | -- |
 | 5 | Material Normalization Engine | Not Started | -- |
 | 6 | Price Search + Filtering | Not Started | -- |
@@ -48,16 +48,22 @@ Progress: [########--] Phase 1 complete (3/3), Phase 2 complete (2/2)
 | 2026-02-09 | Storage paths use {org_id}/{uuid}_{filename} pattern | Organizational hygiene for future multi-tenant scoping |
 | 2026-02-09 | Realtime events invalidate React Query cache rather than manual state patches | Simpler and more reliable; React Query refetches automatically |
 | 2026-02-09 | No client-side org filter on document queries -- RLS enforces scoping | 004_rls_policies.sql handles organization filtering at database level |
+| 2026-02-09 | Use claude-haiku-4-5-20250315 for extraction | Cost-efficient and capable enough for structured data extraction from PDFs |
+| 2026-02-09 | Send PDF as native document content block, not text extraction | Claude's native PDF support preserves table layouts, fonts, and visual structure |
+| 2026-02-09 | Chunked base64 encoding (8192 bytes) for PDF conversion | Avoids call stack overflow from spread operator on large Uint8Arrays |
+| 2026-02-09 | Edge Function uses SUPABASE_SERVICE_ROLE_KEY, not anon key | Needs elevated access to bypass RLS for cross-table operations |
 
 ## Blockers
 
-**Action required before Phase 3:** Apply migration `006_job_queue.sql` to Supabase (via `supabase db push` or SQL editor).
+**Action required before deploying Edge Functions:** Set `ANTHROPIC_API_KEY` in Supabase Edge Function secrets: `supabase secrets set ANTHROPIC_API_KEY=sk-ant-...`
+
+**Action required (from Phase 2):** Apply migration `006_job_queue.sql` to Supabase (via `supabase db push` or SQL editor).
 
 ## Session Continuity
 
 Last session: 2026-02-09
-Stopped at: Completed 02-02-PLAN.md (Phase 2 complete)
-Resume file: None -- ready for Phase 3
+Stopped at: Completed 03-01-PLAN.md (Core Extraction Edge Function)
+Resume file: None -- ready for 03-02-PLAN.md
 
 ---
 *Initialized: 2026-02-06*
