@@ -2,18 +2,18 @@
 
 **Milestone:** v1 — Core Price Intelligence
 **Current Phase:** 5 (Material Normalization Engine) -- IN PROGRESS
-**Status:** Phase 5 In Progress (2/4 plans complete)
+**Status:** Phase 5 In Progress (3/4 plans complete)
 **Last Updated:** 2026-02-09
 
 ## Current Position
 
 Phase: 5 of 8 (Material Normalization Engine)
-Plan: 2/4 executed (05-01 complete, 05-02 complete, 05-03 planned, 05-04 planned)
+Plan: 3/4 executed (05-01 complete, 05-02 complete, 05-03 complete, 05-04 planned)
 Status: In progress
-Last activity: 2026-02-09 - Completed 05-02-PLAN.md (Normalization Edge Function)
+Last activity: 2026-02-09 - Completed 05-03-PLAN.md (Material Hooks + Quote Linkage UI)
 
-Progress: [█████████████████████████████████████████████████████░░░░░░░░░░░░] Phase 1-4 complete (11/11), Phase 5: 2/4
-         13/15 plans complete through Phase 5
+Progress: [██████████████████████████████████████████████████████████░░░░░░░░] Phase 1-4 complete (11/11), Phase 5: 3/4
+         14/15 plans complete through Phase 5
 
 ## Phase Progress
 
@@ -23,7 +23,7 @@ Progress: [███████████████████████
 | 2 | File Upload + Storage Pipeline | Complete | 2/2 |
 | 3 | AI Quote Extraction | Complete | 3/3 |
 | 4 | Human Review UI | Complete | 3/3 |
-| 5 | Material Normalization Engine | In Progress | 2/4 |
+| 5 | Material Normalization Engine | In Progress | 3/4 |
 | 6 | Price Search + Filtering | Not Started | -- |
 | 7 | Quote Management + Navigation | Not Started | -- |
 | 8 | Polish + Integration Readiness | Not Started | -- |
@@ -75,6 +75,9 @@ Progress: [███████████████████████
 | 2026-02-09 | Single batch AI call for all descriptions per quote | Efficiency over per-item calls; classifyMaterials() sends one Claude request |
 | 2026-02-09 | Per-item error isolation in normalization | One bad classification doesn't block the entire quote's normalization |
 | 2026-02-09 | Record both raw_description and canonical_name as aliases | Maximizes future fuzzy matching from both original and normalized forms |
+| 2026-02-09 | Delayed invalidation (10s setTimeout) for async normalization results | Edge Function takes ~5-15s after approval; immediate invalidation would show un-normalized items |
+| 2026-02-09 | FK Relationships added to Database type for typed Supabase joins | PostgREST typed client requires Relationships definitions; without them, relational select queries fail |
+| 2026-02-09 | Material badge in approved view only (not review mode) | Normalization only runs post-approval; review mode uses separate LineItemsEditor component |
 
 ## Blockers
 
@@ -83,11 +86,11 @@ All resolved. Database fully set up (all 9 migrations + seed + org + user_profil
 ## Session Continuity
 
 Last session: 2026-02-09
-Stopped at: Completed 05-02-PLAN.md (Normalization Edge Function)
-Resume file: None -- execute 05-03 next
-Decision: normalize-materials Edge Function deployed and verified (v1 on Supabase)
-Decision: Batch AI classification + two-tier fuzzy matching pattern established
-Decision: Per-item error isolation prevents batch failures
+Stopped at: Completed 05-03-PLAN.md (Material Hooks + Quote Linkage UI)
+Resume file: None -- execute 05-04 next
+Decision: Material hooks created (useMaterials, useMaterialAliases, useMergeMaterials, useLineItemMaterials)
+Decision: Delayed cache invalidation pattern for async normalization
+Decision: FK Relationships in Database type enable typed Supabase relational queries
 
 ---
 *Initialized: 2026-02-06*
