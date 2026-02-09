@@ -74,6 +74,7 @@
 7. Dashboard shows documents by status: pending → extracted → approved
 
 **Research needed:** No — standard React form patterns, PDF viewer integration
+**Status:** Complete (2026-02-09)
 
 ---
 

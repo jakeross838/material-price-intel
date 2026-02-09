@@ -125,8 +125,8 @@ Which phases cover which requirements. Updated by create-roadmap.
 |-------------|-------|--------|
 | INGEST-01 | 3 | Complete |
 | INGEST-02 | 2, 7 | Pending |
-| INGEST-03 | 4 | Pending |
-| INGEST-04 | 3, 4 | Pending |
+| INGEST-03 | 4 | Complete |
+| INGEST-04 | 3, 4 | Complete |
 | INGEST-05 | 3 | Complete |
 | EXTRACT-01 | 3 | Complete |
 | EXTRACT-02 | 3 | Complete |
@@ -156,4 +156,4 @@ Which phases cover which requirements. Updated by create-roadmap.
 
 ---
 *Requirements defined: 2026-02-06*
-*Last updated: 2026-02-06 after Phase 1 completion*
+*Last updated: 2026-02-09 after Phase 4 completion*
