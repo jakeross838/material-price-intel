@@ -2,24 +2,24 @@
 
 **Milestone:** v1 — Core Price Intelligence
 **Current Phase:** 2 (File Upload + Storage Pipeline)
-**Status:** In Progress
+**Status:** Phase Complete
 **Last Updated:** 2026-02-09
 
 ## Current Position
 
 Phase: 2 of 8 (File Upload + Storage Pipeline)
-Plan: 1/2 executed
-Status: In progress
-Last activity: 2026-02-09 - Completed 02-01-PLAN.md (File Upload + Storage)
+Plan: 2/2 executed
+Status: Phase complete
+Last activity: 2026-02-09 - Completed 02-02-PLAN.md (Processing Status + Realtime)
 
-Progress: [######----] Phase 1 complete (3/3), Phase 2 in progress (1/2)
+Progress: [########--] Phase 1 complete (3/3), Phase 2 complete (2/2)
 
 ## Phase Progress
 
 | Phase | Name | Status | Plans |
 |-------|------|--------|-------|
 | 1 | Project Foundation + Database Schema | Complete | 3/3 |
-| 2 | File Upload + Storage Pipeline | In Progress | 1/2 |
+| 2 | File Upload + Storage Pipeline | Complete | 2/2 |
 | 3 | AI Quote Extraction | Not Started | -- |
 | 4 | Human Review UI | Not Started | -- |
 | 5 | Material Normalization Engine | Not Started | -- |
@@ -43,20 +43,23 @@ Progress: [######----] Phase 1 complete (3/3), Phase 2 in progress (1/2)
 | 2026-02-06 | React Query staleTime 5 minutes, retry 1 | Balance between freshness and network efficiency |
 | 2026-02-06 | Connected to Ross Built Price Analyzer Supabase project | xgpjwpwhtfmbvoqtvete.supabase.co |
 | 2026-02-06 | Edge Function trigger instead of pg_cron for v1 job processing | Simpler for single-user; claim_pending_document() still supports concurrent workers if needed later |
-| 2026-02-06 | No react-dropzone — native HTML5 drag events | Minimizes dependencies; drag-and-drop is simple enough without a library |
+| 2026-02-06 | No react-dropzone -- native HTML5 drag events | Minimizes dependencies; drag-and-drop is simple enough without a library |
 | 2026-02-09 | Converted Database row types from interface to type alias | TypeScript interfaces do not satisfy Record<string, unknown> required by Supabase client GenericSchema |
 | 2026-02-09 | Storage paths use {org_id}/{uuid}_{filename} pattern | Organizational hygiene for future multi-tenant scoping |
+| 2026-02-09 | Realtime events invalidate React Query cache rather than manual state patches | Simpler and more reliable; React Query refetches automatically |
+| 2026-02-09 | No client-side org filter on document queries -- RLS enforces scoping | 004_rls_policies.sql handles organization filtering at database level |
 
 ## Blockers
 
-None currently.
+**Action required before Phase 3:** Apply migration `006_job_queue.sql` to Supabase (via `supabase db push` or SQL editor).
 
 ## Session Continuity
 
 Last session: 2026-02-09
-Stopped at: Completed 02-01-PLAN.md
-Resume file: .planning/phases/02-upload-pipeline/02-02-PLAN.md
+Stopped at: Completed 02-02-PLAN.md (Phase 2 complete)
+Resume file: None -- ready for Phase 3
 
 ---
 *Initialized: 2026-02-06*
 *Phase 1 completed: 2026-02-06*
+*Phase 2 completed: 2026-02-09*
