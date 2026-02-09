@@ -1,18 +1,18 @@
 # Project State: Material Price Intelligence System
 
 **Milestone:** v1 — Core Price Intelligence
-**Current Phase:** 3 (AI Quote Extraction)
-**Status:** In Progress
+**Current Phase:** 3 (AI Quote Extraction) -- COMPLETE
+**Status:** Phase 3 Complete
 **Last Updated:** 2026-02-09
 
 ## Current Position
 
 Phase: 3 of 8 (AI Quote Extraction)
-Plan: 2/3 executed (03-01 complete, 03-02 pending, 03-03 complete)
-Status: In progress
-Last activity: 2026-02-09 - Completed 03-03-PLAN.md (Wire Upload to Extraction Pipeline)
+Plan: 3/3 executed (03-01 complete, 03-02 complete, 03-03 complete)
+Status: Phase complete
+Last activity: 2026-02-09 - Completed 03-02-PLAN.md (Validation + Persistence)
 
-Progress: [##########█████---] Phase 1 complete (3/3), Phase 2 complete (2/2), Phase 3 in progress (2/3)
+Progress: [████████████████--] Phase 1 complete (3/3), Phase 2 complete (2/2), Phase 3 complete (3/3)
 
 ## Phase Progress
 
@@ -20,7 +20,7 @@ Progress: [##########█████---] Phase 1 complete (3/3), Phase 2 complet
 |-------|------|--------|-------|
 | 1 | Project Foundation + Database Schema | Complete | 3/3 |
 | 2 | File Upload + Storage Pipeline | Complete | 2/2 |
-| 3 | AI Quote Extraction | In Progress | 2/3 (03-02 remaining) |
+| 3 | AI Quote Extraction | Complete | 3/3 |
 | 4 | Human Review UI | Not Started | -- |
 | 5 | Material Normalization Engine | Not Started | -- |
 | 6 | Price Search + Filtering | Not Started | -- |
@@ -54,6 +54,11 @@ Progress: [##########█████---] Phase 1 complete (3/3), Phase 2 complet
 | 2026-02-09 | Edge Function uses SUPABASE_SERVICE_ROLE_KEY, not anon key | Needs elevated access to bypass RLS for cross-table operations |
 | 2026-02-09 | Fire-and-forget Edge Function invocation from upload hook | Upload returns immediately; extraction status tracked via Realtime subscriptions |
 | 2026-02-09 | .catch() logs extraction trigger failure without surfacing to user | Document is already stored with 'pending' status; extraction can be retried |
+| 2026-02-09 | Tolerance-based math validation (1%/$0.02 lines, $1.00 totals) | Exact equality would produce false-positive warnings from rounding differences |
+| 2026-02-09 | Confidence reduced by 0.05 per warning, max -0.3, floor at 0.1 | Graduated degradation; single rounding issue doesn't tank confidence |
+| 2026-02-09 | Validation warnings stored in raw_extraction JSONB | Phase 4 review UI can highlight specific math issues for human reviewers |
+| 2026-02-09 | Direct UPDATE for review_needed status (no RPC) | complete_document RPC hardcodes status=completed |
+| 2026-02-09 | Race condition handling on supplier creation via re-query | Concurrent requests creating same supplier handled gracefully |
 
 ## Blockers
 
@@ -61,15 +66,14 @@ Progress: [##########█████---] Phase 1 complete (3/3), Phase 2 complet
 
 **Action required (from Phase 2):** Apply migration `006_job_queue.sql` to Supabase (via `supabase db push` or SQL editor).
 
-**Phase 3 remaining:** 03-02-PLAN.md (database persistence for extraction results) still needs to be executed.
-
 ## Session Continuity
 
 Last session: 2026-02-09
-Stopped at: Completed 03-03-PLAN.md (Wire Upload to Extraction Pipeline)
-Resume file: None -- ready for 03-02-PLAN.md
+Stopped at: Completed 03-02-PLAN.md (Validation + Persistence) -- Phase 3 complete
+Resume file: None -- ready for Phase 4
 
 ---
 *Initialized: 2026-02-06*
 *Phase 1 completed: 2026-02-06*
 *Phase 2 completed: 2026-02-09*
+*Phase 3 completed: 2026-02-09*
