@@ -133,21 +133,21 @@ Which phases cover which requirements. Updated by create-roadmap.
 | EXTRACT-03 | 3 | Pending |
 | EXTRACT-04 | 3 | Pending |
 | MAT-01 | 5 | Pending |
-| MAT-02 | 1 | Pending |
-| MAT-03 | 1 | Pending |
+| MAT-02 | 1 | Complete |
+| MAT-03 | 1 | Complete |
 | MAT-04 | 5 | Pending |
 | MAT-05 | 5 | Pending |
 | SEARCH-01 | 6 | Pending |
 | SEARCH-02 | 6 | Pending |
 | SEARCH-03 | 6 | Pending |
 | SEARCH-04 | 6 | Pending |
-| PRICE-01 | 1 | Pending |
-| PRICE-02 | 1 | Pending |
+| PRICE-01 | 1 | Complete |
+| PRICE-02 | 1 | Complete |
 | PRICE-03 | 6 | Pending |
-| PLAT-01 | 1 | Pending |
+| PLAT-01 | 1 | Complete |
 | PLAT-02 | 1, 7, 8 | Pending |
 | PLAT-03 | 2, 8 | Pending |
-| PLAT-04 | 1 | Pending |
+| PLAT-04 | 1 | Complete |
 
 **Coverage:**
 - v1 requirements: 25 total
@@ -156,4 +156,4 @@ Which phases cover which requirements. Updated by create-roadmap.
 
 ---
 *Requirements defined: 2026-02-06*
-*Last updated: 2026-02-06 after create-roadmap*
+*Last updated: 2026-02-06 after Phase 1 completion*

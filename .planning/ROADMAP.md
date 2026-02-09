@@ -20,6 +20,7 @@
 6. Delivery cost and tax fields exist as separate quote-level columns (not embedded in line items)
 
 **Research needed:** No — standard Supabase setup patterns, well-documented
+**Status:** Complete (2026-02-06)
 
 ---
 
