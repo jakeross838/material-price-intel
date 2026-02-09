@@ -48,6 +48,14 @@ export function useApproveQuote() {
     onSuccess: (_data, quoteId) => {
       queryClient.invalidateQueries({ queryKey: ["quote", quoteId] });
       queryClient.invalidateQueries({ queryKey: ["documents", "recent"] });
+      // Normalization runs async via Edge Function (~5-15 seconds after approval).
+      // Re-fetch material data after a delay so normalization results appear.
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["materials"] });
+        queryClient.invalidateQueries({
+          queryKey: ["line_items_with_materials"],
+        });
+      }, 10_000);
     },
   });
 }

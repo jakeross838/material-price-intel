@@ -10,6 +10,7 @@ import { type EditableLineItem } from "@/components/review/LineItemsEditor";
 import { ValidationWarnings } from "@/components/review/ValidationWarnings";
 import { ConfidenceBadge } from "@/components/review/ConfidenceBadge";
 import { useApproveQuote, useUpdateQuoteReview } from "@/hooks/useQuoteReview";
+import { useLineItemMaterials } from "@/hooks/useMaterials";
 import type { Quote, LineItem, Supplier } from "@/lib/types";
 
 type QuoteWithSupplier = Quote & { suppliers: Pick<Supplier, "name" | "contact_name" | "contact_phone" | "contact_email" | "address"> };
@@ -53,6 +54,8 @@ export function QuoteDetailPage() {
     },
     enabled: !!id,
   });
+
+  const { data: lineItemMaterials } = useLineItemMaterials(id ?? "");
 
   const { data: docUrl } = useQuery({
     queryKey: ["quote_pdf_url", id],
@@ -257,16 +260,26 @@ export function QuoteDetailPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {lineItems?.map((item, i) => (
+                  {lineItems?.map((item, i) => {
+                    const matched = lineItemMaterials?.find((m) => m.id === item.id);
+                    return (
                     <tr key={item.id} className="border-b last:border-0 hover:bg-muted/30">
                       <td className="px-4 py-2 text-muted-foreground">{i + 1}</td>
-                      <td className="px-4 py-2 max-w-md">{item.raw_description}</td>
+                      <td className="px-4 py-2 max-w-md">
+                        {item.raw_description}
+                        {matched?.materials?.canonical_name && (
+                          <span className="ml-2 inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs text-blue-700">
+                            {matched.materials.canonical_name}
+                          </span>
+                        )}
+                      </td>
                       <td className="px-4 py-2 text-right tabular-nums">{item.quantity ?? "\u2014"}</td>
                       <td className="px-4 py-2">{item.unit ?? "\u2014"}</td>
                       <td className="px-4 py-2 text-right tabular-nums">{formatCurrency(item.unit_price)}</td>
                       <td className="px-4 py-2 text-right tabular-nums font-medium">{formatCurrency(item.line_total)}</td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

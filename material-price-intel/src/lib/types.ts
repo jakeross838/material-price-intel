@@ -192,13 +192,29 @@ export type Database = {
         Row: LineItem;
         Insert: Omit<LineItem, "id" | "created_at">;
         Update: Partial<Omit<LineItem, "id" | "created_at">>;
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "line_items_material_id_fkey";
+            columns: ["material_id"];
+            isOneToOne: false;
+            referencedRelation: "materials";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       material_aliases: {
         Row: MaterialAlias;
         Insert: Omit<MaterialAlias, "id" | "created_at">;
         Update: Partial<Omit<MaterialAlias, "id" | "created_at">>;
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "material_aliases_material_id_fkey";
+            columns: ["material_id"];
+            isOneToOne: false;
+            referencedRelation: "materials";
+            referencedColumns: ["id"];
+          },
+        ];
       };
     };
     Views: {
