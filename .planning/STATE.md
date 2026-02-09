@@ -2,18 +2,18 @@
 
 **Milestone:** v1 — Core Price Intelligence
 **Current Phase:** 5 (Material Normalization Engine) -- IN PROGRESS
-**Status:** Phase 5 In Progress (1/4 plans complete)
+**Status:** Phase 5 In Progress (2/4 plans complete)
 **Last Updated:** 2026-02-09
 
 ## Current Position
 
 Phase: 5 of 8 (Material Normalization Engine)
-Plan: 1/4 executed (05-01 complete, 05-02 planned, 05-03 planned, 05-04 planned)
+Plan: 2/4 executed (05-01 complete, 05-02 complete, 05-03 planned, 05-04 planned)
 Status: In progress
-Last activity: 2026-02-09 - Completed 05-01-PLAN.md (Material Aliases Schema)
+Last activity: 2026-02-09 - Completed 05-02-PLAN.md (Normalization Edge Function)
 
-Progress: [████████████████████████████████████████████████░░░░░░░░░░░░░░░░] Phase 1-4 complete (11/11), Phase 5: 1/4
-         12/15 plans complete through Phase 5
+Progress: [█████████████████████████████████████████████████████░░░░░░░░░░░░] Phase 1-4 complete (11/11), Phase 5: 2/4
+         13/15 plans complete through Phase 5
 
 ## Phase Progress
 
@@ -23,7 +23,7 @@ Progress: [███████████████████████
 | 2 | File Upload + Storage Pipeline | Complete | 2/2 |
 | 3 | AI Quote Extraction | Complete | 3/3 |
 | 4 | Human Review UI | Complete | 3/3 |
-| 5 | Material Normalization Engine | In Progress | 1/4 |
+| 5 | Material Normalization Engine | In Progress | 2/4 |
 | 6 | Price Search + Filtering | Not Started | -- |
 | 7 | Quote Management + Navigation | Not Started | -- |
 | 8 | Polish + Integration Readiness | Not Started | -- |
@@ -71,6 +71,10 @@ Progress: [███████████████████████
 | 2026-02-09 | Added RPC function types to Database.Functions in types.ts | Supabase JS client rpc() is typed from Database schema; without declarations, TypeScript rejects rpc() calls |
 | 2026-02-09 | Hardcoded service_role_key in pg_net normalize trigger (same as 007) | SECURITY DEFINER functions are safe; only postgres role can view function source |
 | 2026-02-09 | RLS on material_aliases via subquery to materials.organization_id | No direct org_id column; inherits org scope through material_id FK |
+| 2026-02-09 | Two-tier threshold: 0.3 search, 0.5 auto-link | Prevents false-positive auto-matches while keeping broad candidate retrieval |
+| 2026-02-09 | Single batch AI call for all descriptions per quote | Efficiency over per-item calls; classifyMaterials() sends one Claude request |
+| 2026-02-09 | Per-item error isolation in normalization | One bad classification doesn't block the entire quote's normalization |
+| 2026-02-09 | Record both raw_description and canonical_name as aliases | Maximizes future fuzzy matching from both original and normalized forms |
 
 ## Blockers
 
@@ -79,12 +83,11 @@ All resolved. Database fully set up (all 9 migrations + seed + org + user_profil
 ## Session Continuity
 
 Last session: 2026-02-09
-Stopped at: Completed 05-01-PLAN.md (Material Aliases Schema + Normalization Trigger)
-Resume file: None -- execute 05-02 next
-Decision: "Split" covered by create-new + reassign (no dedicated split RPC needed)
-Decision: Two-tier similarity threshold (0.3 search, 0.5 auto-link) to reduce false positives
-Decision: Hardcoded service_role_key in pg_net normalize trigger (same safe pattern as 007)
-Decision: RLS on material_aliases via subquery to materials.organization_id (no direct org_id column)
+Stopped at: Completed 05-02-PLAN.md (Normalization Edge Function)
+Resume file: None -- execute 05-03 next
+Decision: normalize-materials Edge Function deployed and verified (v1 on Supabase)
+Decision: Batch AI classification + two-tier fuzzy matching pattern established
+Decision: Per-item error isolation prevents batch failures
 
 ---
 *Initialized: 2026-02-06*
