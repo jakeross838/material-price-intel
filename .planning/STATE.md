@@ -2,17 +2,17 @@
 
 **Milestone:** v1 — Core Price Intelligence
 **Current Phase:** 4 (Human Review UI) -- IN PROGRESS
-**Status:** Phase 4 In Progress (1/3 plans complete)
+**Status:** Phase 4 In Progress (2/3 plans complete)
 **Last Updated:** 2026-02-09
 
 ## Current Position
 
 Phase: 4 of 8 (Human Review UI)
-Plan: 1/3 executed (04-01 complete, 04-02 pending, 04-03 pending)
+Plan: 2/3 executed (04-01 complete, 04-02 complete, 04-03 pending)
 Status: In progress
-Last activity: 2026-02-09 - Completed 04-01-PLAN.md
+Last activity: 2026-02-09 - Completed 04-02-PLAN.md
 
-Progress: [█████████████████-] Phase 1 complete (3/3), Phase 2 complete (2/2), Phase 3 complete (3/3), Phase 4 in progress (1/3)
+Progress: [██████████████████] Phase 1 complete (3/3), Phase 2 complete (2/2), Phase 3 complete (3/3), Phase 4 in progress (2/3)
 
 ## Phase Progress
 
@@ -21,7 +21,7 @@ Progress: [█████████████████-] Phase 1 complet
 | 1 | Project Foundation + Database Schema | Complete | 3/3 |
 | 2 | File Upload + Storage Pipeline | Complete | 2/2 |
 | 3 | AI Quote Extraction | Complete | 3/3 |
-| 4 | Human Review UI | In Progress | 1/3 |
+| 4 | Human Review UI | In Progress | 2/3 |
 | 5 | Material Normalization Engine | Not Started | -- |
 | 6 | Price Search + Filtering | Not Started | -- |
 | 7 | Quote Management + Navigation | Not Started | -- |
@@ -67,6 +67,7 @@ Progress: [█████████████████-] Phase 1 complet
 | 2026-02-09 | pg_net database trigger replaces client-side Edge Function invoke | Service role key in SECURITY DEFINER function body (safe -- only postgres can view source) |
 | 2026-02-09 | approve_quote atomically marks quote verified + document approved | Single RPC for atomic state transition with org ownership check |
 | 2026-02-09 | update_quote_review uses COALESCE for partials, DELETE+INSERT for line items | Simpler than diffing; no dead p_supplier_name parameter |
+| 2026-02-09 | Added RPC function types to Database.Functions in types.ts | Supabase JS client rpc() is typed from Database schema; without declarations, TypeScript rejects rpc() calls |
 
 ## Blockers
 
@@ -75,8 +76,8 @@ All resolved. Database fully set up (all 8 migrations + seed + org + user_profil
 ## Session Continuity
 
 Last session: 2026-02-09
-Stopped at: Completed 04-01-PLAN.md (database trigger + review infrastructure)
-Resume file: None -- continue with 04-02
+Stopped at: Completed 04-02-PLAN.md (review form components + hooks)
+Resume file: None -- continue with 04-03
 
 ---
 *Initialized: 2026-02-06*
