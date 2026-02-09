@@ -2,24 +2,24 @@
 
 **Milestone:** v1 — Core Price Intelligence
 **Current Phase:** 2 (File Upload + Storage Pipeline)
-**Status:** Planned
-**Last Updated:** 2026-02-06
+**Status:** In Progress
+**Last Updated:** 2026-02-09
 
 ## Current Position
 
 Phase: 2 of 8 (File Upload + Storage Pipeline)
-Plan: 0/2 executed
-Status: Planned (ready for execution)
-Last activity: 2026-02-06 - Phase 2 plans created and verified
+Plan: 1/2 executed
+Status: In progress
+Last activity: 2026-02-09 - Completed 02-01-PLAN.md (File Upload + Storage)
 
-Progress: [#####-----] Phase 1 complete, Phase 2 planned
+Progress: [######----] Phase 1 complete (3/3), Phase 2 in progress (1/2)
 
 ## Phase Progress
 
 | Phase | Name | Status | Plans |
 |-------|------|--------|-------|
 | 1 | Project Foundation + Database Schema | Complete | 3/3 |
-| 2 | File Upload + Storage Pipeline | Planned | 0/2 |
+| 2 | File Upload + Storage Pipeline | In Progress | 1/2 |
 | 3 | AI Quote Extraction | Not Started | -- |
 | 4 | Human Review UI | Not Started | -- |
 | 5 | Material Normalization Engine | Not Started | -- |
@@ -44,10 +44,18 @@ Progress: [#####-----] Phase 1 complete, Phase 2 planned
 | 2026-02-06 | Connected to Ross Built Price Analyzer Supabase project | xgpjwpwhtfmbvoqtvete.supabase.co |
 | 2026-02-06 | Edge Function trigger instead of pg_cron for v1 job processing | Simpler for single-user; claim_pending_document() still supports concurrent workers if needed later |
 | 2026-02-06 | No react-dropzone — native HTML5 drag events | Minimizes dependencies; drag-and-drop is simple enough without a library |
+| 2026-02-09 | Converted Database row types from interface to type alias | TypeScript interfaces do not satisfy Record<string, unknown> required by Supabase client GenericSchema |
+| 2026-02-09 | Storage paths use {org_id}/{uuid}_{filename} pattern | Organizational hygiene for future multi-tenant scoping |
 
 ## Blockers
 
 None currently.
+
+## Session Continuity
+
+Last session: 2026-02-09
+Stopped at: Completed 02-01-PLAN.md
+Resume file: .planning/phases/02-upload-pipeline/02-02-PLAN.md
 
 ---
 *Initialized: 2026-02-06*
