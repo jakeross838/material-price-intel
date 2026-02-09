@@ -190,7 +190,28 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      approve_quote: {
+        Args: { p_quote_id: string };
+        Returns: undefined;
+      };
+      update_quote_review: {
+        Args: {
+          p_quote_id: string;
+          p_quote_number?: string | null;
+          p_quote_date?: string | null;
+          p_project_name?: string | null;
+          p_payment_terms?: string | null;
+          p_valid_until?: string | null;
+          p_notes?: string | null;
+          p_subtotal?: number | null;
+          p_delivery_cost?: number | null;
+          p_tax_amount?: number | null;
+          p_tax_rate?: number | null;
+          p_total_amount?: number | null;
+          p_line_items?: string | null;
+        };
+        Returns: undefined;
+      };
     };
   };
 };
