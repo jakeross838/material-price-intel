@@ -57,6 +57,15 @@ export type Material = {
   updated_at: string;
 };
 
+export type MaterialAlias = {
+  id: string;
+  material_id: string;
+  alias: string;
+  normalized_alias: string;
+  source_quote_id: string | null;
+  created_at: string;
+};
+
 export type DocumentFileType = "pdf" | "xlsx" | "csv" | "email_text";
 export type DocumentSource = "upload" | "email";
 export type DocumentStatus =
@@ -185,6 +194,12 @@ export type Database = {
         Update: Partial<Omit<LineItem, "id" | "created_at">>;
         Relationships: [];
       };
+      material_aliases: {
+        Row: MaterialAlias;
+        Insert: Omit<MaterialAlias, "id" | "created_at">;
+        Update: Partial<Omit<MaterialAlias, "id" | "created_at">>;
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -211,6 +226,22 @@ export type Database = {
           p_line_items?: string | null;
         };
         Returns: undefined;
+      };
+      merge_materials: {
+        Args: { p_keep_id: string; p_merge_id: string };
+        Returns: undefined;
+      };
+      find_similar_material: {
+        Args: {
+          p_org_id: string;
+          p_search_name: string;
+          p_threshold?: number;
+        };
+        Returns: Array<{
+          id: string;
+          canonical_name: string;
+          similarity: number;
+        }>;
       };
     };
   };
