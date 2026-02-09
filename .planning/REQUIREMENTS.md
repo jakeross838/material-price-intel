@@ -123,15 +123,15 @@ Which phases cover which requirements. Updated by create-roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INGEST-01 | 3 | Pending |
+| INGEST-01 | 3 | Complete |
 | INGEST-02 | 2, 7 | Pending |
 | INGEST-03 | 4 | Pending |
 | INGEST-04 | 3, 4 | Pending |
-| INGEST-05 | 3 | Pending |
-| EXTRACT-01 | 3 | Pending |
-| EXTRACT-02 | 3 | Pending |
-| EXTRACT-03 | 3 | Pending |
-| EXTRACT-04 | 3 | Pending |
+| INGEST-05 | 3 | Complete |
+| EXTRACT-01 | 3 | Complete |
+| EXTRACT-02 | 3 | Complete |
+| EXTRACT-03 | 3 | Complete |
+| EXTRACT-04 | 3 | Complete |
 | MAT-01 | 5 | Pending |
 | MAT-02 | 1 | Complete |
 | MAT-03 | 1 | Complete |

@@ -56,6 +56,7 @@
 8. Extracted data written to quotes and line_items tables, document status updated to `completed` (high confidence) or `review_needed` (low confidence)
 
 **Research needed:** YES — need real supplier quote samples to test prompt engineering. Format-specific prompt strategies for tables vs text layouts.
+**Status:** Complete (2026-02-09)
 
 ---
 
