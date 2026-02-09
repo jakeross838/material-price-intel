@@ -64,7 +64,8 @@ export type DocumentStatus =
   | "processing"
   | "completed"
   | "failed"
-  | "review_needed";
+  | "review_needed"
+  | "approved";
 
 export type Document = {
   id: string;

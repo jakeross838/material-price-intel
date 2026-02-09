@@ -1,4 +1,5 @@
-import { FileText, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router";
+import { FileText, Loader2, ChevronRight } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useRecentDocuments } from "@/hooks/useDocumentStatus";
@@ -41,6 +42,10 @@ const statusConfig: Record<
     label: "Review Needed",
     className: "bg-orange-100 text-orange-800",
   },
+  approved: {
+    label: "Approved",
+    className: "bg-emerald-100 text-emerald-800",
+  },
 };
 
 // ===========================================
@@ -50,6 +55,7 @@ const statusConfig: Record<
 // ===========================================
 export function RecentUploads() {
   const { documents, isLoading } = useRecentDocuments();
+  const navigate = useNavigate();
 
   return (
     <div className="space-y-4">
@@ -78,10 +84,18 @@ export function RecentUploads() {
         <div className="divide-y divide-border rounded-lg border">
           {documents.map((doc) => {
             const config = statusConfig[doc.status];
+            const hasQuote = doc.quote_id && (doc.status === "completed" || doc.status === "review_needed" || doc.status === "approved");
             return (
               <div
                 key={doc.id}
-                className="flex items-center gap-3 px-4 py-3"
+                role={hasQuote ? "button" : undefined}
+                tabIndex={hasQuote ? 0 : undefined}
+                onClick={hasQuote ? () => navigate(`/quotes/${doc.quote_id}`) : undefined}
+                onKeyDown={hasQuote ? (e) => { if (e.key === "Enter") navigate(`/quotes/${doc.quote_id}`); } : undefined}
+                className={cn(
+                  "flex items-center gap-3 px-4 py-3",
+                  hasQuote && "cursor-pointer hover:bg-muted/50 transition-colors"
+                )}
               >
                 <FileText className="h-5 w-5 shrink-0 text-muted-foreground" />
 
@@ -113,6 +127,8 @@ export function RecentUploads() {
                 >
                   {config.label}
                 </span>
+
+                {hasQuote && <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />}
               </div>
             );
           })}
