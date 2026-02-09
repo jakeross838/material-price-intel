@@ -53,7 +53,7 @@
 5. Confidence scores assigned per field — low-confidence fields flagged
 6. Cross-validation checks: line item × qty = line total, line totals sum to subtotal, subtotal + tax + delivery ≈ grand total
 7. Extraction handles both formal PDF table layouts and casual text-style quotes
-8. Extracted data written to quotes and quote_line_items tables, document status updated to `extracted`
+8. Extracted data written to quotes and line_items tables, document status updated to `completed` (high confidence) or `review_needed` (low confidence)
 
 **Research needed:** YES — need real supplier quote samples to test prompt engineering. Format-specific prompt strategies for tables vs text layouts.
 
