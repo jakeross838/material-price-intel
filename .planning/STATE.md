@@ -1,18 +1,18 @@
 # Project State: Material Price Intelligence System
 
 **Milestone:** v1 — Core Price Intelligence
-**Current Phase:** 3 (AI Quote Extraction) -- COMPLETE
-**Status:** Phase 3 Complete
+**Current Phase:** 4 (Human Review UI) -- IN PROGRESS
+**Status:** Phase 4 In Progress (1/3 plans complete)
 **Last Updated:** 2026-02-09
 
 ## Current Position
 
-Phase: 3 of 8 (AI Quote Extraction)
-Plan: 3/3 executed (03-01 complete, 03-02 complete, 03-03 complete)
-Status: Phase complete
-Last activity: 2026-02-09 - Completed 03-02-PLAN.md (Validation + Persistence)
+Phase: 4 of 8 (Human Review UI)
+Plan: 1/3 executed (04-01 complete, 04-02 pending, 04-03 pending)
+Status: In progress
+Last activity: 2026-02-09 - Completed 04-01-PLAN.md
 
-Progress: [████████████████--] Phase 1 complete (3/3), Phase 2 complete (2/2), Phase 3 complete (3/3)
+Progress: [█████████████████-] Phase 1 complete (3/3), Phase 2 complete (2/2), Phase 3 complete (3/3), Phase 4 in progress (1/3)
 
 ## Phase Progress
 
@@ -21,7 +21,7 @@ Progress: [████████████████--] Phase 1 complete 
 | 1 | Project Foundation + Database Schema | Complete | 3/3 |
 | 2 | File Upload + Storage Pipeline | Complete | 2/2 |
 | 3 | AI Quote Extraction | Complete | 3/3 |
-| 4 | Human Review UI | Not Started | -- |
+| 4 | Human Review UI | In Progress | 1/3 |
 | 5 | Material Normalization Engine | Not Started | -- |
 | 6 | Price Search + Filtering | Not Started | -- |
 | 7 | Quote Management + Navigation | Not Started | -- |
@@ -59,18 +59,24 @@ Progress: [████████████████--] Phase 1 complete 
 | 2026-02-09 | Validation warnings stored in raw_extraction JSONB | Phase 4 review UI can highlight specific math issues for human reviewers |
 | 2026-02-09 | Direct UPDATE for review_needed status (no RPC) | complete_document RPC hardcodes status=completed |
 | 2026-02-09 | Race condition handling on supplier creation via re-query | Concurrent requests creating same supplier handled gracefully |
+| 2026-02-09 | Anon key must be JWT format, not sb_publishable_ format | Supabase JS client RLS requires JWT-format key |
+| 2026-02-09 | Model ID updated to claude-haiku-4-5-20251001 | Previous model 20250315 not found |
+| 2026-02-09 | Strip markdown fences from Claude JSON responses | Claude wraps JSON in ```json``` fences despite prompt instructions |
+| 2026-02-09 | public.user_org_id() not auth.user_org_id() | Supabase blocks function creation in auth schema via migrations/API |
+| 2026-02-09 | pg_net for auto-extraction trigger (Phase 4 plan) | Client-side supabase.functions.invoke() fails; pg_net database trigger is reliable |
+| 2026-02-09 | pg_net database trigger replaces client-side Edge Function invoke | Service role key in SECURITY DEFINER function body (safe -- only postgres can view source) |
+| 2026-02-09 | approve_quote atomically marks quote verified + document approved | Single RPC for atomic state transition with org ownership check |
+| 2026-02-09 | update_quote_review uses COALESCE for partials, DELETE+INSERT for line items | Simpler than diffing; no dead p_supplier_name parameter |
 
 ## Blockers
 
-**ANTHROPIC_API_KEY:** Configured in Supabase Edge Function secrets (resolved 2026-02-09).
-
-**Action required (from Phase 2):** Apply migration `006_job_queue.sql` to Supabase (via `supabase db push` or SQL editor).
+All resolved. Database fully set up (all 8 migrations + seed + org + user_profile applied via Management API).
 
 ## Session Continuity
 
 Last session: 2026-02-09
-Stopped at: Completed 03-02-PLAN.md (Validation + Persistence) -- Phase 3 complete
-Resume file: None -- ready for Phase 4
+Stopped at: Completed 04-01-PLAN.md (database trigger + review infrastructure)
+Resume file: None -- continue with 04-02
 
 ---
 *Initialized: 2026-02-06*
