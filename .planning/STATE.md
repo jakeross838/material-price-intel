@@ -1,19 +1,19 @@
 # Project State: Material Price Intelligence System
 
 **Milestone:** v1 — Core Price Intelligence
-**Current Phase:** 4 (Human Review UI) -- COMPLETE
-**Status:** Phase 4 Complete (3/3 plans complete)
+**Current Phase:** 5 (Material Normalization Engine) -- IN PROGRESS
+**Status:** Phase 5 In Progress (1/4 plans complete)
 **Last Updated:** 2026-02-09
 
 ## Current Position
 
-Phase: 4 of 8 (Human Review UI)
-Plan: 3/3 executed (04-01 complete, 04-02 complete, 04-03 complete)
-Status: Phase complete
-Last activity: 2026-02-09 - Completed 04-03-PLAN.md
+Phase: 5 of 8 (Material Normalization Engine)
+Plan: 1/4 executed (05-01 complete, 05-02 planned, 05-03 planned, 05-04 planned)
+Status: In progress
+Last activity: 2026-02-09 - Completed 05-01-PLAN.md (Material Aliases Schema)
 
-Progress: [████████████████████████████████████████████] Phase 1 complete (3/3), Phase 2 complete (2/2), Phase 3 complete (3/3), Phase 4 complete (3/3)
-         11/11 plans complete through Phase 4 (100% of planned phases 1-4)
+Progress: [████████████████████████████████████████████████░░░░░░░░░░░░░░░░] Phase 1-4 complete (11/11), Phase 5: 1/4
+         12/15 plans complete through Phase 5
 
 ## Phase Progress
 
@@ -23,7 +23,7 @@ Progress: [███████████████████████
 | 2 | File Upload + Storage Pipeline | Complete | 2/2 |
 | 3 | AI Quote Extraction | Complete | 3/3 |
 | 4 | Human Review UI | Complete | 3/3 |
-| 5 | Material Normalization Engine | Not Started | -- |
+| 5 | Material Normalization Engine | In Progress | 1/4 |
 | 6 | Price Search + Filtering | Not Started | -- |
 | 7 | Quote Management + Navigation | Not Started | -- |
 | 8 | Polish + Integration Readiness | Not Started | -- |
@@ -69,16 +69,22 @@ Progress: [███████████████████████
 | 2026-02-09 | approve_quote atomically marks quote verified + document approved | Single RPC for atomic state transition with org ownership check |
 | 2026-02-09 | update_quote_review uses COALESCE for partials, DELETE+INSERT for line items | Simpler than diffing; no dead p_supplier_name parameter |
 | 2026-02-09 | Added RPC function types to Database.Functions in types.ts | Supabase JS client rpc() is typed from Database schema; without declarations, TypeScript rejects rpc() calls |
+| 2026-02-09 | Hardcoded service_role_key in pg_net normalize trigger (same as 007) | SECURITY DEFINER functions are safe; only postgres role can view function source |
+| 2026-02-09 | RLS on material_aliases via subquery to materials.organization_id | No direct org_id column; inherits org scope through material_id FK |
 
 ## Blockers
 
-All resolved. Database fully set up (all 8 migrations + seed + org + user_profile applied via Management API).
+All resolved. Database fully set up (all 9 migrations + seed + org + user_profile applied via Management API).
 
 ## Session Continuity
 
 Last session: 2026-02-09
-Stopped at: Completed 04-03-PLAN.md (page integration + review workflow -- Phase 4 complete)
-Resume file: None -- continue with Phase 5
+Stopped at: Completed 05-01-PLAN.md (Material Aliases Schema + Normalization Trigger)
+Resume file: None -- execute 05-02 next
+Decision: "Split" covered by create-new + reassign (no dedicated split RPC needed)
+Decision: Two-tier similarity threshold (0.3 search, 0.5 auto-link) to reduce false positives
+Decision: Hardcoded service_role_key in pg_net normalize trigger (same safe pattern as 007)
+Decision: RLS on material_aliases via subquery to materials.organization_id (no direct org_id column)
 
 ---
 *Initialized: 2026-02-06*
