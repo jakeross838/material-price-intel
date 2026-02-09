@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useUploadDocument } from "@/hooks/useUploadDocument";
+import { RecentUploads } from "@/components/documents/RecentUploads";
 
 type DropZoneState = "idle" | "dragover" | "uploading" | "success" | "error";
 
@@ -270,6 +271,9 @@ export function UploadPage() {
           />
         </CardContent>
       </Card>
+
+      {/* Recent uploads with live status updates */}
+      <RecentUploads />
     </div>
   );
 }
