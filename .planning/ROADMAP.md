@@ -37,6 +37,7 @@
 6. Job queue infrastructure with atomic claim/complete/fail functions for pending documents
 
 **Research needed:** No — standard Supabase Storage + Realtime patterns
+**Status:** Complete (2026-02-09)
 
 ---
 
