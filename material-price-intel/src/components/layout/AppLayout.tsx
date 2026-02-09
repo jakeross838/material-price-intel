@@ -1,5 +1,7 @@
 import { Outlet, NavLink } from "react-router";
-import { LayoutDashboard, Upload, FileText, Search } from "lucide-react";
+import { LayoutDashboard, Upload, FileText, Search, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
 
 const navItems = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -9,6 +11,8 @@ const navItems = [
 ];
 
 export function AppLayout() {
+  const { user, signOut } = useAuth();
+
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
@@ -41,6 +45,22 @@ export function AppLayout() {
             </NavLink>
           ))}
         </nav>
+
+        {/* User footer */}
+        <div className="p-4 border-t border-border space-y-2">
+          <p className="text-sm text-muted-foreground truncate">
+            {user?.email}
+          </p>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start"
+            onClick={signOut}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Sign Out
+          </Button>
+        </div>
       </aside>
 
       {/* Main content */}
