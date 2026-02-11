@@ -66,6 +66,105 @@ export type MaterialAlias = {
   created_at: string;
 };
 
+// ===========================================
+// Estimating & Procurement types
+// ===========================================
+
+export type ProjectStatus = 'planning' | 'estimating' | 'in_progress' | 'completed' | 'on_hold';
+
+export type Project = {
+  id: string;
+  organization_id: string;
+  name: string;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  square_footage: number | null;
+  client_name: string | null;
+  client_email: string | null;
+  client_phone: string | null;
+  target_budget: number | null;
+  status: ProjectStatus;
+  notes: string | null;
+  start_date: string | null;
+  estimated_completion: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type RoomType = 'interior' | 'exterior' | 'utility' | 'common';
+
+export type ProjectRoom = {
+  id: string;
+  project_id: string;
+  name: string;
+  room_type: RoomType;
+  sort_order: number;
+  notes: string | null;
+  created_at: string;
+};
+
+export type UpgradeStatus = 'pending' | 'standard' | 'upgrade' | 'downgrade';
+
+export type ProjectSelection = {
+  id: string;
+  room_id: string;
+  category_id: string | null;
+  material_id: string | null;
+  selection_name: string;
+  description: string | null;
+  allowance_amount: number | null;
+  quantity: number | null;
+  unit: string | null;
+  estimated_unit_price: number | null;
+  estimated_total: number | null;
+  actual_unit_price: number | null;
+  actual_total: number | null;
+  variance_amount: number | null;
+  upgrade_status: UpgradeStatus;
+  supplier_id: string | null;
+  sort_order: number;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ProcurementStatus = 'not_quoted' | 'rfq_sent' | 'quoted' | 'awarded' | 'ordered' | 'delivered' | 'installed';
+
+export type ProcurementItem = {
+  id: string;
+  selection_id: string;
+  quote_id: string | null;
+  line_item_id: string | null;
+  status: ProcurementStatus;
+  po_number: string | null;
+  ordered_date: string | null;
+  expected_delivery: string | null;
+  actual_delivery: string | null;
+  committed_price: number | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ProjectSummary = {
+  total_allowance: number;
+  total_estimated: number;
+  total_actual: number;
+  total_variance: number;
+  selection_count: number;
+  items_bought_out: number;
+};
+
+export type MaterialPriceStats = {
+  avg_price: number | null;
+  min_price: number | null;
+  max_price: number | null;
+  quote_count: number;
+  latest_price: number | null;
+  latest_supplier: string | null;
+};
+
 export type DocumentFileType = "pdf" | "xlsx" | "csv" | "email_text";
 export type DocumentSource = "upload" | "email";
 export type DocumentStatus =
@@ -223,6 +322,89 @@ export type Database = {
           },
         ];
       };
+      projects: {
+        Row: Project;
+        Insert: Omit<Project, "id" | "created_at" | "updated_at">;
+        Update: Partial<Omit<Project, "id" | "created_at">>;
+        Relationships: [];
+      };
+      project_rooms: {
+        Row: ProjectRoom;
+        Insert: Omit<ProjectRoom, "id" | "created_at">;
+        Update: Partial<Omit<ProjectRoom, "id" | "created_at">>;
+        Relationships: [
+          {
+            foreignKeyName: "project_rooms_project_id_fkey";
+            columns: ["project_id"];
+            isOneToOne: false;
+            referencedRelation: "projects";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      project_selections: {
+        Row: ProjectSelection;
+        Insert: Omit<ProjectSelection, "id" | "created_at" | "updated_at" | "variance_amount">;
+        Update: Partial<Omit<ProjectSelection, "id" | "created_at" | "variance_amount">>;
+        Relationships: [
+          {
+            foreignKeyName: "project_selections_room_id_fkey";
+            columns: ["room_id"];
+            isOneToOne: false;
+            referencedRelation: "project_rooms";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "project_selections_material_id_fkey";
+            columns: ["material_id"];
+            isOneToOne: false;
+            referencedRelation: "materials";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "project_selections_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "material_categories";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "project_selections_supplier_id_fkey";
+            columns: ["supplier_id"];
+            isOneToOne: false;
+            referencedRelation: "suppliers";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      procurement_items: {
+        Row: ProcurementItem;
+        Insert: Omit<ProcurementItem, "id" | "created_at" | "updated_at">;
+        Update: Partial<Omit<ProcurementItem, "id" | "created_at">>;
+        Relationships: [
+          {
+            foreignKeyName: "procurement_items_selection_id_fkey";
+            columns: ["selection_id"];
+            isOneToOne: true;
+            referencedRelation: "project_selections";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "procurement_items_quote_id_fkey";
+            columns: ["quote_id"];
+            isOneToOne: false;
+            referencedRelation: "quotes";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "procurement_items_line_item_id_fkey";
+            columns: ["line_item_id"];
+            isOneToOne: false;
+            referencedRelation: "line_items";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -267,6 +449,14 @@ export type Database = {
           canonical_name: string;
           similarity: number;
         }>;
+      };
+      get_project_summary: {
+        Args: { p_project_id: string };
+        Returns: ProjectSummary[];
+      };
+      get_material_price_stats: {
+        Args: { p_material_id: string };
+        Returns: MaterialPriceStats[];
       };
     };
   };
