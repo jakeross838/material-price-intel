@@ -1,18 +1,18 @@
 # Project State: Material Price Intelligence System
 
-**Milestone:** v3 — Estimating & Procurement
-**Current Phase:** 10 (Estimating & Procurement)
-**Status:** In progress
+**Milestone:** v3 -- Estimating & Procurement
+**Current Phase:** 10 of 10 (Estimating & Procurement)
+**Status:** Complete
 **Last Updated:** 2026-02-11
 
 ## Current Position
 
 Phase: 10 of 10 (Estimating & Procurement)
-Plan: 7 of 8
-Status: In progress
-Last activity: 2026-02-11 - Completed 10-07: Client-Facing Selection Sheet
+Plan: 8 of 8
+Status: Complete
+Last activity: 2026-02-11 - Completed 10-08: Dashboard Integration & E2E Verification
 
-Progress: [#######.] 7/8 plans in Phase 10
+Progress: [########] 8/8 plans in Phase 10
 
 ## Phase Progress
 
@@ -27,7 +27,7 @@ Progress: [#######.] 7/8 plans in Phase 10
 | 7 | Quote Management + Navigation | Complete | delivered inline |
 | 8 | Reports & Price Analytics Dashboard | Complete | 3/3 |
 | 9 | Smart Accuracy | Complete | 6/6 |
-| 10 | Estimating & Procurement | In progress | 7/8 |
+| 10 | Estimating & Procurement | Complete | 8/8 |
 
 ## Decisions Log
 
@@ -129,6 +129,10 @@ Progress: [#######.] 7/8 plans in Phase 10
 | 2026-02-11 | no-print CSS class pattern for hiding app chrome during print | Simple, reusable; any element marked no-print disappears in print preview |
 | 2026-02-11 | Selection Sheet as 4th tab rather than separate route | Keeps all project context together; toolbar with print/toggle is convenient inline |
 | 2026-02-11 | Pricing toggle defaults to shown (true) | Most common use case is sharing selections with prices; early-stage can toggle off |
+| 2026-02-11 | Dashboard active projects limited to 5 with per-project RPC | Keeps dashboard fast; 5 projects = 5 RPC calls acceptable for v1 |
+| 2026-02-11 | Parallel Promise.all for project summaries on list page | Fetches all summaries concurrently; acceptable for v1 project count |
+| 2026-02-11 | Insert types use Pick + Partial pattern for nullable columns | Resolves TypeScript strictness where Omit requires all remaining fields |
+| 2026-02-11 | window.confirm for delete confirmation | Simple and consistent; no extra modal component needed |
 
 ## Blockers
 
@@ -137,10 +141,10 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 10-07-PLAN.md (Client-Facing Selection Sheet)
+Stopped at: Completed 10-08-PLAN.md (Dashboard Integration & E2E Verification)
 Resume file: None
-Modified: SelectionSheet.tsx, ProjectDetailPage.tsx, AppLayout.tsx, index.css
-Phase 10 progress: 7/8 plans complete
+Modified: DashboardPage.tsx, ProjectsListPage.tsx, ProjectDetailPage.tsx, ProjectEditModal.tsx, types.ts
+Phase 10 progress: 8/8 plans complete -- PHASE COMPLETE
 
 ---
 *Initialized: 2026-02-06*
@@ -156,3 +160,5 @@ Phase 10 progress: 7/8 plans complete
 *Phase 9 started: 2026-02-11*
 *Phase 9 completed: 2026-02-11*
 *Phase 10 started: 2026-02-11*
+*Phase 10 completed: 2026-02-11*
+*All 10 phases complete: 2026-02-11*
