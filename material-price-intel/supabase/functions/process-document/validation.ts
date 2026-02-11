@@ -176,6 +176,84 @@ export function validateExtraction(
   }
 
   // -------------------------------------------------
+  // 5. Line type consistency checks
+  // -------------------------------------------------
+  for (let i = 0; i < extraction.line_items.length; i++) {
+    const item = extraction.line_items[i];
+
+    // 5a. Material items should have unit_price
+    if (item.line_type === 'material' && item.unit_price == null && item.pricing_flag !== 'call_for_pricing') {
+      warnings.push({
+        field: `line_items[${i}].unit_price`,
+        expected: -1, // sentinel: not a numeric comparison
+        actual: 0,
+        message: `Material line item "${item.raw_description}" has no unit_price and is not flagged as call-for-pricing`,
+      });
+    }
+
+    // 5b. Impossible: $0.00 unit_price on a material (unless flagged)
+    if (item.line_type === 'material' && item.unit_price === 0 && item.pricing_flag !== 'zero_price') {
+      warnings.push({
+        field: `line_items[${i}].unit_price`,
+        expected: -1,
+        actual: 0,
+        message: `Material "${item.raw_description}" has $0.00 unit price but is not flagged as zero_price`,
+      });
+    }
+
+    // 5c. Discount lines should have negative line_total or discount info
+    if (item.line_type === 'discount') {
+      const hasDiscountData = (item.discount_pct != null) || (item.discount_amount != null) || (item.line_total != null && item.line_total < 0);
+      if (!hasDiscountData) {
+        warnings.push({
+          field: `line_items[${i}].line_type`,
+          expected: -1,
+          actual: 0,
+          message: `Line item classified as "discount" but has no discount_pct, discount_amount, or negative line_total: "${item.raw_description}"`,
+        });
+      }
+    }
+
+    // 5d. Negative quantity without credit context
+    if (item.quantity != null && item.quantity < 0 && !item.is_credit) {
+      warnings.push({
+        field: `line_items[${i}].quantity`,
+        expected: 0,
+        actual: item.quantity,
+        message: `Negative quantity (${item.quantity}) on non-credit line "${item.raw_description}" -- may need review`,
+      });
+    }
+
+    // 5e. Subtotal lines should not be counted in totals
+    // (This is informational -- the persistence layer handles exclusion)
+    if (item.line_type === 'subtotal_line' && item.line_total != null) {
+      // No warning needed, but we track it for subtotal calculation adjustments
+    }
+  }
+
+  // -------------------------------------------------
+  // 6. Adjusted subtotal check (excluding non-material items)
+  // -------------------------------------------------
+  // If the basic subtotal check (section 2) produced a warning,
+  // try recalculating excluding subtotal_line items which shouldn't be double-counted
+  const materialAndFeeLineTotals = extraction.line_items
+    .filter((item) => item.line_type !== 'subtotal_line' && item.line_type !== 'note')
+    .map((item) => item.line_total)
+    .filter((t): t is number => t != null);
+
+  if (extraction.totals.subtotal != null && materialAndFeeLineTotals.length >= 2) {
+    const adjustedSum = materialAndFeeLineTotals.reduce((sum, t) => sum + t, 0);
+    // If the adjusted sum is closer to stated subtotal than the raw sum,
+    // remove the section-2 warning (it was caused by including subtotal lines)
+    if (isClose(adjustedSum, extraction.totals.subtotal, 1.0)) {
+      const subtotalWarningIdx = warnings.findIndex(w => w.field === 'totals.subtotal');
+      if (subtotalWarningIdx !== -1) {
+        warnings.splice(subtotalWarningIdx, 1);
+      }
+    }
+  }
+
+  // -------------------------------------------------
   // Confidence adjustment
   // -------------------------------------------------
   // Start with overall_confidence, reduce by 0.05 per warning (max 0.3 reduction)
