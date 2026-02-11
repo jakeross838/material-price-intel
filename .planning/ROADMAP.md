@@ -163,6 +163,24 @@
 
 ---
 
+### Phase 10: Project Estimating & Procurement
+**Goal:** Transform the price intelligence system into a full estimating and procurement tool for custom home building. A builder can create a project, define rooms/areas, assign material selections (with client allowances and upgrades), generate estimates from historical pricing data, track buying out (actual POs against estimates), and see real-time budget vs actual variance across the entire home. Designed for large Florida custom homes with hundreds of selections across dozens of categories.
+
+**Requirements:** EST-01 (project/room structure), EST-02 (selection management with allowances), EST-03 (estimate generation from price history), EST-04 (procurement/buyout tracking), EST-05 (budget vs actual variance), EST-06 (selection sheets for client review)
+**Success Criteria:**
+1. Projects page: create a project with name, address, sqft, client info, and target budget
+2. Room/area structure: define rooms (Master Bath, Kitchen, Great Room, etc.) with material category assignments
+3. Selection management: for each room+category, define allowance amount, selected material, selected supplier, actual cost, and upgrade/downgrade status
+4. Estimate builder: pull historical average prices from the price database to auto-populate estimates — "based on your last 6 quotes, 2x4 SPF averages $4.35/pc from 84 Lumber"
+5. Buyout tracking: link actual supplier quotes to project selections, marking items as "quoted", "ordered", "received" — turning quotes into purchase commitments
+6. Budget vs actual dashboard: per-room and per-category variance (budgeted $45K for windows, actual $52K, +$7K variance), with project-wide rollup
+7. Selection sheet export: generate a printable/PDF selection summary showing all rooms, selected materials, suppliers, and prices for client review meetings
+
+**Research needed:** YES — need to understand the typical custom home selection workflow, allowance structures, how builders track buyouts in practice, and what the competitive tools (BuilderTrend, CoConstruct, Builderpad) do vs don't do well.
+**Status:** Complete (2026-02-11)
+
+---
+
 ## Requirement Coverage
 
 | Requirement | Phase | Description |
