@@ -8,11 +8,11 @@
 ## Current Position
 
 Phase: 10 of 10 (Estimating & Procurement)
-Plan: 6 of 8
+Plan: 7 of 8
 Status: In progress
-Last activity: 2026-02-11 - Completed 10-06: Budget vs. Actual Variance Dashboard
+Last activity: 2026-02-11 - Completed 10-07: Client-Facing Selection Sheet
 
-Progress: [######..] 6/8 plans in Phase 10
+Progress: [#######.] 7/8 plans in Phase 10
 
 ## Phase Progress
 
@@ -27,7 +27,7 @@ Progress: [######..] 6/8 plans in Phase 10
 | 7 | Quote Management + Navigation | Complete | delivered inline |
 | 8 | Reports & Price Analytics Dashboard | Complete | 3/3 |
 | 9 | Smart Accuracy | Complete | 6/6 |
-| 10 | Estimating & Procurement | In progress | 6/8 |
+| 10 | Estimating & Procurement | In progress | 7/8 |
 
 ## Decisions Log
 
@@ -126,6 +126,9 @@ Progress: [######..] 6/8 plans in Phase 10
 | 2026-02-11 | Client-side room/category aggregation for budget dashboard | Data already loaded by useProjectSelections; avoids extra RPCs for v1 scale |
 | 2026-02-11 | Four bar series in variance chart (allowance, estimated, actual, variance) | Variance bar gives quick visual indicator; actual bars hidden when zero |
 | 2026-02-11 | Recharts Cell for conditional actual bar coloring | Per-bar conditional fill not natively supported by Recharts Bar component |
+| 2026-02-11 | no-print CSS class pattern for hiding app chrome during print | Simple, reusable; any element marked no-print disappears in print preview |
+| 2026-02-11 | Selection Sheet as 4th tab rather than separate route | Keeps all project context together; toolbar with print/toggle is convenient inline |
+| 2026-02-11 | Pricing toggle defaults to shown (true) | Most common use case is sharing selections with prices; early-stage can toggle off |
 
 ## Blockers
 
@@ -134,10 +137,10 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 10-06-PLAN.md (Budget vs. Actual Variance Dashboard)
+Stopped at: Completed 10-07-PLAN.md (Client-Facing Selection Sheet)
 Resume file: None
-Modified: VarianceChart.tsx, BudgetDashboard.tsx, ProjectDetailPage.tsx
-Phase 10 progress: 6/8 plans complete
+Modified: SelectionSheet.tsx, ProjectDetailPage.tsx, AppLayout.tsx, index.css
+Phase 10 progress: 7/8 plans complete
 
 ---
 *Initialized: 2026-02-06*
