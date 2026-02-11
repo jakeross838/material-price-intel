@@ -126,7 +126,7 @@ async function persistExtraction(
     extraction.supplier,
   );
 
-  // 2. Insert quote
+  // 2. Insert quote (including quote-level discount fields)
   const finalConfidence = validation.adjusted_confidence;
 
   const { data: quote, error: quoteError } = await supabase
@@ -146,6 +146,8 @@ async function persistExtraction(
       total_amount: extraction.totals.total_amount,
       payment_terms: extraction.payment_terms,
       notes: extraction.notes,
+      quote_discount_pct: extraction.quote_discount_pct,
+      quote_discount_amount: extraction.quote_discount_amount,
       confidence_score: finalConfidence,
       raw_extraction: {
         extraction,
@@ -165,8 +167,9 @@ async function persistExtraction(
 
   const quoteId: string = quote.id;
 
-  // 3. Batch insert line items
+  // 3. Insert line items with classification and effective pricing
   if (extraction.line_items.length > 0) {
+    // --- Pass 1: Build line item rows with computed effective prices ---
     const lineItemRows = extraction.line_items.map((item, index) => ({
       quote_id: quoteId,
       raw_description: item.raw_description,
@@ -180,16 +183,85 @@ async function persistExtraction(
       notes: item.notes,
       sort_order: index,
       material_id: null, // Set during Phase 5 normalization
+      line_type: item.line_type ?? 'material',
+      effective_unit_price: null as number | null, // computed below
+      applies_to_line_item_id: null as string | null, // set in pass 2
     }));
 
-    const { error: lineItemsError } = await supabase
+    // --- Compute effective_unit_price for material items ---
+    // For each material line, check if any discount line targets it
+    for (let i = 0; i < extraction.line_items.length; i++) {
+      const item = extraction.line_items[i];
+      if (item.line_type !== 'material' || item.unit_price == null) continue;
+
+      let effectivePrice = item.unit_price;
+
+      // Check for per-item discounts on this material
+      if (item.discount_pct != null) {
+        effectivePrice = item.unit_price * (1 - item.discount_pct / 100);
+      } else if (item.discount_amount != null && item.quantity != null && item.quantity > 0) {
+        effectivePrice = item.unit_price - (item.discount_amount / item.quantity);
+      }
+
+      // Check for discount lines that target this material
+      for (const discountItem of extraction.line_items) {
+        if (discountItem.line_type !== 'discount') continue;
+        if (discountItem.discount_applies_to !== i) continue;
+
+        // This discount line targets material at index i
+        if (discountItem.discount_pct != null) {
+          effectivePrice = effectivePrice * (1 - discountItem.discount_pct / 100);
+        } else if (discountItem.discount_amount != null && item.quantity != null && item.quantity > 0) {
+          // Discount amount spread over the material's quantity
+          effectivePrice = effectivePrice - (Math.abs(discountItem.discount_amount) / item.quantity);
+        } else if (discountItem.line_total != null && discountItem.line_total < 0 && item.quantity != null && item.quantity > 0) {
+          // Use negative line_total as discount amount
+          effectivePrice = effectivePrice - (Math.abs(discountItem.line_total) / item.quantity);
+        }
+      }
+
+      // Apply quote-wide discount if present (proportionally)
+      if (extraction.quote_discount_pct != null) {
+        effectivePrice = effectivePrice * (1 - extraction.quote_discount_pct / 100);
+      }
+
+      // Floor at 0 -- negative effective prices are invalid
+      lineItemRows[i].effective_unit_price = Math.max(0, Math.round(effectivePrice * 10000) / 10000);
+    }
+
+    // --- Insert line items ---
+    const { data: insertedLineItems, error: lineItemsError } = await supabase
       .from("line_items")
-      .insert(lineItemRows);
+      .insert(lineItemRows)
+      .select("id, sort_order");
 
     if (lineItemsError) {
       throw new Error(
         `Failed to insert line items: ${lineItemsError.message}`,
       );
+    }
+
+    // --- Pass 2: Set applies_to_line_item_id for discount lines ---
+    if (insertedLineItems && insertedLineItems.length > 0) {
+      // Build sort_order -> id mapping
+      const sortOrderToId = new Map<number, string>();
+      for (const row of insertedLineItems) {
+        sortOrderToId.set(row.sort_order, row.id);
+      }
+
+      for (let i = 0; i < extraction.line_items.length; i++) {
+        const item = extraction.line_items[i];
+        if (item.line_type !== 'discount' || item.discount_applies_to == null) continue;
+
+        const targetId = sortOrderToId.get(item.discount_applies_to);
+        const discountId = sortOrderToId.get(i);
+        if (targetId && discountId) {
+          await supabase
+            .from("line_items")
+            .update({ applies_to_line_item_id: targetId })
+            .eq("id", discountId);
+        }
+      }
     }
   }
 
@@ -349,7 +421,7 @@ Deno.serve(async (req: Request) => {
     const { system, messages } = buildExtractionMessages(base64Data);
 
     const response = await anthropic.messages.create({
-      model: "claude-haiku-4-5-20250315",
+      model: "claude-haiku-4-5-20251001",
       max_tokens: 16384,
       system,
       messages,
@@ -365,7 +437,13 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const responseText = textBlock.text;
+    // Strip markdown code fences if present (e.g. ```json ... ```)
+    let responseText = textBlock.text.trim();
+    if (responseText.startsWith("```")) {
+      responseText = responseText
+        .replace(/^```(?:json)?\s*\n?/, "")
+        .replace(/\n?```\s*$/, "");
+    }
 
     let parsedResult: ExtractionResult;
     try {
