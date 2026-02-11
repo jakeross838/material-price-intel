@@ -5,7 +5,6 @@ import {
   Plus,
   LinkIcon,
   ExternalLink,
-  ChevronRight,
   Package,
   Truck,
   Wrench,

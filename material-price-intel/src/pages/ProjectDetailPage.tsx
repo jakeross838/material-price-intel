@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useParams, useNavigate } from "react-router";
 import {
   ArrowLeft,
   Loader2,
@@ -18,10 +18,11 @@ import {
   ShoppingCart,
   BarChart3,
   Printer,
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useProject, useUpdateProject } from "@/hooks/useProjects";
+import { useProject, useUpdateProject, useDeleteProject } from "@/hooks/useProjects";
 import { useProjectRooms } from "@/hooks/useProjectRooms";
 import { useProjectSelections } from "@/hooks/useProjectSelections";
 import { useAutoEstimate } from "@/hooks/useEstimateBuilder";
@@ -30,6 +31,7 @@ import { SelectionEditor } from "@/components/projects/SelectionEditor";
 import { ProcurementTracker } from "@/components/projects/ProcurementTracker";
 import { BudgetDashboard } from "@/components/projects/BudgetDashboard";
 import { SelectionSheet } from "@/components/projects/SelectionSheet";
+import { ProjectEditModal } from "@/components/projects/ProjectEditModal";
 import type { ProjectStatus } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
@@ -89,6 +91,7 @@ function defaultTab(status: ProjectStatus | undefined): ProjectTab {
 
 export function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { data: project, isLoading, isError } = useProject(id);
   const { data: rooms } = useProjectRooms(id);
   const { data: allSelections } = useProjectSelections(id);
@@ -102,8 +105,10 @@ export function ProjectDetailPage() {
   } | null>(null);
   const [autoEstimateResult, setAutoEstimateResult] = useState<string | null>(null);
   const [showPricing, setShowPricing] = useState(true);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const autoEstimate = useAutoEstimate();
   const updateProject = useUpdateProject();
+  const deleteProject = useDeleteProject();
 
   // Set default tab based on project status when project loads
   useEffect(() => {
@@ -165,6 +170,21 @@ export function ProjectDetailPage() {
       updateProject.mutate({ id: project.id, updates: { status: "estimating" } });
     }
   }, [selectionsNeedingEstimates, autoEstimate, project, updateProject]);
+
+  // Delete project with confirmation
+  const handleDeleteProject = useCallback(() => {
+    if (!project) return;
+    const confirmed = window.confirm(
+      "Are you sure? This will delete all rooms, selections, and procurement data."
+    );
+    if (!confirmed) return;
+
+    deleteProject.mutate(project.id, {
+      onSuccess: () => {
+        navigate("/projects");
+      },
+    });
+  }, [project, deleteProject, navigate]);
 
   if (isLoading) {
     return (
@@ -273,9 +293,25 @@ export function ProjectDetailPage() {
                 </>
               )}
             </Button>
-            <Button variant="outline" disabled>
+            <Button
+              variant="outline"
+              onClick={() => setEditModalOpen(true)}
+            >
               <Pencil className="mr-2 h-4 w-4" />
               Edit
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleDeleteProject}
+              disabled={deleteProject.isPending}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              {deleteProject.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4" />
+              )}
             </Button>
           </div>
         </div>
@@ -625,6 +661,15 @@ export function ProjectDetailPage() {
             />
           </div>
         </div>
+      )}
+
+      {/* Edit Modal */}
+      {editModalOpen && (
+        <ProjectEditModal
+          project={project}
+          onClose={() => setEditModalOpen(false)}
+          onSaved={() => setEditModalOpen(false)}
+        />
       )}
     </div>
   );

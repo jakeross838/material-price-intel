@@ -48,14 +48,8 @@ function formatCurrencyWhole(val: number | null | undefined) {
   }).format(val);
 }
 
-function formatDate(val: string | null | undefined) {
-  if (!val) return null;
-  return new Date(val).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
+// formatDate available if needed for future use
+// function formatDate(val: string | null | undefined) { ... }
 
 // ---------------------------------------------------------------------------
 // EstimateBuilder component

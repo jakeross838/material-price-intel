@@ -10,12 +10,15 @@ import {
   Loader2,
   ShieldCheck,
   XCircle,
+  FolderKanban,
+  ArrowRight,
+  DollarSign,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
-import type { DocumentStatus } from "@/lib/types";
+import type { DocumentStatus, ProjectStatus } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
 // Status card configuration
@@ -72,6 +75,38 @@ const statusOrder: DocumentStatus[] = [
 ];
 
 // ---------------------------------------------------------------------------
+// Project status badge config
+// ---------------------------------------------------------------------------
+
+const projectStatusConfig: Record<
+  ProjectStatus,
+  { label: string; color: string }
+> = {
+  planning: { label: "Planning", color: "bg-blue-100 text-blue-800" },
+  estimating: { label: "Estimating", color: "bg-amber-100 text-amber-800" },
+  in_progress: {
+    label: "In Progress",
+    color: "bg-green-100 text-green-800",
+  },
+  completed: { label: "Completed", color: "bg-slate-100 text-slate-800" },
+  on_hold: { label: "On Hold", color: "bg-red-100 text-red-800" },
+};
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function formatCurrency(val: number | null) {
+  if (val == null) return null;
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(val);
+}
+
+// ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
@@ -120,6 +155,36 @@ export function DashboardPage() {
       if (error) throw error;
       return data ?? [];
     },
+  });
+
+  // Fetch active projects (planning, estimating, in_progress)
+  const { data: activeProjects } = useQuery({
+    queryKey: ["projects", "active-dashboard"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("projects")
+        .select("id, name, client_name, status, target_budget, updated_at")
+        .in("status", ["planning", "estimating", "in_progress"])
+        .order("updated_at", { ascending: false })
+        .limit(5);
+
+      if (error) throw error;
+
+      // For each project, fetch summary via RPC
+      const withSummary = await Promise.all(
+        (data ?? []).map(async (project) => {
+          const { data: summary } = await supabase.rpc(
+            "get_project_summary",
+            { p_project_id: project.id }
+          );
+          const s = summary?.[0] ?? null;
+          return { ...project, summary: s };
+        })
+      );
+
+      return withSummary;
+    },
+    staleTime: 5 * 60 * 1000,
   });
 
   return (
@@ -221,6 +286,102 @@ export function DashboardPage() {
               <p className="text-sm text-muted-foreground">
                 All caught up! No documents need review.
               </p>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      {/* Active projects section */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-lg font-semibold tracking-tight">
+            Active Projects
+          </h3>
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/projects">
+              View All
+              <ArrowRight className="ml-1 h-3.5 w-3.5" />
+            </Link>
+          </Button>
+        </div>
+
+        {activeProjects && activeProjects.length > 0 ? (
+          <Card>
+            <CardContent className="p-0">
+              <div className="divide-y divide-border">
+                {activeProjects.map((project) => {
+                  const cfg =
+                    projectStatusConfig[project.status as ProjectStatus] ??
+                    projectStatusConfig.planning;
+                  const summary = project.summary;
+                  const estimated = summary?.total_estimated ?? 0;
+                  const actual = summary?.total_actual ?? 0;
+                  const budget = project.target_budget;
+                  const displayAmount = actual > 0 ? actual : estimated;
+                  const displayLabel = actual > 0 ? "Actual" : "Est";
+
+                  return (
+                    <div
+                      key={project.id}
+                      className="flex items-center gap-3 px-4 py-3"
+                    >
+                      <FolderKanban className="h-4 w-4 shrink-0 text-blue-500" />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <Link
+                            to={`/projects/${project.id}`}
+                            className="truncate text-sm font-medium hover:underline"
+                          >
+                            {project.name}
+                          </Link>
+                          <span
+                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium shrink-0 ${cfg.color}`}
+                          >
+                            {cfg.label}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
+                          {project.client_name && (
+                            <span>{project.client_name}</span>
+                          )}
+                          {displayAmount > 0 && budget ? (
+                            <span className="tabular-nums">
+                              <DollarSign className="inline h-3 w-3" />
+                              {displayLabel}: {formatCurrency(displayAmount)} /{" "}
+                              Budget: {formatCurrency(budget)}
+                            </span>
+                          ) : displayAmount > 0 ? (
+                            <span className="tabular-nums">
+                              {displayLabel}: {formatCurrency(displayAmount)}
+                            </span>
+                          ) : budget ? (
+                            <span className="tabular-nums">
+                              Budget: {formatCurrency(budget)}
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="sm" asChild>
+                        <Link to={`/projects/${project.id}`}>
+                          <ArrowRight className="h-3.5 w-3.5" />
+                        </Link>
+                      </Button>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card>
+            <CardContent className="py-8 text-center">
+              <FolderKanban className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
+              <p className="text-sm text-muted-foreground">
+                No active projects. Start by creating a project.
+              </p>
+              <Button asChild size="sm" className="mt-3">
+                <Link to="/projects/new">Create Project</Link>
+              </Button>
             </CardContent>
           </Card>
         )}

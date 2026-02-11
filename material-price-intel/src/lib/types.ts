@@ -344,7 +344,7 @@ export type Database = {
       };
       project_selections: {
         Row: ProjectSelection;
-        Insert: Omit<ProjectSelection, "id" | "created_at" | "updated_at" | "variance_amount">;
+        Insert: Pick<ProjectSelection, "room_id" | "selection_name" | "upgrade_status" | "sort_order"> & Partial<Omit<ProjectSelection, "id" | "created_at" | "updated_at" | "variance_amount" | "room_id" | "selection_name" | "upgrade_status" | "sort_order">>;
         Update: Partial<Omit<ProjectSelection, "id" | "created_at" | "variance_amount">>;
         Relationships: [
           {
@@ -379,7 +379,7 @@ export type Database = {
       };
       procurement_items: {
         Row: ProcurementItem;
-        Insert: Omit<ProcurementItem, "id" | "created_at" | "updated_at">;
+        Insert: Pick<ProcurementItem, "selection_id" | "status"> & Partial<Omit<ProcurementItem, "id" | "created_at" | "updated_at" | "selection_id" | "status">>;
         Update: Partial<Omit<ProcurementItem, "id" | "created_at">>;
         Relationships: [
           {
