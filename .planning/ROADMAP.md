@@ -128,20 +128,38 @@
 
 ---
 
-### Phase 8: Polish + Integration Readiness
-**Goal:** Final quality pass — responsive design, error handling, loading states, empty states, and architectural preparation for the Ross Built Intelligence Platform integration. System is production-ready for Greg's daily use.
+### Phase 8: Reports & Price Analytics Dashboard
+**Goal:** Interactive reports page with live charts showing price fluctuations over time. Users can compare material prices across suppliers/distributors, drill into specific materials or categories (lumber, windows, etc.), and see multiple supplier lines on the same chart. This is where historical pricing data becomes visually actionable — the difference between knowing a price and *seeing* a price trend.
 
-**Requirements:** PLAT-02 (polish), PLAT-03 (edge cases)
+**Requirements:** ANALYTICS-01 (supplier comparison), ANALYTICS-02 (price trends), ANALYTICS-04 (dashboard stats)
 **Success Criteria:**
-1. All pages responsive on desktop and tablet (primary use at desk)
-2. Loading skeletons on all data-fetching views
-3. Empty states with helpful messaging ("No quotes yet — upload your first PDF")
-4. Error boundaries with user-friendly error messages and retry options
-5. Toast notifications for async operations (upload complete, extraction done, approval confirmed)
-6. Environment configuration ready for integration into larger Supabase project
-7. README with setup instructions, architecture overview, and deployment guide
+1. Reports page with interactive line charts showing material unit prices over time (x-axis: quote date, y-axis: unit price)
+2. Multiple supplier/distributor lines on the same chart — different colors per supplier for direct visual comparison
+3. Filter by material category (Lumber, Windows, etc.), specific canonical material, supplier/company, and date range
+4. Category-level aggregate view (e.g., "average lumber price over time" across all lumber materials)
+5. Summary stat cards: average price, price trend direction (up/down/flat), best supplier, quote count
+6. Clicking a data point on a chart links back to the original quote
+7. Chart library renders smoothly with existing data volume (Recharts or similar lightweight React chart lib)
 
-**Research needed:** No — standard React polish patterns
+**Research needed:** No — standard React charting patterns (Recharts is well-documented)
+
+---
+
+### Phase 9: Smart Quote Accuracy Engine
+**Goal:** Achieve near-100% extraction accuracy by teaching the AI to classify line item types (material vs discount vs surcharge vs fee), properly attribute discounts to the correct materials, handle edge cases like bundle pricing, volume tiers, minimum order charges, and ambiguous units. The system must produce clean, accurate per-unit prices suitable for reliable cross-supplier comparison — the foundation of the app's value.
+
+**Requirements:** ACCURACY-01 (line item classification), ACCURACY-02 (discount attribution), ACCURACY-03 (edge case handling), ACCURACY-04 (unit price normalization)
+**Success Criteria:**
+1. AI classifies each line item with a `line_type` field: `material`, `discount`, `fee`, `subtotal_line`, `note` — only `material` items get normalized and priced
+2. Discount lines are attributed to the correct material(s): per-item discounts reduce that item's effective unit price; quote-wide discounts are distributed proportionally or stored as quote-level adjustments
+3. The system stores both raw (pre-discount) and effective (post-discount) unit prices, so users can see both what was quoted and what they actually paid
+4. Edge cases handled: minimum order surcharges, fuel/delivery surcharges masquerading as line items, credit/return lines (negative amounts), "call for pricing" items (flagged, not guessed)
+5. Validation catches impossible prices (e.g., $0.00 unit price on a material, negative quantities without credit context) and flags them for review
+6. Review UI shows line item classifications and lets users reclassify if AI got it wrong
+7. Existing data migration: re-classify already-imported line items with the new type system without losing any data
+
+**Research needed:** YES — need real supplier quote samples with discounts, surcharges, bundle pricing to test classification rules. Advantage Lumber discount line is the first known case.
+**Status:** Complete (2026-02-11)
 
 ---
 
