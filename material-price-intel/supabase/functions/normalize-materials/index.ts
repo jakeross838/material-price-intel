@@ -336,8 +336,9 @@ Deno.serve(async (req: Request) => {
     // -----------------------------------------------
     const { data: lineItems, error: lineItemsError } = await supabase
       .from("line_items")
-      .select("id, raw_description")
+      .select("id, raw_description, line_type")
       .eq("quote_id", quoteId)
+      .eq("line_type", "material")
       .is("material_id", null);
 
     if (lineItemsError) {
@@ -361,7 +362,7 @@ Deno.serve(async (req: Request) => {
     }
 
     console.log(
-      `Normalizing ${lineItems.length} line items for quote ${quoteId}`,
+      `Normalizing ${lineItems.length} material line items for quote ${quoteId} (non-material items skipped)`,
     );
 
     // -----------------------------------------------
