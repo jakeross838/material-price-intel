@@ -115,10 +115,14 @@ export type Quote = {
   notes: string | null;
   confidence_score: number | null;
   raw_extraction: Record<string, unknown> | null;
+  quote_discount_pct: number | null;
+  quote_discount_amount: number | null;
   is_verified: boolean;
   created_at: string;
   updated_at: string;
 };
+
+export type LineItemType = 'material' | 'discount' | 'fee' | 'subtotal_line' | 'note';
 
 export type LineItem = {
   id: string;
@@ -134,6 +138,9 @@ export type LineItem = {
   line_total: number | null;
   notes: string | null;
   sort_order: number;
+  line_type: LineItemType;
+  effective_unit_price: number | null;
+  applies_to_line_item_id: string | null;
   created_at: string;
 };
 
@@ -240,6 +247,8 @@ export type Database = {
           p_tax_rate?: number | null;
           p_total_amount?: number | null;
           p_line_items?: string | null;
+          p_quote_discount_pct?: number | null;
+          p_quote_discount_amount?: number | null;
         };
         Returns: undefined;
       };
