@@ -1,20 +1,25 @@
+import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router";
 import {
   ArrowLeft,
   Loader2,
   DollarSign,
   Ruler,
-  User,
-  Activity,
-  Plus,
+  TrendingDown,
+  TrendingUp,
   MapPin,
   Calendar,
   FileText,
   Pencil,
+  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useProject } from "@/hooks/useProjects";
+import { useProjectRooms } from "@/hooks/useProjectRooms";
+import { useProjectSelections } from "@/hooks/useProjectSelections";
+import { RoomManager } from "@/components/projects/RoomManager";
+import { SelectionEditor } from "@/components/projects/SelectionEditor";
 import type { ProjectStatus } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
@@ -60,6 +65,17 @@ function formatDate(val: string | null) {
 export function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { data: project, isLoading, isError } = useProject(id);
+  const { data: rooms } = useProjectRooms(id);
+  const { data: allSelections } = useProjectSelections(id);
+
+  const [selectedRoomId, setSelectedRoomId] = useState<string | undefined>();
+
+  // Auto-select first room when rooms load
+  useEffect(() => {
+    if (!selectedRoomId && rooms && rooms.length > 0) {
+      setSelectedRoomId(rooms[0].id);
+    }
+  }, [rooms, selectedRoomId]);
 
   if (isLoading) {
     return (
@@ -94,6 +110,24 @@ export function ProjectDetailPage() {
   const addressParts = [project.address, project.city, project.state]
     .filter(Boolean)
     .join(", ");
+
+  // Compute aggregated totals from all selections
+  const totalAllowance = (allSelections ?? []).reduce(
+    (sum, s) => sum + (s.allowance_amount ?? 0),
+    0
+  );
+  const totalEstimated = (allSelections ?? []).reduce(
+    (sum, s) => sum + (s.estimated_total ?? 0),
+    0
+  );
+  const totalActual = (allSelections ?? []).reduce(
+    (sum, s) => sum + (s.actual_total ?? 0),
+    0
+  );
+  const hasActuals = (allSelections ?? []).some((s) => s.actual_total != null);
+  const totalVariance = hasActuals ? totalActual - totalAllowance : null;
+
+  const selectedRoom = rooms?.find((r) => r.id === selectedRoomId);
 
   return (
     <div className="space-y-6">
@@ -132,10 +166,17 @@ export function ProjectDetailPage() {
                 <DollarSign className="h-5 w-5 text-emerald-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Target Budget</p>
+                <p className="text-sm text-muted-foreground">Total Allowance</p>
                 <p className="text-xl font-bold tabular-nums">
-                  {formatCurrency(project.target_budget)}
+                  {totalAllowance > 0
+                    ? formatCurrency(totalAllowance)
+                    : formatCurrency(project.target_budget)}
                 </p>
+                {totalAllowance > 0 && project.target_budget && (
+                  <p className="text-[10px] text-muted-foreground">
+                    Budget: {formatCurrency(project.target_budget)}
+                  </p>
+                )}
               </div>
             </div>
           </CardContent>
@@ -148,10 +189,19 @@ export function ProjectDetailPage() {
                 <Ruler className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Square Footage</p>
-                <p className="text-xl font-bold tabular-nums">
-                  {formatSqft(project.square_footage)}
+                <p className="text-sm text-muted-foreground">
+                  Total Estimated
                 </p>
+                <p className="text-xl font-bold tabular-nums">
+                  {totalEstimated > 0
+                    ? formatCurrency(totalEstimated)
+                    : formatSqft(project.square_footage)}
+                </p>
+                {totalEstimated > 0 && project.square_footage && (
+                  <p className="text-[10px] text-muted-foreground">
+                    {formatSqft(project.square_footage)}
+                  </p>
+                )}
               </div>
             </div>
           </CardContent>
@@ -161,12 +211,20 @@ export function ProjectDetailPage() {
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-purple-100">
-                <User className="h-5 w-5 text-purple-600" />
+                {hasActuals ? (
+                  <DollarSign className="h-5 w-5 text-purple-600" />
+                ) : (
+                  <User className="h-5 w-5 text-purple-600" />
+                )}
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Client</p>
-                <p className="text-xl font-bold truncate">
-                  {project.client_name ?? "\u2014"}
+                <p className="text-sm text-muted-foreground">
+                  {hasActuals ? "Total Actual" : "Client"}
+                </p>
+                <p className="text-xl font-bold tabular-nums truncate">
+                  {hasActuals
+                    ? formatCurrency(totalActual)
+                    : project.client_name ?? "\u2014"}
                 </p>
               </div>
             </div>
@@ -176,112 +234,166 @@ export function ProjectDetailPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-100">
-                <Activity className="h-5 w-5 text-amber-600" />
+              <div
+                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
+                  totalVariance != null
+                    ? totalVariance > 0
+                      ? "bg-red-100"
+                      : "bg-green-100"
+                    : "bg-amber-100"
+                }`}
+              >
+                {totalVariance != null ? (
+                  totalVariance > 0 ? (
+                    <TrendingUp className="h-5 w-5 text-red-600" />
+                  ) : (
+                    <TrendingDown className="h-5 w-5 text-green-600" />
+                  )
+                ) : (
+                  <FileText className="h-5 w-5 text-amber-600" />
+                )}
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Status</p>
-                <p className="text-xl font-bold">{cfg.label}</p>
+                <p className="text-sm text-muted-foreground">
+                  {totalVariance != null ? "Variance" : "Selections"}
+                </p>
+                <p
+                  className={`text-xl font-bold tabular-nums ${
+                    totalVariance != null
+                      ? totalVariance > 0
+                        ? "text-red-600"
+                        : totalVariance < 0
+                          ? "text-green-600"
+                          : ""
+                      : ""
+                  }`}
+                >
+                  {totalVariance != null
+                    ? formatCurrency(totalVariance)
+                    : (allSelections ?? []).length}
+                </p>
+                {totalVariance != null && (
+                  <p className="text-[10px] text-muted-foreground">
+                    {totalVariance > 0 ? "Over budget" : "Under budget"}
+                  </p>
+                )}
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Project details card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Project Details</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {addressParts && (
-            <div className="flex items-start gap-3">
-              <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
-              <div>
-                <p className="text-sm font-medium">Address</p>
-                <p className="text-sm text-muted-foreground">{addressParts}</p>
+      {/* Project details card (collapsible feel - compact) */}
+      {(addressParts ||
+        project.start_date ||
+        project.estimated_completion ||
+        project.client_email ||
+        project.notes) && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Project Details</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {addressParts && (
+              <div className="flex items-start gap-3">
+                <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
+                <div>
+                  <p className="text-sm font-medium">Address</p>
+                  <p className="text-sm text-muted-foreground">
+                    {addressParts}
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
-
-          {(project.start_date || project.estimated_completion) && (
-            <div className="flex items-start gap-3">
-              <Calendar className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
-              <div>
-                <p className="text-sm font-medium">Timeline</p>
-                <p className="text-sm text-muted-foreground">
-                  {project.start_date && (
-                    <span>Start: {formatDate(project.start_date)}</span>
-                  )}
-                  {project.start_date && project.estimated_completion && (
-                    <span> &mdash; </span>
-                  )}
-                  {project.estimated_completion && (
-                    <span>
-                      Est. Completion:{" "}
-                      {formatDate(project.estimated_completion)}
-                    </span>
-                  )}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {project.client_email && (
-            <div className="flex items-start gap-3">
-              <User className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
-              <div>
-                <p className="text-sm font-medium">Client Contact</p>
-                <p className="text-sm text-muted-foreground">
-                  {project.client_email}
-                  {project.client_phone && ` | ${project.client_phone}`}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {project.notes && (
-            <div className="flex items-start gap-3">
-              <FileText className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
-              <div>
-                <p className="text-sm font-medium">Notes</p>
-                <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                  {project.notes}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {!addressParts &&
-            !project.start_date &&
-            !project.estimated_completion &&
-            !project.client_email &&
-            !project.notes && (
-              <p className="text-sm text-muted-foreground">
-                No additional details yet.
-              </p>
             )}
-        </CardContent>
-      </Card>
+            {(project.start_date || project.estimated_completion) && (
+              <div className="flex items-start gap-3">
+                <Calendar className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
+                <div>
+                  <p className="text-sm font-medium">Timeline</p>
+                  <p className="text-sm text-muted-foreground">
+                    {project.start_date && (
+                      <span>Start: {formatDate(project.start_date)}</span>
+                    )}
+                    {project.start_date && project.estimated_completion && (
+                      <span> &mdash; </span>
+                    )}
+                    {project.estimated_completion && (
+                      <span>
+                        Est. Completion:{" "}
+                        {formatDate(project.estimated_completion)}
+                      </span>
+                    )}
+                  </p>
+                </div>
+              </div>
+            )}
+            {project.client_email && (
+              <div className="flex items-start gap-3">
+                <User className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
+                <div>
+                  <p className="text-sm font-medium">Client Contact</p>
+                  <p className="text-sm text-muted-foreground">
+                    {project.client_email}
+                    {project.client_phone && ` | ${project.client_phone}`}
+                  </p>
+                </div>
+              </div>
+            )}
+            {project.notes && (
+              <div className="flex items-start gap-3">
+                <FileText className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
+                <div>
+                  <p className="text-sm font-medium">Notes</p>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                    {project.notes}
+                  </p>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
-      {/* Rooms section */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">Rooms & Areas</CardTitle>
-            <Button size="sm" disabled>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Room
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground text-center py-6">
-            Rooms will appear here. Add rooms to start defining material
-            selections.
-          </p>
-        </CardContent>
-      </Card>
+      {/* Rooms + Selections two-panel layout */}
+      <div className="flex gap-6">
+        {/* Left panel: Room list */}
+        <div className="w-1/3 shrink-0">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Rooms & Areas</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <RoomManager
+                projectId={id!}
+                selectedRoomId={selectedRoomId}
+                onSelectRoom={setSelectedRoomId}
+              />
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right panel: Selections for selected room */}
+        <div className="flex-1 min-w-0">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">
+                {selectedRoom
+                  ? `${selectedRoom.name} Selections`
+                  : "Material Selections"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {selectedRoomId ? (
+                <SelectionEditor roomId={selectedRoomId} projectId={id!} />
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-8">
+                  Select a room to view and manage its material selections.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }
