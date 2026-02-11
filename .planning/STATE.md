@@ -8,11 +8,11 @@
 ## Current Position
 
 Phase: 10 of 10 (Estimating & Procurement)
-Plan: 2 of 8
+Plan: 3 of 8
 Status: In progress
-Last activity: 2026-02-11 - Completed 10-02: Project CRUD UI
+Last activity: 2026-02-11 - Completed 10-03: Room Management & Selection Editing
 
-Progress: [##......] 2/8 plans in Phase 10
+Progress: [###.....] 3/8 plans in Phase 10
 
 ## Phase Progress
 
@@ -27,7 +27,7 @@ Progress: [##......] 2/8 plans in Phase 10
 | 7 | Quote Management + Navigation | Complete | delivered inline |
 | 8 | Reports & Price Analytics Dashboard | Complete | 3/3 |
 | 9 | Smart Accuracy | Complete | 6/6 |
-| 10 | Estimating & Procurement | In progress | 2/8 |
+| 10 | Estimating & Procurement | In progress | 3/8 |
 
 ## Decisions Log
 
@@ -111,6 +111,10 @@ Progress: [##......] 2/8 plans in Phase 10
 | 2026-02-11 | useState per field for project create form (no form library) | Simple controlled inputs matching existing patterns |
 | 2026-02-11 | Empty strings converted to null before Supabase insert | Database expects NULL for optional fields, not empty strings |
 | 2026-02-11 | Edit/Add Room buttons as disabled placeholders | Plan 03 will implement room management; edit deferred to future plan |
+| 2026-02-11 | RoomManager accepts selectedRoomId + onSelectRoom props for controlled selection | Parent page owns selected room state so it can coordinate between room list and selection editor |
+| 2026-02-11 | SelectionWithJoins type derived from Awaited<ReturnType<>> pattern | Avoids manually re-declaring joined types; stays in sync with Supabase select query |
+| 2026-02-11 | Summary cards adapt between metadata view and financial totals view | When no selections exist, cards show project metadata; when selections exist, cards show aggregated totals |
+| 2026-02-11 | Upgrade status computed client-side on save with 1% tolerance threshold | actual > allowance * 1.01 = upgrade, actual < allowance * 0.99 = downgrade, else standard |
 
 ## Blockers
 
@@ -119,10 +123,10 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 10-02-PLAN.md (Project CRUD UI)
+Stopped at: Completed 10-03-PLAN.md (Room Management & Selection Editing)
 Resume file: None
-Modified: useProjects.ts, ProjectsListPage.tsx, ProjectCreatePage.tsx, ProjectDetailPage.tsx, App.tsx, AppLayout.tsx
-Phase 10 progress: 2/8 plans complete
+Modified: useProjectRooms.ts, useProjectSelections.ts, RoomManager.tsx, SelectionEditor.tsx, ProjectDetailPage.tsx
+Phase 10 progress: 3/8 plans complete
 
 ---
 *Initialized: 2026-02-06*
