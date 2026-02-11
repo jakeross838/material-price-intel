@@ -8,11 +8,11 @@
 ## Current Position
 
 Phase: 9 (Smart Accuracy)
-Plan: 2 of 6 complete
+Plan: 3 of 6 complete
 Status: In progress
-Last activity: 2026-02-11 - Completed 09-02: Line item classification types, extraction prompt upgrade, and validation enhancement
+Last activity: 2026-02-11 - Completed 09-04: Backfill migration reclassifying existing line items
 
-Progress: [██░░░░] 2/6 plans in Phase 9
+Progress: [███░░░] 3/6 plans in Phase 9
 
 ## Phase Progress
 
@@ -26,7 +26,7 @@ Progress: [██░░░░] 2/6 plans in Phase 9
 | 6 | Price Search + Filtering | Complete | delivered inline |
 | 7 | Quote Management + Navigation | Complete | delivered inline |
 | 8 | Reports & Price Analytics Dashboard | Complete | 3/3 |
-| 9 | Smart Accuracy | In Progress | 2/6 |
+| 9 | Smart Accuracy | In Progress | 3/6 |
 
 ## Decisions Log
 
@@ -91,18 +91,21 @@ Progress: [██░░░░] 2/6 plans in Phase 9
 | 2026-02-11 | discount_applies_to uses 0-based line index, null for quote-wide | Simple unambiguous linking between discount and target material |
 | 2026-02-11 | pricing_flag string for call_for_pricing, zero_price, negative_quantity | Three distinct edge cases need differentiation beyond a boolean |
 | 2026-02-11 | Additive-only validation (sections 5+6) preserving existing 4 sections | Prevents regressions in existing math validation logic |
+| 2026-02-11 | Conservative reclassification (high-confidence only) | Ambiguous items stay as 'material' for human review; false negatives preferable to false positives |
+| 2026-02-11 | GREATEST(0,...) floor on effective_unit_price | Prevents negative effective prices from unusual discount configurations |
+| 2026-02-11 | Section ordering: reclassify before compute effective price | Ensures effective_unit_price only computed for rows that remain line_type='material' |
 
 ## Blockers
 
-None. Migration 010 ready to apply. Extraction types, prompt, and validation updated for line classification.
+None. Migrations 010+011 ready to apply. Extraction types, prompt, and validation updated. Existing data backfill migration ready.
 
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 09-02-PLAN.md (line item classification + discount attribution + validation)
-Resume file: .planning/phases/09-smart-accuracy/09-03-PLAN.md
-Modified: types.ts, prompt.ts, validation.ts in process-document Edge Function
-Phase 9 progress: 2/6 plans complete
+Stopped at: Completed 09-04-PLAN.md (backfill migration for line type reclassification)
+Resume file: .planning/phases/09-smart-accuracy/09-05-PLAN.md
+Modified: supabase/migrations/011_backfill_line_types.sql
+Phase 9 progress: 3/6 plans complete
 
 ---
 *Initialized: 2026-02-06*
