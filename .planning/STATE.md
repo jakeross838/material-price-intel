@@ -8,11 +8,11 @@
 ## Current Position
 
 Phase: 10 of 10 (Estimating & Procurement)
-Plan: 3 of 8
+Plan: 4 of 8
 Status: In progress
-Last activity: 2026-02-11 - Completed 10-03: Room Management & Selection Editing
+Last activity: 2026-02-11 - Completed 10-04: Estimate Builder & Price Intelligence
 
-Progress: [###.....] 3/8 plans in Phase 10
+Progress: [####....] 4/8 plans in Phase 10
 
 ## Phase Progress
 
@@ -27,7 +27,7 @@ Progress: [###.....] 3/8 plans in Phase 10
 | 7 | Quote Management + Navigation | Complete | delivered inline |
 | 8 | Reports & Price Analytics Dashboard | Complete | 3/3 |
 | 9 | Smart Accuracy | Complete | 6/6 |
-| 10 | Estimating & Procurement | In progress | 3/8 |
+| 10 | Estimating & Procurement | In progress | 4/8 |
 
 ## Decisions Log
 
@@ -115,6 +115,10 @@ Progress: [###.....] 3/8 plans in Phase 10
 | 2026-02-11 | SelectionWithJoins type derived from Awaited<ReturnType<>> pattern | Avoids manually re-declaring joined types; stays in sync with Supabase select query |
 | 2026-02-11 | Summary cards adapt between metadata view and financial totals view | When no selections exist, cards show project metadata; when selections exist, cards show aggregated totals |
 | 2026-02-11 | Upgrade status computed client-side on save with 1% tolerance threshold | actual > allowance * 1.01 = upgrade, actual < allowance * 0.99 = downgrade, else standard |
+| 2026-02-11 | useAutoEstimate encapsulates RPC fetch + selection update in single mutation | More efficient than separate price fetch + useUpdateSelection calls |
+| 2026-02-11 | Sequential auto-estimate-all with progress counter | Prevents overwhelming Supabase with parallel RPC calls |
+| 2026-02-11 | Project status auto-transitions planning to estimating on first estimate | useUpdateProject called after successful bulk estimate |
+| 2026-02-11 | Expandable detail row pattern for EstimateBuilder in table | colSpan=9 row below selection; one expanded at a time |
 
 ## Blockers
 
@@ -123,10 +127,10 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 10-03-PLAN.md (Room Management & Selection Editing)
+Stopped at: Completed 10-04-PLAN.md (Estimate Builder & Price Intelligence)
 Resume file: None
-Modified: useProjectRooms.ts, useProjectSelections.ts, RoomManager.tsx, SelectionEditor.tsx, ProjectDetailPage.tsx
-Phase 10 progress: 3/8 plans complete
+Modified: useEstimateBuilder.ts, EstimateBuilder.tsx, SelectionEditor.tsx, ProjectDetailPage.tsx
+Phase 10 progress: 4/8 plans complete
 
 ---
 *Initialized: 2026-02-06*
