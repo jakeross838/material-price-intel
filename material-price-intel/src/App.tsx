@@ -10,6 +10,9 @@ import { MaterialsPage } from "./pages/MaterialsPage";
 import { QuotesListPage } from "./pages/QuotesListPage";
 import { SearchPage } from "./pages/SearchPage";
 import { ReportsPage } from "./pages/ReportsPage";
+import { ProjectsListPage } from "./pages/ProjectsListPage";
+import { ProjectCreatePage } from "./pages/ProjectCreatePage";
+import { ProjectDetailPage } from "./pages/ProjectDetailPage";
 
 function App() {
   return (
@@ -24,6 +27,9 @@ function App() {
           <Route path="/materials" element={<MaterialsPage />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/projects" element={<ProjectsListPage />} />
+          <Route path="/projects/new" element={<ProjectCreatePage />} />
+          <Route path="/projects/:id" element={<ProjectDetailPage />} />
         </Route>
       </Route>
       <Route path="*" element={<NotFoundPage />} />

@@ -1,5 +1,5 @@
 import { Outlet, NavLink } from "react-router";
-import { LayoutDashboard, Upload, FileText, Layers, Search, BarChart3, LogOut } from "lucide-react";
+import { LayoutDashboard, Upload, FileText, Layers, Search, BarChart3, FolderKanban, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 
@@ -10,6 +10,7 @@ const navItems = [
   { to: "/materials", label: "Materials", icon: Layers },
   { to: "/search", label: "Search", icon: Search },
   { to: "/reports", label: "Reports", icon: BarChart3 },
+  { to: "/projects", label: "Projects", icon: FolderKanban },
 ];
 
 export function AppLayout() {
