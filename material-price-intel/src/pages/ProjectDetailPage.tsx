@@ -27,6 +27,7 @@ import { useAutoEstimate } from "@/hooks/useEstimateBuilder";
 import { RoomManager } from "@/components/projects/RoomManager";
 import { SelectionEditor } from "@/components/projects/SelectionEditor";
 import { ProcurementTracker } from "@/components/projects/ProcurementTracker";
+import { BudgetDashboard } from "@/components/projects/BudgetDashboard";
 import type { ProjectStatus } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
@@ -566,15 +567,10 @@ export function ProjectDetailPage() {
       )}
 
       {activeTab === "budget" && (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <BarChart3 className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-            <p className="text-sm font-medium">Budget Dashboard</p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Coming in Plan 06 -- budget vs. actuals breakdown by room and category.
-            </p>
-          </CardContent>
-        </Card>
+        <BudgetDashboard
+          projectId={id!}
+          targetBudget={project.target_budget}
+        />
       )}
     </div>
   );
