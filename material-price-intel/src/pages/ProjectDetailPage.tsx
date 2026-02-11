@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useParams } from "react-router";
 import {
   ArrowLeft,
@@ -12,12 +12,15 @@ import {
   FileText,
   Pencil,
   User,
+  Zap,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useProject } from "@/hooks/useProjects";
+import { useProject, useUpdateProject } from "@/hooks/useProjects";
 import { useProjectRooms } from "@/hooks/useProjectRooms";
 import { useProjectSelections } from "@/hooks/useProjectSelections";
+import { useAutoEstimate } from "@/hooks/useEstimateBuilder";
 import { RoomManager } from "@/components/projects/RoomManager";
 import { SelectionEditor } from "@/components/projects/SelectionEditor";
 import type { ProjectStatus } from "@/lib/types";
@@ -69,6 +72,13 @@ export function ProjectDetailPage() {
   const { data: allSelections } = useProjectSelections(id);
 
   const [selectedRoomId, setSelectedRoomId] = useState<string | undefined>();
+  const [autoEstimateProgress, setAutoEstimateProgress] = useState<{
+    current: number;
+    total: number;
+  } | null>(null);
+  const [autoEstimateResult, setAutoEstimateResult] = useState<string | null>(null);
+  const autoEstimate = useAutoEstimate();
+  const updateProject = useUpdateProject();
 
   // Auto-select first room when rooms load
   useEffect(() => {
@@ -76,6 +86,52 @@ export function ProjectDetailPage() {
       setSelectedRoomId(rooms[0].id);
     }
   }, [rooms, selectedRoomId]);
+
+  // Selections that need estimates: have material_id but no estimated_unit_price
+  const selectionsNeedingEstimates = (allSelections ?? []).filter(
+    (s) => s.material_id && s.estimated_unit_price == null
+  );
+
+  // Auto-estimate all selections with materials but no price
+  const handleAutoEstimateAll = useCallback(async () => {
+    if (selectionsNeedingEstimates.length === 0) return;
+
+    setAutoEstimateProgress({ current: 0, total: selectionsNeedingEstimates.length });
+    let completed = 0;
+    let failed = 0;
+
+    for (const sel of selectionsNeedingEstimates) {
+      try {
+        await autoEstimate.mutateAsync({
+          selectionId: sel.id,
+          roomId: sel.room_id,
+          materialId: sel.material_id!,
+          quantity: sel.quantity,
+          priceStrategy: "average",
+        });
+        completed++;
+      } catch {
+        failed++;
+      }
+      setAutoEstimateProgress({
+        current: completed + failed,
+        total: selectionsNeedingEstimates.length,
+      });
+    }
+
+    setAutoEstimateProgress(null);
+    const msg =
+      failed > 0
+        ? `${completed} items estimated, ${failed} had no pricing data`
+        : `${completed} item${completed !== 1 ? "s" : ""} estimated`;
+    setAutoEstimateResult(msg);
+    setTimeout(() => setAutoEstimateResult(null), 4000);
+
+    // Transition project status to 'estimating' if currently 'planning'
+    if (project?.status === "planning" && completed > 0) {
+      updateProject.mutate({ id: project.id, updates: { status: "estimating" } });
+    }
+  }, [selectionsNeedingEstimates, autoEstimate, project, updateProject]);
 
   if (isLoading) {
     return (
@@ -150,10 +206,45 @@ export function ProjectDetailPage() {
               {cfg.label}
             </span>
           </div>
-          <Button variant="outline" disabled>
-            <Pencil className="mr-2 h-4 w-4" />
-            Edit
-          </Button>
+          <div className="flex items-center gap-2">
+            {autoEstimateResult && (
+              <span className="text-xs text-green-600 flex items-center gap-1">
+                <Check className="h-3 w-3" />
+                {autoEstimateResult}
+              </span>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleAutoEstimateAll}
+              disabled={
+                selectionsNeedingEstimates.length === 0 ||
+                autoEstimateProgress !== null
+              }
+            >
+              {autoEstimateProgress ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Estimating {autoEstimateProgress.current} of{" "}
+                  {autoEstimateProgress.total}...
+                </>
+              ) : (
+                <>
+                  <Zap className="mr-2 h-4 w-4" />
+                  Auto-Estimate All
+                  {selectionsNeedingEstimates.length > 0 && (
+                    <span className="ml-1 text-muted-foreground">
+                      ({selectionsNeedingEstimates.length})
+                    </span>
+                  )}
+                </>
+              )}
+            </Button>
+            <Button variant="outline" disabled>
+              <Pencil className="mr-2 h-4 w-4" />
+              Edit
+            </Button>
+          </div>
         </div>
       </div>
 

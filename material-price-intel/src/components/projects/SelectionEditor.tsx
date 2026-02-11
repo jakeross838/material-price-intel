@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Plus, X, Pencil, Check, Loader2 } from "lucide-react";
+import { Plus, X, Pencil, Check, Loader2, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/lib/supabase";
@@ -13,6 +13,7 @@ import {
 } from "@/hooks/useProjectSelections";
 import type { SelectionWithJoins } from "@/hooks/useProjectSelections";
 import type { MaterialCategory, UpgradeStatus } from "@/lib/types";
+import { EstimateBuilder } from "@/components/projects/EstimateBuilder";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -210,9 +211,11 @@ type SelectionRowProps = {
   roomId: string;
   categories: MaterialCategory[];
   materials: ReturnType<typeof useMaterials>["data"];
+  isExpanded: boolean;
+  onToggleExpand: () => void;
 };
 
-function SelectionRow({ sel, roomId, categories, materials }: SelectionRowProps) {
+function SelectionRow({ sel, roomId, categories, materials, isExpanded, onToggleExpand }: SelectionRowProps) {
   const updateSelection = useUpdateSelection();
   const deleteSelection = useDeleteSelection();
   const [editing, setEditing] = useState(false);
@@ -426,80 +429,104 @@ function SelectionRow({ sel, roomId, categories, materials }: SelectionRowProps)
   }
 
   return (
-    <tr className="hover:bg-muted/30 transition-colors group">
-      <td className="px-2 py-1.5 text-sm font-medium">{sel.selection_name}</td>
-      <td className="px-2 py-1.5 text-xs text-muted-foreground">
-        {categoryName}
-      </td>
-      <td className="px-2 py-1.5 text-xs">
-        <span
-          className={
-            sel.material_id ? "text-foreground" : "text-muted-foreground italic"
-          }
-        >
-          {materialName}
-        </span>
-        {supplierName && (
-          <span className="text-[10px] text-muted-foreground ml-1">
-            ({supplierName})
-          </span>
-        )}
-      </td>
-      <td className="px-2 py-1.5 text-xs tabular-nums text-right">
-        {formatCurrency(sel.allowance_amount)}
-      </td>
-      <td className="px-2 py-1.5 text-xs tabular-nums">
-        {sel.quantity != null
-          ? `${sel.quantity} ${sel.unit ?? ""}`
-          : "\u2014"}
-      </td>
-      <td className="px-2 py-1.5 text-xs tabular-nums text-right">
-        {formatCurrency(estTotal)}
-      </td>
-      <td className="px-2 py-1.5 text-xs tabular-nums text-right">
-        {formatCurrency(actTotal)}
-      </td>
-      <td className="px-2 py-1.5 text-xs tabular-nums text-right">
-        <span
-          className={
-            variance == null
-              ? "text-muted-foreground"
-              : variance > 0
-                ? "text-red-600 font-medium"
-                : variance < 0
-                  ? "text-green-600 font-medium"
-                  : "text-muted-foreground"
-          }
-        >
-          {formatCurrency(variance)}
-        </span>
-      </td>
-      <td className="px-2 py-1.5">
-        <div className="flex items-center gap-1 justify-end">
+    <>
+      <tr className="hover:bg-muted/30 transition-colors group">
+        <td className="px-2 py-1.5 text-sm font-medium">
+          <div className="flex items-center gap-1">
+            {sel.selection_name}
+            {sel.material_id && (
+              <Button
+                size="xs"
+                variant="ghost"
+                onClick={onToggleExpand}
+                className="text-[10px] h-5 px-1.5 text-blue-600 hover:text-blue-800 shrink-0"
+              >
+                <BarChart3 className="h-3 w-3 mr-0.5" />
+                {isExpanded ? "Hide" : "Estimate"}
+              </Button>
+            )}
+          </div>
+        </td>
+        <td className="px-2 py-1.5 text-xs text-muted-foreground">
+          {categoryName}
+        </td>
+        <td className="px-2 py-1.5 text-xs">
           <span
-            className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium ${badge.color}`}
+            className={
+              sel.material_id ? "text-foreground" : "text-muted-foreground italic"
+            }
           >
-            {badge.label}
+            {materialName}
           </span>
-          <Button
-            size="icon-xs"
-            variant="ghost"
-            onClick={startEdit}
-            className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground"
+          {supplierName && (
+            <span className="text-[10px] text-muted-foreground ml-1">
+              ({supplierName})
+            </span>
+          )}
+        </td>
+        <td className="px-2 py-1.5 text-xs tabular-nums text-right">
+          {formatCurrency(sel.allowance_amount)}
+        </td>
+        <td className="px-2 py-1.5 text-xs tabular-nums">
+          {sel.quantity != null
+            ? `${sel.quantity} ${sel.unit ?? ""}`
+            : "\u2014"}
+        </td>
+        <td className="px-2 py-1.5 text-xs tabular-nums text-right">
+          {formatCurrency(estTotal)}
+        </td>
+        <td className="px-2 py-1.5 text-xs tabular-nums text-right">
+          {formatCurrency(actTotal)}
+        </td>
+        <td className="px-2 py-1.5 text-xs tabular-nums text-right">
+          <span
+            className={
+              variance == null
+                ? "text-muted-foreground"
+                : variance > 0
+                  ? "text-red-600 font-medium"
+                  : variance < 0
+                    ? "text-green-600 font-medium"
+                    : "text-muted-foreground"
+            }
           >
-            <Pencil className="h-3 w-3" />
-          </Button>
-          <Button
-            size="icon-xs"
-            variant="ghost"
-            onClick={handleDelete}
-            className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-          >
-            <X className="h-3 w-3" />
-          </Button>
-        </div>
-      </td>
-    </tr>
+            {formatCurrency(variance)}
+          </span>
+        </td>
+        <td className="px-2 py-1.5">
+          <div className="flex items-center gap-1 justify-end">
+            <span
+              className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium ${badge.color}`}
+            >
+              {badge.label}
+            </span>
+            <Button
+              size="icon-xs"
+              variant="ghost"
+              onClick={startEdit}
+              className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground"
+            >
+              <Pencil className="h-3 w-3" />
+            </Button>
+            <Button
+              size="icon-xs"
+              variant="ghost"
+              onClick={handleDelete}
+              className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          </div>
+        </td>
+      </tr>
+      {isExpanded && sel.material_id && (
+        <tr>
+          <td colSpan={9} className="px-2 py-2">
+            <EstimateBuilder selection={sel} roomId={roomId} />
+          </td>
+        </tr>
+      )}
+    </>
   );
 }
 
@@ -516,6 +543,7 @@ export function SelectionEditor({ roomId, projectId }: SelectionEditorProps) {
   const { data: selections, isLoading } = useRoomSelections(roomId);
   const { data: categories } = useMaterialCategories();
   const { data: materials } = useMaterials();
+  const [expandedSelectionId, setExpandedSelectionId] = useState<string | null>(null);
 
   // Suppress unused variable warning -- projectId reserved for future use
   void projectId;
@@ -569,6 +597,12 @@ export function SelectionEditor({ roomId, projectId }: SelectionEditorProps) {
                   roomId={roomId}
                   categories={categories ?? []}
                   materials={materials}
+                  isExpanded={expandedSelectionId === sel.id}
+                  onToggleExpand={() =>
+                    setExpandedSelectionId(
+                      expandedSelectionId === sel.id ? null : sel.id
+                    )
+                  }
                 />
               ))}
             </tbody>
