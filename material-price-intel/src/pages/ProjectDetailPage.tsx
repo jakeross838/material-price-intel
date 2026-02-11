@@ -17,6 +17,7 @@ import {
   LayoutList,
   ShoppingCart,
   BarChart3,
+  Printer,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,6 +29,7 @@ import { RoomManager } from "@/components/projects/RoomManager";
 import { SelectionEditor } from "@/components/projects/SelectionEditor";
 import { ProcurementTracker } from "@/components/projects/ProcurementTracker";
 import { BudgetDashboard } from "@/components/projects/BudgetDashboard";
+import { SelectionSheet } from "@/components/projects/SelectionSheet";
 import type { ProjectStatus } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
@@ -46,7 +48,7 @@ const statusConfig: Record<ProjectStatus, { label: string; color: string }> = {
 // Tab types
 // ---------------------------------------------------------------------------
 
-type ProjectTab = "selections" | "procurement" | "budget";
+type ProjectTab = "selections" | "procurement" | "budget" | "sheet";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -99,6 +101,7 @@ export function ProjectDetailPage() {
     total: number;
   } | null>(null);
   const [autoEstimateResult, setAutoEstimateResult] = useState<string | null>(null);
+  const [showPricing, setShowPricing] = useState(true);
   const autoEstimate = useAutoEstimate();
   const updateProject = useUpdateProject();
 
@@ -218,7 +221,7 @@ export function ProjectDetailPage() {
   return (
     <div className="space-y-6">
       {/* Back link + page header */}
-      <div>
+      <div className="no-print">
         <Button variant="ghost" size="sm" asChild className="mb-2">
           <Link to="/projects">
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -279,7 +282,7 @@ export function ProjectDetailPage() {
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="no-print grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
@@ -410,7 +413,7 @@ export function ProjectDetailPage() {
         project.estimated_completion ||
         project.client_email ||
         project.notes) && (
-        <Card>
+        <Card className="no-print">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg">Project Details</CardTitle>
           </CardHeader>
@@ -476,7 +479,7 @@ export function ProjectDetailPage() {
       )}
 
       {/* Tab navigation */}
-      <div className="flex gap-1 border-b">
+      <div className="no-print flex gap-1 border-b">
         <button
           onClick={() => setActiveTab("selections")}
           className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
@@ -509,6 +512,17 @@ export function ProjectDetailPage() {
         >
           <BarChart3 className="h-4 w-4" />
           Budget
+        </button>
+        <button
+          onClick={() => setActiveTab("sheet")}
+          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === "sheet"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30"
+          }`}
+        >
+          <Printer className="h-4 w-4" />
+          Selection Sheet
         </button>
       </div>
 
@@ -571,6 +585,46 @@ export function ProjectDetailPage() {
           projectId={id!}
           targetBudget={project.target_budget}
         />
+      )}
+
+      {activeTab === "sheet" && (
+        <div>
+          {/* Toolbar (hidden in print) */}
+          <div className="no-print flex items-center gap-4 mb-4 p-3 bg-muted/50 rounded-lg">
+            <Button
+              size="sm"
+              onClick={() => window.print()}
+            >
+              <Printer className="mr-2 h-4 w-4" />
+              Print
+            </Button>
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showPricing}
+                onChange={(e) => setShowPricing(e.target.checked)}
+                className="rounded border-border"
+              />
+              Show Pricing
+            </label>
+            <span className="text-xs text-muted-foreground ml-auto">
+              Date: {new Date().toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </span>
+          </div>
+
+          {/* Selection Sheet (visible in print) */}
+          <div className="border rounded-lg p-8 bg-white">
+            <SelectionSheet
+              projectId={id!}
+              project={project}
+              showPricing={showPricing}
+            />
+          </div>
+        </div>
       )}
     </div>
   );

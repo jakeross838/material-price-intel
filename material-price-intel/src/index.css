@@ -122,3 +122,65 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ===========================================
+   Print styles for Selection Sheet
+   =========================================== */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+
+  /* Selection sheet print formatting */
+  .selection-sheet {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 11px;
+  }
+
+  .selection-sheet h1 {
+    font-size: 16px !important;
+  }
+
+  .selection-sheet h3 {
+    font-size: 13px !important;
+  }
+
+  .selection-sheet-room {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .selection-sheet-table {
+    border-collapse: collapse;
+  }
+
+  .selection-sheet-table th,
+  .selection-sheet-table td {
+    border: 1px solid #ddd !important;
+    padding: 3px 6px !important;
+  }
+
+  /* Remove card borders/shadows in print */
+  .selection-sheet .border {
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  @page {
+    margin: 0.75in;
+  }
+}
