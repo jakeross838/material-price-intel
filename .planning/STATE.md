@@ -8,11 +8,11 @@
 ## Current Position
 
 Phase: 10 of 10 (Estimating & Procurement)
-Plan: 5 of 8
+Plan: 6 of 8
 Status: In progress
-Last activity: 2026-02-11 - Completed 10-05: Procurement Tracking & Buyout Workflow
+Last activity: 2026-02-11 - Completed 10-06: Budget vs. Actual Variance Dashboard
 
-Progress: [#####...] 5/8 plans in Phase 10
+Progress: [######..] 6/8 plans in Phase 10
 
 ## Phase Progress
 
@@ -27,7 +27,7 @@ Progress: [#####...] 5/8 plans in Phase 10
 | 7 | Quote Management + Navigation | Complete | delivered inline |
 | 8 | Reports & Price Analytics Dashboard | Complete | 3/3 |
 | 9 | Smart Accuracy | Complete | 6/6 |
-| 10 | Estimating & Procurement | In progress | 5/8 |
+| 10 | Estimating & Procurement | In progress | 6/8 |
 
 ## Decisions Log
 
@@ -123,6 +123,9 @@ Progress: [#####...] 5/8 plans in Phase 10
 | 2026-02-11 | Tab navigation uses local state not routing | Button-based tabs; default tab based on project status |
 | 2026-02-11 | Untracked selections shown inline in procurement table | Single unified view with Start Tracking button to create procurement record |
 | 2026-02-11 | supplierId passed through AwardQuoteInput from modal | Avoids extra fetch inside mutation; QuoteLinkModal already has supplier data |
+| 2026-02-11 | Client-side room/category aggregation for budget dashboard | Data already loaded by useProjectSelections; avoids extra RPCs for v1 scale |
+| 2026-02-11 | Four bar series in variance chart (allowance, estimated, actual, variance) | Variance bar gives quick visual indicator; actual bars hidden when zero |
+| 2026-02-11 | Recharts Cell for conditional actual bar coloring | Per-bar conditional fill not natively supported by Recharts Bar component |
 
 ## Blockers
 
@@ -131,10 +134,10 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 10-05-PLAN.md (Procurement Tracking & Buyout Workflow)
+Stopped at: Completed 10-06-PLAN.md (Budget vs. Actual Variance Dashboard)
 Resume file: None
-Modified: useProcurement.ts, ProcurementTracker.tsx, QuoteLinkModal.tsx, ProjectDetailPage.tsx
-Phase 10 progress: 5/8 plans complete
+Modified: VarianceChart.tsx, BudgetDashboard.tsx, ProjectDetailPage.tsx
+Phase 10 progress: 6/8 plans complete
 
 ---
 *Initialized: 2026-02-06*
