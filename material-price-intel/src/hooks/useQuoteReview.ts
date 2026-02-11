@@ -28,6 +28,8 @@ export type QuoteReviewUpdate = {
     discount_amount: number | null;
     line_total: number | null;
     notes: string | null;
+    line_type: string;
+    effective_unit_price: number | null;
   }>;
 };
 

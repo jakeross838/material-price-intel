@@ -135,6 +135,8 @@ export function ReviewForm({
         discount_amount: null,
         line_total: item.line_total,
         notes: item.notes,
+        line_type: item.line_type,
+        effective_unit_price: item.effective_unit_price,
       })),
     };
   }

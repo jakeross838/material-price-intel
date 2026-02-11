@@ -2,6 +2,7 @@ import { Trash2, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import type { LineItemType } from "@/lib/types";
 
 export type EditableLineItem = {
   id: string; // temp ID for React key
@@ -12,6 +13,10 @@ export type EditableLineItem = {
   line_total: number | null;
   notes: string | null;
   confidence?: number;
+  line_type: LineItemType;
+  effective_unit_price: number | null;
+  discount_pct?: number | null;
+  discount_amount?: number | null;
 };
 
 type LineItemsEditorProps = {
@@ -48,7 +53,44 @@ export function LineItemsEditor({ items, onChange }: LineItemsEditorProps) {
       "line_total",
     ];
     const value = numericFields.includes(field) ? parseNumber(raw) : raw;
-    onChange(updateItem(items, index, field, value));
+    let updated = updateItem(items, index, field, value);
+
+    // When line_type changes, recompute effective_unit_price
+    if (field === "line_type") {
+      const item = updated[index];
+      if (raw === "material") {
+        // Reclassified TO material: compute effective_unit_price from discount fields
+        let effectivePrice = item.unit_price;
+        if (effectivePrice != null) {
+          if (item.discount_pct != null && item.discount_pct > 0) {
+            effectivePrice = effectivePrice * (1 - item.discount_pct / 100);
+          } else if (
+            item.discount_amount != null &&
+            item.discount_amount > 0 &&
+            item.quantity != null &&
+            item.quantity > 0
+          ) {
+            effectivePrice =
+              effectivePrice - item.discount_amount / item.quantity;
+          }
+          effectivePrice = Math.max(
+            0,
+            Math.round(effectivePrice * 10000) / 10000
+          );
+        }
+        updated = updateItem(
+          updated,
+          index,
+          "effective_unit_price",
+          effectivePrice
+        );
+      } else {
+        // Reclassified AWAY from material: null out effective_unit_price
+        updated = updateItem(updated, index, "effective_unit_price", null);
+      }
+    }
+
+    onChange(updated);
   }
 
   function handleAddRow() {
@@ -60,6 +102,8 @@ export function LineItemsEditor({ items, onChange }: LineItemsEditorProps) {
       unit_price: null,
       line_total: null,
       notes: null,
+      line_type: "material",
+      effective_unit_price: null,
     };
     onChange([...items, newItem]);
   }
@@ -75,6 +119,7 @@ export function LineItemsEditor({ items, onChange }: LineItemsEditorProps) {
           <thead>
             <tr className="border-b bg-muted/50">
               <th className="px-2 py-2 text-left font-medium w-10">#</th>
+              <th className="px-2 py-2 text-left font-medium w-28">Type</th>
               <th className="px-2 py-2 text-left font-medium min-w-[200px]">
                 Description
               </th>
@@ -100,11 +145,48 @@ export function LineItemsEditor({ items, onChange }: LineItemsEditorProps) {
                   key={item.id}
                   className={cn(
                     "border-b last:border-0",
-                    lowConfidence && "bg-amber-50"
+                    lowConfidence && "bg-amber-50",
+                    item.line_type === "discount" &&
+                      !lowConfidence &&
+                      "bg-orange-50/50",
+                    item.line_type === "fee" &&
+                      !lowConfidence &&
+                      "bg-purple-50/50",
+                    item.line_type === "subtotal_line" &&
+                      !lowConfidence &&
+                      "bg-gray-50/50",
+                    item.line_type === "note" &&
+                      !lowConfidence &&
+                      "bg-gray-50/50 opacity-60"
                   )}
                 >
                   <td className="px-2 py-1.5 text-muted-foreground tabular-nums">
                     {i + 1}
+                  </td>
+                  <td className="px-2 py-1.5">
+                    <select
+                      value={item.line_type}
+                      onChange={(e) =>
+                        handleFieldChange(i, "line_type", e.target.value)
+                      }
+                      className={cn(
+                        "h-8 w-full rounded-md border border-input bg-transparent px-1.5 text-xs",
+                        item.line_type === "discount" &&
+                          "text-orange-600 bg-orange-50",
+                        item.line_type === "fee" &&
+                          "text-purple-600 bg-purple-50",
+                        item.line_type === "subtotal_line" &&
+                          "text-gray-500 bg-gray-50",
+                        item.line_type === "note" &&
+                          "text-gray-400 bg-gray-50 italic"
+                      )}
+                    >
+                      <option value="material">Material</option>
+                      <option value="discount">Discount</option>
+                      <option value="fee">Fee</option>
+                      <option value="subtotal_line">Subtotal</option>
+                      <option value="note">Note</option>
+                    </select>
                   </td>
                   <td className="px-2 py-1.5">
                     <Input
