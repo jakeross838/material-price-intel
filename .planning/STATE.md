@@ -8,11 +8,11 @@
 ## Current Position
 
 Phase: 10 of 10 (Estimating & Procurement)
-Plan: 1 of 8
+Plan: 2 of 8
 Status: In progress
-Last activity: 2026-02-11 - Completed 10-01: Estimating & Procurement Schema
+Last activity: 2026-02-11 - Completed 10-02: Project CRUD UI
 
-Progress: [#.......] 1/8 plans in Phase 10
+Progress: [##......] 2/8 plans in Phase 10
 
 ## Phase Progress
 
@@ -27,7 +27,7 @@ Progress: [#.......] 1/8 plans in Phase 10
 | 7 | Quote Management + Navigation | Complete | delivered inline |
 | 8 | Reports & Price Analytics Dashboard | Complete | 3/3 |
 | 9 | Smart Accuracy | Complete | 6/6 |
-| 10 | Estimating & Procurement | In progress | 1/8 |
+| 10 | Estimating & Procurement | In progress | 2/8 |
 
 ## Decisions Log
 
@@ -107,6 +107,10 @@ Progress: [#.......] 1/8 plans in Phase 10
 | 2026-02-11 | Multi-level RLS join chains for nested tables | project_rooms via projects, project_selections via rooms->projects, procurement_items via selections->rooms->projects |
 | 2026-02-11 | SECURITY DEFINER on RPCs with manual org ownership checks | get_project_summary and get_material_price_stats verify caller org before returning data |
 | 2026-02-11 | UNIQUE(selection_id) on procurement_items enforces 1:1 | Each selection has at most one procurement record tracking its buyout lifecycle |
+| 2026-02-11 | Organization ID fetched from user_profiles in useCreateProject | Auth user ID mapped to org via user_profiles lookup before project insert |
+| 2026-02-11 | useState per field for project create form (no form library) | Simple controlled inputs matching existing patterns |
+| 2026-02-11 | Empty strings converted to null before Supabase insert | Database expects NULL for optional fields, not empty strings |
+| 2026-02-11 | Edit/Add Room buttons as disabled placeholders | Plan 03 will implement room management; edit deferred to future plan |
 
 ## Blockers
 
@@ -115,10 +119,10 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 10-01-PLAN.md (Estimating & Procurement Schema)
+Stopped at: Completed 10-02-PLAN.md (Project CRUD UI)
 Resume file: None
-Modified: 012_estimating_schema.sql, types.ts
-Phase 10 progress: 1/8 plans complete
+Modified: useProjects.ts, ProjectsListPage.tsx, ProjectCreatePage.tsx, ProjectDetailPage.tsx, App.tsx, AppLayout.tsx
+Phase 10 progress: 2/8 plans complete
 
 ---
 *Initialized: 2026-02-06*
