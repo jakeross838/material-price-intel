@@ -2,17 +2,17 @@
 
 **Milestone:** v2 — Smart Accuracy & Line Classification
 **Current Phase:** 9 (Smart Accuracy)
-**Status:** In Progress
+**Status:** Complete
 **Last Updated:** 2026-02-11
 
 ## Current Position
 
 Phase: 9 (Smart Accuracy)
-Plan: 4 of 6 complete
-Status: In progress
-Last activity: 2026-02-11 - Completed 09-03: Extraction persistence and normalization filtering
+Plan: 6 of 6 complete
+Status: Phase complete
+Last activity: 2026-02-11 - Completed 09-06: Search and Reports effective price integration
 
-Progress: [████░░] 4/6 plans in Phase 9
+Progress: [██████] 6/6 plans in Phase 9
 
 ## Phase Progress
 
@@ -26,7 +26,7 @@ Progress: [████░░] 4/6 plans in Phase 9
 | 6 | Price Search + Filtering | Complete | delivered inline |
 | 7 | Quote Management + Navigation | Complete | delivered inline |
 | 8 | Reports & Price Analytics Dashboard | Complete | 3/3 |
-| 9 | Smart Accuracy | In Progress | 4/6 |
+| 9 | Smart Accuracy | Complete | 6/6 |
 
 ## Decisions Log
 
@@ -98,18 +98,20 @@ Progress: [████░░] 4/6 plans in Phase 9
 | 2026-02-11 | Effective price rounded to 4 decimals, floored at 0 | Prevents floating point noise; negative prices are invalid |
 | 2026-02-11 | Quote-wide discount applied multiplicatively last | Per-item discounts reduce base, then quote-wide applies to discounted price |
 | 2026-02-11 | Server-side line_type filter on normalization query | .eq('line_type','material') more efficient than client-side filtering |
+| 2026-02-11 | Fallback to unit_price when effective_unit_price is null | Backward compatibility with pre-classification data |
+| 2026-02-11 | Chart components updated alongside ReportsPage for effective prices | PriceTrendChart and CategoryAggregateChart also use effectiveUnitPrice for consistent rendering |
 
 ## Blockers
 
-None. Migrations 010+011 ready to apply. Extraction persistence updated with line classification and effective pricing. Normalization filters to material-only items.
+None. Phase 9 (Smart Accuracy) is complete. All 6 plans executed successfully.
 
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 09-03-PLAN.md (extraction persistence + normalization filtering)
-Resume file: .planning/phases/09-smart-accuracy/09-05-PLAN.md
-Modified: process-document/index.ts, normalize-materials/index.ts
-Phase 9 progress: 4/6 plans complete
+Stopped at: Completed 09-06-PLAN.md (Search and Reports effective price integration)
+Resume file: None
+Modified: SearchPage.tsx, useReportsData.ts, ReportsPage.tsx, PriceTrendChart.tsx, CategoryAggregateChart.tsx
+Phase 9 progress: 6/6 plans complete (phase complete)
 
 ---
 *Initialized: 2026-02-06*
@@ -123,3 +125,4 @@ Phase 9 progress: 4/6 plans complete
 *Phase 8 completed: 2026-02-11*
 *v1 Milestone complete: 2026-02-11*
 *Phase 9 started: 2026-02-11*
+*Phase 9 completed: 2026-02-11*
