@@ -1,18 +1,18 @@
 # Project State: Material Price Intelligence System
 
-**Milestone:** v2 — Smart Accuracy & Line Classification
-**Current Phase:** 9 (Smart Accuracy)
-**Status:** Complete
+**Milestone:** v3 — Estimating & Procurement
+**Current Phase:** 10 (Estimating & Procurement)
+**Status:** In progress
 **Last Updated:** 2026-02-11
 
 ## Current Position
 
-Phase: 9 (Smart Accuracy)
-Plan: 6 of 6 complete
-Status: Phase complete
-Last activity: 2026-02-11 - Completed 09-06: Search and Reports effective price integration
+Phase: 10 of 10 (Estimating & Procurement)
+Plan: 1 of 8
+Status: In progress
+Last activity: 2026-02-11 - Completed 10-01: Estimating & Procurement Schema
 
-Progress: [██████] 6/6 plans in Phase 9
+Progress: [#.......] 1/8 plans in Phase 10
 
 ## Phase Progress
 
@@ -27,6 +27,7 @@ Progress: [██████] 6/6 plans in Phase 9
 | 7 | Quote Management + Navigation | Complete | delivered inline |
 | 8 | Reports & Price Analytics Dashboard | Complete | 3/3 |
 | 9 | Smart Accuracy | Complete | 6/6 |
+| 10 | Estimating & Procurement | In progress | 1/8 |
 
 ## Decisions Log
 
@@ -102,18 +103,22 @@ Progress: [██████] 6/6 plans in Phase 9
 | 2026-02-11 | Effective price recomputation only on line_type change | Avoids recomputing on every field edit; explicit reclassification is the trigger |
 | 2026-02-11 | Fallback to unit_price when effective_unit_price is null | Backward compatibility with pre-classification data |
 | 2026-02-11 | Chart components updated alongside ReportsPage for effective prices | PriceTrendChart and CategoryAggregateChart also use effectiveUnitPrice for consistent rendering |
+| 2026-02-11 | GENERATED ALWAYS AS STORED for variance_amount column | Auto-computes (actual_total or estimated_total) minus allowance_amount |
+| 2026-02-11 | Multi-level RLS join chains for nested tables | project_rooms via projects, project_selections via rooms->projects, procurement_items via selections->rooms->projects |
+| 2026-02-11 | SECURITY DEFINER on RPCs with manual org ownership checks | get_project_summary and get_material_price_stats verify caller org before returning data |
+| 2026-02-11 | UNIQUE(selection_id) on procurement_items enforces 1:1 | Each selection has at most one procurement record tracking its buyout lifecycle |
 
 ## Blockers
 
-None. All phases complete. v2 milestone done.
+None.
 
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 09-06-PLAN.md (Search and Reports effective price integration)
+Stopped at: Completed 10-01-PLAN.md (Estimating & Procurement Schema)
 Resume file: None
-Modified: SearchPage.tsx, useReportsData.ts, ReportsPage.tsx, PriceTrendChart.tsx, CategoryAggregateChart.tsx
-Phase 9 progress: 6/6 plans complete (phase complete)
+Modified: 012_estimating_schema.sql, types.ts
+Phase 10 progress: 1/8 plans complete
 
 ---
 *Initialized: 2026-02-06*
@@ -128,3 +133,4 @@ Phase 9 progress: 6/6 plans complete (phase complete)
 *v1 Milestone complete: 2026-02-11*
 *Phase 9 started: 2026-02-11*
 *Phase 9 completed: 2026-02-11*
+*Phase 10 started: 2026-02-11*
