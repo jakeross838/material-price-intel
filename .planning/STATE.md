@@ -8,11 +8,11 @@
 ## Current Position
 
 Phase: 9 (Smart Accuracy)
-Plan: 1 of 6 complete
+Plan: 2 of 6 complete
 Status: In progress
-Last activity: 2026-02-11 - Completed 09-01: line_type, effective_unit_price, quote-level discount schema + TypeScript types
+Last activity: 2026-02-11 - Completed 09-02: Line item classification types, extraction prompt upgrade, and validation enhancement
 
-Progress: [█░░░░░] 1/6 plans in Phase 9
+Progress: [██░░░░] 2/6 plans in Phase 9
 
 ## Phase Progress
 
@@ -26,7 +26,7 @@ Progress: [█░░░░░] 1/6 plans in Phase 9
 | 6 | Price Search + Filtering | Complete | delivered inline |
 | 7 | Quote Management + Navigation | Complete | delivered inline |
 | 8 | Reports & Price Analytics Dashboard | Complete | 3/3 |
-| 9 | Smart Accuracy | In Progress | 1/6 |
+| 9 | Smart Accuracy | In Progress | 2/6 |
 
 ## Decisions Log
 
@@ -87,18 +87,22 @@ Progress: [█░░░░░] 1/6 plans in Phase 9
 | 2026-02-11 | Recharts onClick requires type cast | MouseHandlerDataParam type doesn't include activePayload |
 | 2026-02-11 | applies_to_line_item_id NULL in RPC INSERT (DELETE+INSERT pattern) | Discount attribution set during AI extraction; FK destroyed on review save cycle -- accepted limitation |
 | 2026-02-11 | Backfill effective_unit_price = unit_price when no discount exists | Safe default ensuring all rows have comparable values |
+| 2026-02-11 | LineItemType as 5-value union: material, discount, fee, subtotal_line, note | Covers all observed line types in real lumber quotes |
+| 2026-02-11 | discount_applies_to uses 0-based line index, null for quote-wide | Simple unambiguous linking between discount and target material |
+| 2026-02-11 | pricing_flag string for call_for_pricing, zero_price, negative_quantity | Three distinct edge cases need differentiation beyond a boolean |
+| 2026-02-11 | Additive-only validation (sections 5+6) preserving existing 4 sections | Prevents regressions in existing math validation logic |
 
 ## Blockers
 
-None. Migration 010 ready to apply to database.
+None. Migration 010 ready to apply. Extraction types, prompt, and validation updated for line classification.
 
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 09-01-PLAN.md (line_type + effective pricing schema)
-Resume file: .planning/phases/09-smart-accuracy/09-02-PLAN.md
-Created: 010_line_type_and_effective_price.sql, updated types.ts
-Phase 9 progress: 1/6 plans complete
+Stopped at: Completed 09-02-PLAN.md (line item classification + discount attribution + validation)
+Resume file: .planning/phases/09-smart-accuracy/09-03-PLAN.md
+Modified: types.ts, prompt.ts, validation.ts in process-document Edge Function
+Phase 9 progress: 2/6 plans complete
 
 ---
 *Initialized: 2026-02-06*
