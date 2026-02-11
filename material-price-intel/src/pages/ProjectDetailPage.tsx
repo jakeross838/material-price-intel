@@ -14,6 +14,9 @@ import {
   User,
   Zap,
   Check,
+  LayoutList,
+  ShoppingCart,
+  BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,6 +26,7 @@ import { useProjectSelections } from "@/hooks/useProjectSelections";
 import { useAutoEstimate } from "@/hooks/useEstimateBuilder";
 import { RoomManager } from "@/components/projects/RoomManager";
 import { SelectionEditor } from "@/components/projects/SelectionEditor";
+import { ProcurementTracker } from "@/components/projects/ProcurementTracker";
 import type { ProjectStatus } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
@@ -36,6 +40,16 @@ const statusConfig: Record<ProjectStatus, { label: string; color: string }> = {
   completed: { label: "Completed", color: "bg-slate-100 text-slate-800" },
   on_hold: { label: "On Hold", color: "bg-red-100 text-red-800" },
 };
+
+// ---------------------------------------------------------------------------
+// Tab types
+// ---------------------------------------------------------------------------
+
+type ProjectTab = "selections" | "procurement" | "budget";
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
 function formatCurrency(val: number | null) {
   if (val == null) return "\u2014";
@@ -61,6 +75,11 @@ function formatDate(val: string | null) {
   });
 }
 
+function defaultTab(status: ProjectStatus | undefined): ProjectTab {
+  if (status === "in_progress") return "procurement";
+  return "selections";
+}
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -72,6 +91,8 @@ export function ProjectDetailPage() {
   const { data: allSelections } = useProjectSelections(id);
 
   const [selectedRoomId, setSelectedRoomId] = useState<string | undefined>();
+  const [activeTab, setActiveTab] = useState<ProjectTab>("selections");
+  const [tabInitialized, setTabInitialized] = useState(false);
   const [autoEstimateProgress, setAutoEstimateProgress] = useState<{
     current: number;
     total: number;
@@ -79,6 +100,14 @@ export function ProjectDetailPage() {
   const [autoEstimateResult, setAutoEstimateResult] = useState<string | null>(null);
   const autoEstimate = useAutoEstimate();
   const updateProject = useUpdateProject();
+
+  // Set default tab based on project status when project loads
+  useEffect(() => {
+    if (project && !tabInitialized) {
+      setActiveTab(defaultTab(project.status));
+      setTabInitialized(true);
+    }
+  }, [project, tabInitialized]);
 
   // Auto-select first room when rooms load
   useEffect(() => {
@@ -445,46 +474,108 @@ export function ProjectDetailPage() {
         </Card>
       )}
 
-      {/* Rooms + Selections two-panel layout */}
-      <div className="flex gap-6">
-        {/* Left panel: Room list */}
-        <div className="w-1/3 shrink-0">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Rooms & Areas</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <RoomManager
-                projectId={id!}
-                selectedRoomId={selectedRoomId}
-                onSelectRoom={setSelectedRoomId}
-              />
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Right panel: Selections for selected room */}
-        <div className="flex-1 min-w-0">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">
-                {selectedRoom
-                  ? `${selectedRoom.name} Selections`
-                  : "Material Selections"}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {selectedRoomId ? (
-                <SelectionEditor roomId={selectedRoomId} projectId={id!} />
-              ) : (
-                <p className="text-sm text-muted-foreground text-center py-8">
-                  Select a room to view and manage its material selections.
-                </p>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+      {/* Tab navigation */}
+      <div className="flex gap-1 border-b">
+        <button
+          onClick={() => setActiveTab("selections")}
+          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === "selections"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30"
+          }`}
+        >
+          <LayoutList className="h-4 w-4" />
+          Rooms & Selections
+        </button>
+        <button
+          onClick={() => setActiveTab("procurement")}
+          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === "procurement"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30"
+          }`}
+        >
+          <ShoppingCart className="h-4 w-4" />
+          Procurement
+        </button>
+        <button
+          onClick={() => setActiveTab("budget")}
+          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === "budget"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30"
+          }`}
+        >
+          <BarChart3 className="h-4 w-4" />
+          Budget
+        </button>
       </div>
+
+      {/* Tab content */}
+      {activeTab === "selections" && (
+        <div className="flex gap-6">
+          {/* Left panel: Room list */}
+          <div className="w-1/3 shrink-0">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">Rooms & Areas</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <RoomManager
+                  projectId={id!}
+                  selectedRoomId={selectedRoomId}
+                  onSelectRoom={setSelectedRoomId}
+                />
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right panel: Selections for selected room */}
+          <div className="flex-1 min-w-0">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">
+                  {selectedRoom
+                    ? `${selectedRoom.name} Selections`
+                    : "Material Selections"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {selectedRoomId ? (
+                  <SelectionEditor roomId={selectedRoomId} projectId={id!} />
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center py-8">
+                    Select a room to view and manage its material selections.
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "procurement" && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Procurement Tracker</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ProcurementTracker projectId={id!} />
+          </CardContent>
+        </Card>
+      )}
+
+      {activeTab === "budget" && (
+        <Card>
+          <CardContent className="py-12 text-center">
+            <BarChart3 className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+            <p className="text-sm font-medium">Budget Dashboard</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Coming in Plan 06 -- budget vs. actuals breakdown by room and category.
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
