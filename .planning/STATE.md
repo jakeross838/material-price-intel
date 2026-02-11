@@ -1,19 +1,18 @@
 # Project State: Material Price Intelligence System
 
-**Milestone:** v1 — Core Price Intelligence
-**Current Phase:** 5 (Material Normalization Engine) -- IN PROGRESS
-**Status:** Phase 5 In Progress (3/4 plans complete)
-**Last Updated:** 2026-02-09
+**Milestone:** v2 — Smart Accuracy & Line Classification
+**Current Phase:** 9 (Smart Accuracy)
+**Status:** In Progress
+**Last Updated:** 2026-02-11
 
 ## Current Position
 
-Phase: 5 of 8 (Material Normalization Engine)
-Plan: 3/4 executed (05-01 complete, 05-02 complete, 05-03 complete, 05-04 planned)
+Phase: 9 (Smart Accuracy)
+Plan: 1 of 6 complete
 Status: In progress
-Last activity: 2026-02-09 - Completed 05-03-PLAN.md (Material Hooks + Quote Linkage UI)
+Last activity: 2026-02-11 - Completed 09-01: line_type, effective_unit_price, quote-level discount schema + TypeScript types
 
-Progress: [██████████████████████████████████████████████████████████░░░░░░░░] Phase 1-4 complete (11/11), Phase 5: 3/4
-         14/15 plans complete through Phase 5
+Progress: [█░░░░░] 1/6 plans in Phase 9
 
 ## Phase Progress
 
@@ -23,10 +22,11 @@ Progress: [███████████████████████
 | 2 | File Upload + Storage Pipeline | Complete | 2/2 |
 | 3 | AI Quote Extraction | Complete | 3/3 |
 | 4 | Human Review UI | Complete | 3/3 |
-| 5 | Material Normalization Engine | In Progress | 3/4 |
-| 6 | Price Search + Filtering | Not Started | -- |
-| 7 | Quote Management + Navigation | Not Started | -- |
-| 8 | Polish + Integration Readiness | Not Started | -- |
+| 5 | Material Normalization Engine | Complete | 4/4 |
+| 6 | Price Search + Filtering | Complete | delivered inline |
+| 7 | Quote Management + Navigation | Complete | delivered inline |
+| 8 | Reports & Price Analytics Dashboard | Complete | 3/3 |
+| 9 | Smart Accuracy | In Progress | 1/6 |
 
 ## Decisions Log
 
@@ -78,19 +78,27 @@ Progress: [███████████████████████
 | 2026-02-09 | Delayed invalidation (10s setTimeout) for async normalization results | Edge Function takes ~5-15s after approval; immediate invalidation would show un-normalized items |
 | 2026-02-09 | FK Relationships added to Database type for typed Supabase joins | PostgREST typed client requires Relationships definitions; without them, relational select queries fail |
 | 2026-02-09 | Material badge in approved view only (not review mode) | Normalization only runs post-approval; review mode uses separate LineItemsEditor component |
+| 2026-02-11 | Client-side filtering for search page | All line items loaded then filtered in-memory; simpler than server-side for v1 scale |
+| 2026-02-11 | QuoteDetailPage back links go to /quotes not /upload | Quotes list page now exists as proper navigation target |
+| 2026-02-11 | Phases 6+7 delivered as inline fixes | Quotes list + search/filter pages created outside formal plan process to fix user-reported 404s and missing features |
+| 2026-02-11 | Recharts for charting library | Lightweight, composable, ships own types, works with React 19 |
+| 2026-02-11 | Client-side is_verified filter in useReportsData | PostgREST cannot reliably filter on joined table columns |
+| 2026-02-11 | Separate categoryChartData excludes materialFilter | Prevents misleading single-material category averages |
+| 2026-02-11 | Recharts onClick requires type cast | MouseHandlerDataParam type doesn't include activePayload |
+| 2026-02-11 | applies_to_line_item_id NULL in RPC INSERT (DELETE+INSERT pattern) | Discount attribution set during AI extraction; FK destroyed on review save cycle -- accepted limitation |
+| 2026-02-11 | Backfill effective_unit_price = unit_price when no discount exists | Safe default ensuring all rows have comparable values |
 
 ## Blockers
 
-All resolved. Database fully set up (all 9 migrations + seed + org + user_profile applied via Management API).
+None. Migration 010 ready to apply to database.
 
 ## Session Continuity
 
-Last session: 2026-02-09
-Stopped at: Completed 05-03-PLAN.md (Material Hooks + Quote Linkage UI)
-Resume file: None -- execute 05-04 next
-Decision: Material hooks created (useMaterials, useMaterialAliases, useMergeMaterials, useLineItemMaterials)
-Decision: Delayed cache invalidation pattern for async normalization
-Decision: FK Relationships in Database type enable typed Supabase relational queries
+Last session: 2026-02-11
+Stopped at: Completed 09-01-PLAN.md (line_type + effective pricing schema)
+Resume file: .planning/phases/09-smart-accuracy/09-02-PLAN.md
+Created: 010_line_type_and_effective_price.sql, updated types.ts
+Phase 9 progress: 1/6 plans complete
 
 ---
 *Initialized: 2026-02-06*
@@ -98,3 +106,9 @@ Decision: FK Relationships in Database type enable typed Supabase relational que
 *Phase 2 completed: 2026-02-09*
 *Phase 3 completed: 2026-02-09*
 *Phase 4 completed: 2026-02-09*
+*Phase 5 completed: 2026-02-09*
+*Phase 6 completed: 2026-02-11*
+*Phase 7 completed: 2026-02-11*
+*Phase 8 completed: 2026-02-11*
+*v1 Milestone complete: 2026-02-11*
+*Phase 9 started: 2026-02-11*
