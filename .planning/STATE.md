@@ -8,11 +8,11 @@
 ## Current Position
 
 Phase: 9 (Smart Accuracy)
-Plan: 3 of 6 complete
+Plan: 4 of 6 complete
 Status: In progress
-Last activity: 2026-02-11 - Completed 09-04: Backfill migration reclassifying existing line items
+Last activity: 2026-02-11 - Completed 09-03: Extraction persistence and normalization filtering
 
-Progress: [███░░░] 3/6 plans in Phase 9
+Progress: [████░░] 4/6 plans in Phase 9
 
 ## Phase Progress
 
@@ -26,7 +26,7 @@ Progress: [███░░░] 3/6 plans in Phase 9
 | 6 | Price Search + Filtering | Complete | delivered inline |
 | 7 | Quote Management + Navigation | Complete | delivered inline |
 | 8 | Reports & Price Analytics Dashboard | Complete | 3/3 |
-| 9 | Smart Accuracy | In Progress | 3/6 |
+| 9 | Smart Accuracy | In Progress | 4/6 |
 
 ## Decisions Log
 
@@ -94,18 +94,22 @@ Progress: [███░░░] 3/6 plans in Phase 9
 | 2026-02-11 | Conservative reclassification (high-confidence only) | Ambiguous items stay as 'material' for human review; false negatives preferable to false positives |
 | 2026-02-11 | GREATEST(0,...) floor on effective_unit_price | Prevents negative effective prices from unusual discount configurations |
 | 2026-02-11 | Section ordering: reclassify before compute effective price | Ensures effective_unit_price only computed for rows that remain line_type='material' |
+| 2026-02-11 | Two-pass INSERT+UPDATE for self-referencing FK | applies_to_line_item_id references row IDs only available after INSERT |
+| 2026-02-11 | Effective price rounded to 4 decimals, floored at 0 | Prevents floating point noise; negative prices are invalid |
+| 2026-02-11 | Quote-wide discount applied multiplicatively last | Per-item discounts reduce base, then quote-wide applies to discounted price |
+| 2026-02-11 | Server-side line_type filter on normalization query | .eq('line_type','material') more efficient than client-side filtering |
 
 ## Blockers
 
-None. Migrations 010+011 ready to apply. Extraction types, prompt, and validation updated. Existing data backfill migration ready.
+None. Migrations 010+011 ready to apply. Extraction persistence updated with line classification and effective pricing. Normalization filters to material-only items.
 
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 09-04-PLAN.md (backfill migration for line type reclassification)
+Stopped at: Completed 09-03-PLAN.md (extraction persistence + normalization filtering)
 Resume file: .planning/phases/09-smart-accuracy/09-05-PLAN.md
-Modified: supabase/migrations/011_backfill_line_types.sql
-Phase 9 progress: 3/6 plans complete
+Modified: process-document/index.ts, normalize-materials/index.ts
+Phase 9 progress: 4/6 plans complete
 
 ---
 *Initialized: 2026-02-06*
