@@ -98,6 +98,8 @@ Progress: [██████] 6/6 plans in Phase 9
 | 2026-02-11 | Effective price rounded to 4 decimals, floored at 0 | Prevents floating point noise; negative prices are invalid |
 | 2026-02-11 | Quote-wide discount applied multiplicatively last | Per-item discounts reduce base, then quote-wide applies to discounted price |
 | 2026-02-11 | Server-side line_type filter on normalization query | .eq('line_type','material') more efficient than client-side filtering |
+| 2026-02-11 | Native select element for line_type dropdown in review | Lightweight, no extra dependency; matches existing form patterns |
+| 2026-02-11 | Effective price recomputation only on line_type change | Avoids recomputing on every field edit; explicit reclassification is the trigger |
 | 2026-02-11 | Fallback to unit_price when effective_unit_price is null | Backward compatibility with pre-classification data |
 | 2026-02-11 | Chart components updated alongside ReportsPage for effective prices | PriceTrendChart and CategoryAggregateChart also use effectiveUnitPrice for consistent rendering |
 
