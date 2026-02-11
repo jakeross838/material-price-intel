@@ -8,11 +8,11 @@
 ## Current Position
 
 Phase: 10 of 10 (Estimating & Procurement)
-Plan: 4 of 8
+Plan: 5 of 8
 Status: In progress
-Last activity: 2026-02-11 - Completed 10-04: Estimate Builder & Price Intelligence
+Last activity: 2026-02-11 - Completed 10-05: Procurement Tracking & Buyout Workflow
 
-Progress: [####....] 4/8 plans in Phase 10
+Progress: [#####...] 5/8 plans in Phase 10
 
 ## Phase Progress
 
@@ -27,7 +27,7 @@ Progress: [####....] 4/8 plans in Phase 10
 | 7 | Quote Management + Navigation | Complete | delivered inline |
 | 8 | Reports & Price Analytics Dashboard | Complete | 3/3 |
 | 9 | Smart Accuracy | Complete | 6/6 |
-| 10 | Estimating & Procurement | In progress | 4/8 |
+| 10 | Estimating & Procurement | In progress | 5/8 |
 
 ## Decisions Log
 
@@ -119,6 +119,10 @@ Progress: [####....] 4/8 plans in Phase 10
 | 2026-02-11 | Sequential auto-estimate-all with progress counter | Prevents overwhelming Supabase with parallel RPC calls |
 | 2026-02-11 | Project status auto-transitions planning to estimating on first estimate | useUpdateProject called after successful bulk estimate |
 | 2026-02-11 | Expandable detail row pattern for EstimateBuilder in table | colSpan=9 row below selection; one expanded at a time |
+| 2026-02-11 | Flat table with status filter instead of grouped sections for procurement | Simpler and more scannable for 200+ items |
+| 2026-02-11 | Tab navigation uses local state not routing | Button-based tabs; default tab based on project status |
+| 2026-02-11 | Untracked selections shown inline in procurement table | Single unified view with Start Tracking button to create procurement record |
+| 2026-02-11 | supplierId passed through AwardQuoteInput from modal | Avoids extra fetch inside mutation; QuoteLinkModal already has supplier data |
 
 ## Blockers
 
@@ -127,10 +131,10 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed 10-04-PLAN.md (Estimate Builder & Price Intelligence)
+Stopped at: Completed 10-05-PLAN.md (Procurement Tracking & Buyout Workflow)
 Resume file: None
-Modified: useEstimateBuilder.ts, EstimateBuilder.tsx, SelectionEditor.tsx, ProjectDetailPage.tsx
-Phase 10 progress: 4/8 plans complete
+Modified: useProcurement.ts, ProcurementTracker.tsx, QuoteLinkModal.tsx, ProjectDetailPage.tsx
+Phase 10 progress: 5/8 plans complete
 
 ---
 *Initialized: 2026-02-06*
