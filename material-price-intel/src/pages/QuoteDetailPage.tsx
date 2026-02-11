@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, FileText, ExternalLink, Loader2, CheckCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ReviewForm } from "@/components/review/ReviewForm";
@@ -18,6 +19,33 @@ type QuoteWithSupplier = Quote & { suppliers: Pick<Supplier, "name" | "contact_n
 function formatCurrency(val: number | null) {
   if (val == null) return "\u2014";
   return `$${Number(val).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+function LineTypeBadge({ type }: { type: string }) {
+  const config: Record<string, { label: string; className: string }> = {
+    material: { label: "Material", className: "bg-blue-50 text-blue-700" },
+    discount: { label: "Discount", className: "bg-orange-50 text-orange-700" },
+    fee: { label: "Fee", className: "bg-purple-50 text-purple-700" },
+    subtotal_line: {
+      label: "Subtotal",
+      className: "bg-gray-100 text-gray-600",
+    },
+    note: {
+      label: "Note",
+      className: "bg-gray-100 text-gray-500 italic",
+    },
+  };
+  const c = config[type] ?? config.material;
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
+        c.className
+      )}
+    >
+      {c.label}
+    </span>
+  );
 }
 
 export function QuoteDetailPage() {
@@ -101,6 +129,10 @@ export function QuoteDetailPage() {
         line_total: item.line_total,
         notes: item.notes,
         confidence: extractedLineItems[index]?.confidence,
+        line_type: item.line_type ?? "material",
+        effective_unit_price: item.effective_unit_price,
+        discount_pct: item.discount_pct,
+        discount_amount: item.discount_amount,
       }))
     );
   }, [lineItems, quote]);
@@ -135,7 +167,7 @@ export function QuoteDetailPage() {
     return (
       <div className="py-20 text-center">
         <p className="text-muted-foreground">Quote not found</p>
-        <Link to="/upload" className="text-primary underline text-sm mt-2 inline-block">Back to uploads</Link>
+        <Link to="/quotes" className="text-primary underline text-sm mt-2 inline-block">Back to quotes</Link>
       </div>
     );
   }
@@ -164,8 +196,8 @@ export function QuoteDetailPage() {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <Link to="/upload" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-2">
-              <ArrowLeft className="h-4 w-4 mr-1" /> Back to uploads
+            <Link to="/quotes" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-2">
+              <ArrowLeft className="h-4 w-4 mr-1" /> Back to quotes
             </Link>
             <h2 className="text-3xl font-bold tracking-tight">
               Quote {quote.quote_number ?? "\u2014"}
@@ -252,10 +284,12 @@ export function QuoteDetailPage() {
                 <thead>
                   <tr className="border-b bg-muted/50">
                     <th className="text-left px-4 py-2 font-medium">#</th>
+                    <th className="text-left px-4 py-2 font-medium">Type</th>
                     <th className="text-left px-4 py-2 font-medium">Description</th>
                     <th className="text-right px-4 py-2 font-medium">Qty</th>
                     <th className="text-left px-4 py-2 font-medium">Unit</th>
                     <th className="text-right px-4 py-2 font-medium">Unit Price</th>
+                    <th className="text-right px-4 py-2 font-medium">Eff. Price</th>
                     <th className="text-right px-4 py-2 font-medium">Line Total</th>
                   </tr>
                 </thead>
@@ -263,8 +297,17 @@ export function QuoteDetailPage() {
                   {lineItems?.map((item, i) => {
                     const matched = lineItemMaterials?.find((m) => m.id === item.id);
                     return (
-                    <tr key={item.id} className="border-b last:border-0 hover:bg-muted/30">
+                    <tr
+                      key={item.id}
+                      className={cn(
+                        "border-b last:border-0 hover:bg-muted/30",
+                        item.line_type !== "material" && "opacity-60"
+                      )}
+                    >
                       <td className="px-4 py-2 text-muted-foreground">{i + 1}</td>
+                      <td className="px-4 py-2">
+                        <LineTypeBadge type={item.line_type} />
+                      </td>
                       <td className="px-4 py-2 max-w-md">
                         {item.raw_description}
                         {matched?.materials?.canonical_name && (
@@ -276,6 +319,12 @@ export function QuoteDetailPage() {
                       <td className="px-4 py-2 text-right tabular-nums">{item.quantity ?? "\u2014"}</td>
                       <td className="px-4 py-2">{item.unit ?? "\u2014"}</td>
                       <td className="px-4 py-2 text-right tabular-nums">{formatCurrency(item.unit_price)}</td>
+                      <td className="px-4 py-2 text-right tabular-nums">
+                        {item.effective_unit_price != null && item.effective_unit_price !== item.unit_price
+                          ? formatCurrency(item.effective_unit_price)
+                          : <span className="text-muted-foreground">{"\u2014"}</span>
+                        }
+                      </td>
                       <td className="px-4 py-2 text-right tabular-nums font-medium">{formatCurrency(item.line_total)}</td>
                     </tr>
                     );
@@ -297,8 +346,8 @@ export function QuoteDetailPage() {
     <div className="space-y-4">
       {/* Header */}
       <div>
-        <Link to="/upload" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-2">
-          <ArrowLeft className="h-4 w-4 mr-1" /> Back to uploads
+        <Link to="/quotes" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-2">
+          <ArrowLeft className="h-4 w-4 mr-1" /> Back to quotes
         </Link>
         <div className="flex items-center gap-3">
           <h2 className="text-3xl font-bold tracking-tight">
