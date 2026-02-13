@@ -67,6 +67,47 @@ export type MaterialAlias = {
 };
 
 // ===========================================
+// Material Catalog types
+// ===========================================
+
+export type MaterialImage = {
+  id: string;
+  material_id: string;
+  image_url: string;
+  storage_path: string | null;
+  thumbnail_url: string | null;
+  caption: string | null;
+  source: string | null;
+  is_primary: boolean;
+  sort_order: number;
+  metadata: Record<string, unknown>;
+  created_at: string;
+};
+
+export type MaterialDocType = 'spec_sheet' | 'installation_guide' | 'cut_sheet' | 'warranty' | 'care_guide' | 'other';
+
+export type MaterialDocument = {
+  id: string;
+  material_id: string;
+  title: string;
+  doc_url: string;
+  storage_path: string | null;
+  doc_type: MaterialDocType;
+  file_size_bytes: number | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+};
+
+export type CatalogRoomType = 'kitchen' | 'master_bath' | 'bathroom' | 'great_room' | 'bedroom' | 'dining_room' | 'office' | 'laundry' | 'garage' | 'exterior';
+
+export type RoomCategoryMapping = {
+  id: string;
+  room_type: string;
+  category_id: string;
+  sort_order: number;
+};
+
+// ===========================================
 // Estimating & Procurement types
 // ===========================================
 
@@ -557,6 +598,48 @@ export type Database = {
         } & Partial<Pick<EstimatorLead, "contact_phone" | "contact_message" | "status" | "admin_notes">>;
         Update: Partial<Omit<EstimatorLead, "id" | "created_at">>;
         Relationships: [];
+      };
+      material_images: {
+        Row: MaterialImage;
+        Insert: Pick<MaterialImage, "material_id" | "image_url"> & Partial<Omit<MaterialImage, "id" | "created_at" | "material_id" | "image_url">>;
+        Update: Partial<Omit<MaterialImage, "id" | "created_at">>;
+        Relationships: [
+          {
+            foreignKeyName: "material_images_material_id_fkey";
+            columns: ["material_id"];
+            isOneToOne: false;
+            referencedRelation: "materials";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      material_documents: {
+        Row: MaterialDocument;
+        Insert: Pick<MaterialDocument, "material_id" | "title" | "doc_url"> & Partial<Omit<MaterialDocument, "id" | "created_at" | "material_id" | "title" | "doc_url">>;
+        Update: Partial<Omit<MaterialDocument, "id" | "created_at">>;
+        Relationships: [
+          {
+            foreignKeyName: "material_documents_material_id_fkey";
+            columns: ["material_id"];
+            isOneToOne: false;
+            referencedRelation: "materials";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      room_category_mapping: {
+        Row: RoomCategoryMapping;
+        Insert: Pick<RoomCategoryMapping, "room_type" | "category_id"> & Partial<Omit<RoomCategoryMapping, "id">>;
+        Update: Partial<Omit<RoomCategoryMapping, "id">>;
+        Relationships: [
+          {
+            foreignKeyName: "room_category_mapping_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "material_categories";
+            referencedColumns: ["id"];
+          },
+        ];
       };
     };
     Views: {
