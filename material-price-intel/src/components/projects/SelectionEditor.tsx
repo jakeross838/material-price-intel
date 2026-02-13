@@ -256,6 +256,8 @@ function SelectionRow({ sel, roomId, roomName, categories, materials, isExpanded
 
   // Editable fields
   const [editName, setEditName] = useState(sel.selection_name);
+  const [editManufacturer, setEditManufacturer] = useState(sel.manufacturer ?? "");
+  const [editModelNumber, setEditModelNumber] = useState(sel.model_number ?? "");
   const [editCategoryId, setEditCategoryId] = useState(sel.category_id ?? "");
   const [editMaterialId, setEditMaterialId] = useState(sel.material_id ?? "");
   const [editAllowance, setEditAllowance] = useState(
@@ -281,6 +283,8 @@ function SelectionRow({ sel, roomId, roomName, categories, materials, isExpanded
 
   function startEdit() {
     setEditName(sel.selection_name);
+    setEditManufacturer(sel.manufacturer ?? "");
+    setEditModelNumber(sel.model_number ?? "");
     setEditCategoryId(sel.category_id ?? "");
     setEditMaterialId(sel.material_id ?? "");
     setEditAllowance(sel.allowance_amount?.toString() ?? "");
@@ -312,6 +316,8 @@ function SelectionRow({ sel, roomId, roomName, categories, materials, isExpanded
         room_id: roomId,
         updates: {
           selection_name: editName.trim() || sel.selection_name,
+          manufacturer: editManufacturer.trim() || null,
+          model_number: editModelNumber.trim() || null,
           category_id: editCategoryId || null,
           material_id: editMaterialId || null,
           allowance_amount: allowance,
@@ -360,6 +366,20 @@ function SelectionRow({ sel, roomId, roomName, categories, materials, isExpanded
             onChange={(e) => setEditName(e.target.value)}
             className="h-7 text-xs"
           />
+          <div className="flex gap-1 mt-1">
+            <Input
+              value={editManufacturer}
+              onChange={(e) => setEditManufacturer(e.target.value)}
+              placeholder="Manufacturer"
+              className="h-6 text-[10px]"
+            />
+            <Input
+              value={editModelNumber}
+              onChange={(e) => setEditModelNumber(e.target.value)}
+              placeholder="Model #"
+              className="h-6 text-[10px]"
+            />
+          </div>
         </td>
         <td className="px-2 py-1.5">
           <select
@@ -492,6 +512,11 @@ function SelectionRow({ sel, roomId, roomName, categories, materials, isExpanded
               </Button>
             )}
           </div>
+          {(sel.manufacturer || sel.model_number) && (
+            <div className="text-[10px] text-muted-foreground mt-0.5">
+              {[sel.manufacturer, sel.model_number].filter(Boolean).join(" / ")}
+            </div>
+          )}
         </td>
         <td className="px-2 py-1.5 text-xs text-muted-foreground">
           {categoryName}

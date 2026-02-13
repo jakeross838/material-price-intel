@@ -126,6 +126,10 @@ export type ProjectSelection = {
   sort_order: number;
   notes: string | null;
   ai_analysis: AiAnalysis | null;
+  product_url: string | null;
+  manufacturer: string | null;
+  model_number: string | null;
+  product_data: ProductData | null;
   created_at: string;
   updated_at: string;
 };
@@ -134,7 +138,7 @@ export type ProjectSelection = {
 // Selection Images & AI Analysis types
 // ===========================================
 
-export type SelectionImageType = 'product_url' | 'upload' | 'web_search' | 'ai_render';
+export type SelectionImageType = 'product_url' | 'upload' | 'web_search' | 'ai_render' | 'document';
 
 export type SelectionImage = {
   id: string;
@@ -160,6 +164,31 @@ export type AiAnalysis = {
   best_uses: string[];
   florida_notes: string | null;
   analyzed_at: string;
+};
+
+// ===========================================
+// Product Data Hub types
+// ===========================================
+
+export type ProductDocType = 'spec_sheet' | 'installation_guide' | 'cut_sheet' | 'warranty' | 'other';
+
+export type ProductDocument = {
+  title: string;
+  url: string;
+  doc_type: ProductDocType;
+};
+
+export type ProductData = {
+  product_name: string;
+  manufacturer: string | null;
+  model_number: string | null;
+  specs: Record<string, string>;
+  description: string | null;
+  price: number | null;
+  images: string[];
+  documents: ProductDocument[];
+  source_url: string;
+  scraped_at: string;
 };
 
 export type ProcurementStatus = 'not_quoted' | 'rfq_sent' | 'quoted' | 'awarded' | 'ordered' | 'delivered' | 'installed';

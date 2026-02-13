@@ -15,6 +15,9 @@ import {
   ThumbsUp,
   ThumbsDown,
   Leaf,
+  Globe,
+  FileText,
+  RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,8 +36,10 @@ import {
 import type { UnsplashResult } from "@/hooks/useImageSearch";
 import { useAiAnalysis, useAiRender } from "@/hooks/useAiAnalysis";
 import type { RenderResult } from "@/hooks/useAiAnalysis";
+import { useScrapeProduct, usePullSpecs } from "@/hooks/useProductData";
 import type { SelectionWithJoins } from "@/hooks/useProjectSelections";
-import type { AiAnalysis, SelectionImage } from "@/lib/types";
+import type { AiAnalysis, ProductData, SelectionImage } from "@/lib/types";
+import { getPrioritizedSpecs } from "@/lib/categorySpecTemplates";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -42,9 +47,10 @@ import { useAuth } from "@/hooks/useAuth";
 // Tabs
 // ===========================================
 
-type PanelTab = "photos" | "search" | "analysis" | "render";
+type PanelTab = "photos" | "search" | "analysis" | "render" | "product";
 
 const TABS: { key: PanelTab; label: string; icon: typeof Camera }[] = [
+  { key: "product", label: "Product", icon: Globe },
   { key: "photos", label: "Photos", icon: ImageIcon },
   { key: "search", label: "Search", icon: Search },
   { key: "analysis", label: "AI Analysis", icon: Sparkles },
@@ -66,7 +72,7 @@ type Props = {
 // ===========================================
 
 export function SelectionImagePanel({ selection, roomId, roomName }: Props) {
-  const [activeTab, setActiveTab] = useState<PanelTab>("photos");
+  const [activeTab, setActiveTab] = useState<PanelTab>("product");
 
   return (
     <div className="border rounded-lg bg-muted/20 overflow-hidden">
@@ -90,6 +96,9 @@ export function SelectionImagePanel({ selection, roomId, roomName }: Props) {
 
       {/* Tab content */}
       <div className="p-3">
+        {activeTab === "product" && (
+          <ProductTab selection={selection} roomName={roomName} />
+        )}
         {activeTab === "photos" && (
           <PhotosTab selection={selection} />
         )}
@@ -532,17 +541,21 @@ function AnalysisTab({
       {/* Summary */}
       <p className="text-sm">{analysis.summary}</p>
 
-      {/* Specs table */}
+      {/* Specs table (category-aware ordering) */}
       {Object.keys(analysis.specs).length > 0 && (
         <div className="border rounded-md overflow-hidden">
           <table className="w-full text-xs">
             <tbody>
-              {Object.entries(analysis.specs).map(([key, val]) => (
-                <tr key={key} className="border-b last:border-0">
-                  <td className="px-2 py-1 font-medium text-muted-foreground bg-muted/30 w-1/3">
-                    {key}
+              {getPrioritizedSpecs(
+                analysis.specs,
+                (selection.material_categories as { name: string } | null)?.name ?? null
+              ).map((spec) => (
+                <tr key={spec.key} className="border-b last:border-0">
+                  <td className={`px-2 py-1 font-medium w-1/3 ${spec.isHighlighted ? "bg-primary/5 text-primary" : "bg-muted/30 text-muted-foreground"}`}>
+                    {spec.label}
+                    {spec.isHighlighted && <span className="ml-1 text-[10px]">&#9733;</span>}
                   </td>
-                  <td className="px-2 py-1">{val}</td>
+                  <td className="px-2 py-1">{spec.value}</td>
                 </tr>
               ))}
             </tbody>
@@ -655,6 +668,290 @@ function AnalysisTab({
           </span>
         )}
       </div>
+    </div>
+  );
+}
+
+// ===========================================
+// Product Tab (URL scrape + specs + documents)
+// ===========================================
+
+function ProductTab({
+  selection,
+  roomName,
+}: {
+  selection: SelectionWithJoins;
+  roomName?: string;
+}) {
+  const scrapeProduct = useScrapeProduct();
+  const pullSpecs = usePullSpecs();
+  const addImage = useAddSelectionImage();
+  const { data: existingImages } = useSelectionImages(selection.id);
+
+  const productData = selection.product_data as ProductData | null;
+  const categoryName =
+    (selection.material_categories as { name: string } | null)?.name ?? null;
+  const [urlInput, setUrlInput] = useState(selection.product_url ?? "");
+
+  async function handleScrape() {
+    const url = urlInput.trim();
+    if (!url) return;
+    await scrapeProduct.mutateAsync({
+      selectionId: selection.id,
+      url,
+      categoryName,
+    });
+  }
+
+  async function handlePullSpecs() {
+    const url = urlInput.trim();
+    if (!url) return;
+    await pullSpecs.mutateAsync({
+      selectionId: selection.id,
+      url,
+      categoryName,
+      selectionName: selection.selection_name,
+      roomName,
+    });
+  }
+
+  function handleSaveImage(imgUrl: string) {
+    const isFirst = !existingImages || existingImages.length === 0;
+    addImage.mutate({
+      selection_id: selection.id,
+      image_type: "product_url",
+      external_url: imgUrl,
+      thumbnail_url: imgUrl,
+      is_primary: isFirst,
+      source: productData?.source_url
+        ? new URL(productData.source_url).hostname
+        : "product",
+    });
+  }
+
+  const isLoading = scrapeProduct.isPending || pullSpecs.isPending;
+
+  // No product data yet — show URL input
+  if (!productData) {
+    return (
+      <div className="space-y-3">
+        <div className="text-center py-4">
+          <Globe className="h-8 w-8 mx-auto text-muted-foreground opacity-40 mb-2" />
+          <p className="text-sm font-medium">Product Data Hub</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Paste a product URL to auto-pull specs, images, and documents
+          </p>
+        </div>
+
+        <div className="flex gap-2">
+          <Input
+            placeholder="https://www.homedepot.com/p/..."
+            value={urlInput}
+            onChange={(e) => setUrlInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handlePullSpecs()}
+            className="h-8 text-xs"
+          />
+          <Button
+            size="xs"
+            onClick={handlePullSpecs}
+            disabled={!urlInput.trim() || isLoading}
+          >
+            {isLoading ? (
+              <Loader2 className="h-3 w-3 animate-spin mr-1" />
+            ) : (
+              <Globe className="h-3 w-3 mr-1" />
+            )}
+            Pull Specs
+          </Button>
+        </div>
+
+        {(scrapeProduct.isError || pullSpecs.isError) && (
+          <p className="text-xs text-destructive flex items-center gap-1">
+            <AlertTriangle className="h-3 w-3" />
+            {(scrapeProduct.error ?? pullSpecs.error)?.message ?? "Scrape failed"}
+          </p>
+        )}
+
+        <p className="text-[10px] text-muted-foreground text-center">
+          Supports Home Depot, Lowe's, Build.com, manufacturer sites, and more.
+          ~$0.002 per scrape.
+        </p>
+      </div>
+    );
+  }
+
+  // Have product data — show full view
+  const specs = getPrioritizedSpecs(productData.specs ?? {}, categoryName);
+
+  return (
+    <div className="space-y-3">
+      {/* URL bar + re-scrape */}
+      <div className="flex gap-2">
+        <Input
+          value={urlInput}
+          onChange={(e) => setUrlInput(e.target.value)}
+          className="h-8 text-xs"
+        />
+        <Button
+          size="xs"
+          variant="outline"
+          onClick={handleScrape}
+          disabled={!urlInput.trim() || isLoading}
+          title="Re-scrape"
+        >
+          {isLoading ? (
+            <Loader2 className="h-3 w-3 animate-spin" />
+          ) : (
+            <RefreshCw className="h-3 w-3" />
+          )}
+        </Button>
+      </div>
+
+      {/* Manufacturer / Model */}
+      <div className="flex gap-4 text-xs">
+        {productData.manufacturer && (
+          <div>
+            <span className="text-muted-foreground">Manufacturer: </span>
+            <span className="font-medium">{productData.manufacturer}</span>
+          </div>
+        )}
+        {productData.model_number && (
+          <div>
+            <span className="text-muted-foreground">Model: </span>
+            <span className="font-medium">{productData.model_number}</span>
+          </div>
+        )}
+        {productData.price != null && (
+          <div>
+            <span className="text-muted-foreground">Price: </span>
+            <span className="font-medium">
+              ${productData.price.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Specifications */}
+      {specs.length > 0 && (
+        <div>
+          <p className="text-xs font-medium text-muted-foreground mb-1">
+            Specifications
+          </p>
+          <div className="border rounded-md overflow-hidden max-h-48 overflow-y-auto">
+            <table className="w-full text-xs">
+              <tbody>
+                {specs.map((spec) => (
+                  <tr key={spec.key} className="border-b last:border-0">
+                    <td
+                      className={`px-2 py-1 font-medium w-1/3 ${
+                        spec.isHighlighted
+                          ? "bg-primary/5 text-primary"
+                          : "bg-muted/30 text-muted-foreground"
+                      }`}
+                    >
+                      {spec.label}
+                      {spec.isHighlighted && (
+                        <span className="ml-1 text-[10px]">&#9733;</span>
+                      )}
+                    </td>
+                    <td className="px-2 py-1">{spec.value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Documents */}
+      {productData.documents?.length > 0 && (
+        <div>
+          <p className="text-xs font-medium text-muted-foreground mb-1">
+            Documents
+          </p>
+          <div className="space-y-1">
+            {productData.documents.map((doc, i) => (
+              <a
+                key={i}
+                href={doc.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-2 py-1.5 rounded border hover:bg-muted/50 transition-colors text-xs"
+              >
+                <FileText className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                <span className="flex-1 truncate">{doc.title}</span>
+                <span className="text-[10px] text-muted-foreground shrink-0 capitalize">
+                  {doc.doc_type.replace(/_/g, " ")}
+                </span>
+                <ExternalLink className="h-3 w-3 text-muted-foreground shrink-0" />
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Product Images */}
+      {productData.images?.length > 0 && (
+        <div>
+          <p className="text-xs font-medium text-muted-foreground mb-1">
+            Product Images
+          </p>
+          <div className="grid grid-cols-4 gap-2">
+            {productData.images.slice(0, 6).map((imgUrl, i) => (
+              <button
+                key={i}
+                onClick={() => handleSaveImage(imgUrl)}
+                className="relative rounded-md overflow-hidden border bg-background aspect-square hover:ring-2 hover:ring-primary transition-all"
+                title="Save to Photos"
+              >
+                <img
+                  src={imgUrl}
+                  alt={`Product image ${i + 1}`}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </button>
+            ))}
+          </div>
+          <p className="text-[10px] text-muted-foreground mt-1">
+            Click an image to save it to Photos
+          </p>
+        </div>
+      )}
+
+      {/* Actions */}
+      <div className="flex items-center gap-2">
+        <Button
+          size="xs"
+          onClick={handlePullSpecs}
+          disabled={!urlInput.trim() || isLoading}
+        >
+          {isLoading ? (
+            <Loader2 className="h-3 w-3 animate-spin mr-1" />
+          ) : (
+            <Sparkles className="h-3 w-3 mr-1" />
+          )}
+          Pull Specs + Analysis
+        </Button>
+        {productData.scraped_at && (
+          <span className="text-[10px] text-muted-foreground">
+            Scraped:{" "}
+            {new Date(productData.scraped_at).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              hour: "numeric",
+              minute: "2-digit",
+            })}
+          </span>
+        )}
+      </div>
+
+      {(scrapeProduct.isError || pullSpecs.isError) && (
+        <p className="text-xs text-destructive flex items-center gap-1">
+          <AlertTriangle className="h-3 w-3" />
+          {(scrapeProduct.error ?? pullSpecs.error)?.message ?? "Failed"}
+        </p>
+      )}
     </div>
   );
 }
