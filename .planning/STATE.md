@@ -1,18 +1,18 @@
 # Project State: Material Price Intelligence System
 
-**Milestone:** v3 -- Estimating & Procurement
-**Current Phase:** 10 of 10 (Estimating & Procurement)
-**Status:** Complete
-**Last Updated:** 2026-02-11
+**Milestone:** v4 -- Dream Home Designer & Platform Intelligence
+**Current Phase:** 11 of 16 (Material Catalog & Visual Library)
+**Status:** In progress
+**Last Updated:** 2026-02-13
 
 ## Current Position
 
-Phase: 10 of 10 (Estimating & Procurement)
-Plan: 8 of 8
-Status: Complete
-Last activity: 2026-02-11 - Completed 10-08: Dashboard Integration & E2E Verification
+Phase: 11 of 16 (Material Catalog & Visual Library)
+Plan: 1 of 4
+Status: In progress
+Last activity: 2026-02-13 - Completed 11-01-PLAN.md (Catalog Schema)
 
-Progress: [########] 8/8 plans in Phase 10
+Progress: [=_________] 1/4 plans in Phase 11
 
 ## Phase Progress
 
@@ -133,18 +133,32 @@ Progress: [########] 8/8 plans in Phase 10
 | 2026-02-11 | Parallel Promise.all for project summaries on list page | Fetches all summaries concurrently; acceptable for v1 project count |
 | 2026-02-11 | Insert types use Pick + Partial pattern for nullable columns | Resolves TypeScript strictness where Omit requires all remaining fields |
 | 2026-02-11 | window.confirm for delete confirmation | Simple and consistent; no extra modal component needed |
+| 2026-02-13 | Public SELECT on material_images/documents filters by materials.is_active=TRUE | Prevents exposing deactivated material data to anonymous catalog browsers |
+| 2026-02-13 | room_category_mapping is global (not org-scoped) | Shared reference data; admin-only write access |
+| 2026-02-13 | material-catalog storage bucket is public (true) | Catalog images need to be publicly accessible for browsing |
+| 2026-02-13 | CatalogRoomType named to avoid collision with existing RoomType | Existing RoomType (interior/exterior/utility/common) used by project_rooms |
 
 ## Blockers
 
 None.
 
+## v4 Phase Progress
+
+| Phase | Name | Status | Plans |
+|-------|------|--------|-------|
+| 11 | Material Catalog & Visual Library | In progress | 1/4 |
+| 12 | Dream Home Designer - Room Selection | Not started | 0/0 |
+| 13 | AI Room Visualization | Not started | 0/0 |
+| 14 | Public Project Dashboard | Not started | 0/0 |
+| 15 | Savings Advisor & Performance Metrics | Not started | 0/0 |
+| 16 | Two-Way Sync & Smart Recommendations | Not started | 0/0 |
+
 ## Session Continuity
 
-Last session: 2026-02-11
-Stopped at: Completed 10-08-PLAN.md (Dashboard Integration & E2E Verification)
+Last session: 2026-02-13
+Stopped at: Completed 11-01-PLAN.md (Catalog Schema)
 Resume file: None
-Modified: DashboardPage.tsx, ProjectsListPage.tsx, ProjectDetailPage.tsx, ProjectEditModal.tsx, types.ts
-Phase 10 progress: 8/8 plans complete -- PHASE COMPLETE
+Modified: 016_catalog_schema.sql, types.ts
 
 ---
 *Initialized: 2026-02-06*
@@ -161,4 +175,5 @@ Phase 10 progress: 8/8 plans complete -- PHASE COMPLETE
 *Phase 9 completed: 2026-02-11*
 *Phase 10 started: 2026-02-11*
 *Phase 10 completed: 2026-02-11*
-*All 10 phases complete: 2026-02-11*
+*v3 Milestone complete: 2026-02-11*
+*v4 Milestone started: 2026-02-13*
