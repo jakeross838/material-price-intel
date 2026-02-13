@@ -14,6 +14,7 @@ import { ProjectsListPage } from "./pages/ProjectsListPage";
 import { ProjectCreatePage } from "./pages/ProjectCreatePage";
 import { ProjectDetailPage } from "./pages/ProjectDetailPage";
 import { EstimatePage } from "./pages/EstimatePage";
+import { AdminEstimatorPage } from "./pages/AdminEstimatorPage";
 
 function App() {
   return (
@@ -32,6 +33,10 @@ function App() {
           <Route path="/projects" element={<ProjectsListPage />} />
           <Route path="/projects/new" element={<ProjectCreatePage />} />
           <Route path="/projects/:id" element={<ProjectDetailPage />} />
+          <Route
+            path="/admin/estimator"
+            element={<AdminEstimatorPage />}
+          />
         </Route>
       </Route>
       <Route path="*" element={<NotFoundPage />} />

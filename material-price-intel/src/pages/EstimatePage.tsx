@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { EstimatorLayout } from "@/components/estimator/EstimatorLayout";
 import { EstimatorProgress } from "@/components/estimator/EstimatorProgress";
@@ -32,6 +32,11 @@ export function EstimatePage() {
   const [step, setStep] = useState(0);
   const [params, setParams] = useState<EstimateParams>(DEFAULT_PARAMS);
   const [showResults, setShowResults] = useState(false);
+
+  useEffect(() => {
+    document.title = "Free Home Estimate | Ross Built Custom Homes";
+    return () => { document.title = "Material Price Intel"; };
+  }, []);
 
   const { data: config, isLoading: configLoading } = useEstimatorConfig(
     params.finish_level as FinishLevel

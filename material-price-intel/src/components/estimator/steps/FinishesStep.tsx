@@ -1,3 +1,4 @@
+import { ArrowRight, ArrowLeft, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const KITCHEN_TIERS = [
@@ -30,6 +31,32 @@ type Props = {
   onBack: () => void;
 };
 
+function OptionCard({
+  label,
+  desc,
+  selected,
+  onClick,
+}: {
+  label: string;
+  desc: string;
+  selected: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`text-left p-4 rounded-xl border-2 transition-all duration-200 ${
+        selected
+          ? "border-brand-600 bg-brand-50 shadow-md ring-1 ring-brand-500/20"
+          : "border-slate-200 hover:border-brand-300 hover:shadow-sm bg-white"
+      }`}
+    >
+      <span className="font-semibold text-sm text-brand-900">{label}</span>
+      <p className="text-xs text-slate-500 mt-1">{desc}</p>
+    </button>
+  );
+}
+
 export function FinishesStep({
   kitchenTier,
   bathTier,
@@ -39,79 +66,61 @@ export function FinishesStep({
   onBack,
 }: Props) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-slate-900">Finishes</h2>
-        <p className="text-slate-500 mt-1">
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-brand-100 mb-4">
+          <Sparkles className="h-6 w-6 text-brand-600" />
+        </div>
+        <h2 className="text-2xl sm:text-3xl font-bold text-brand-900">Finishes</h2>
+        <p className="text-brand-600/70 mt-2 text-sm sm:text-base">
           Customize your kitchen, bathrooms, and flooring.
         </p>
       </div>
 
       {/* Kitchen Tier */}
-      <div className="space-y-2">
-        <p className="text-sm font-medium text-slate-700">Kitchen Level</p>
-        <div className="grid grid-cols-2 gap-2">
+      <div className="space-y-3">
+        <p className="text-sm font-semibold text-brand-800">Kitchen Level</p>
+        <div className="grid grid-cols-2 gap-2.5">
           {KITCHEN_TIERS.map((t) => (
-            <button
+            <OptionCard
               key={t.value}
+              label={t.label}
+              desc={t.desc}
+              selected={kitchenTier === t.value}
               onClick={() => onChange("kitchen_tier", t.value)}
-              className={`text-left p-3 rounded-lg border-2 transition-all ${
-                kitchenTier === t.value
-                  ? "border-slate-900 bg-slate-50"
-                  : "border-slate-200 hover:border-slate-300"
-              }`}
-            >
-              <span className="font-medium text-sm text-slate-900">
-                {t.label}
-              </span>
-              <p className="text-[11px] text-slate-500 mt-0.5">{t.desc}</p>
-            </button>
+            />
           ))}
         </div>
       </div>
 
       {/* Bath Tier */}
-      <div className="space-y-2">
-        <p className="text-sm font-medium text-slate-700">Bathroom Level</p>
-        <div className="grid grid-cols-2 gap-2">
+      <div className="space-y-3">
+        <p className="text-sm font-semibold text-brand-800">Bathroom Level</p>
+        <div className="grid grid-cols-2 gap-2.5">
           {BATH_TIERS.map((t) => (
-            <button
+            <OptionCard
               key={t.value}
+              label={t.label}
+              desc={t.desc}
+              selected={bathTier === t.value}
               onClick={() => onChange("bath_tier", t.value)}
-              className={`text-left p-3 rounded-lg border-2 transition-all ${
-                bathTier === t.value
-                  ? "border-slate-900 bg-slate-50"
-                  : "border-slate-200 hover:border-slate-300"
-              }`}
-            >
-              <span className="font-medium text-sm text-slate-900">
-                {t.label}
-              </span>
-              <p className="text-[11px] text-slate-500 mt-0.5">{t.desc}</p>
-            </button>
+            />
           ))}
         </div>
       </div>
 
       {/* Flooring */}
-      <div className="space-y-2">
-        <p className="text-sm font-medium text-slate-700">Flooring Preference</p>
-        <div className="grid grid-cols-2 gap-2">
+      <div className="space-y-3">
+        <p className="text-sm font-semibold text-brand-800">Flooring Preference</p>
+        <div className="grid grid-cols-2 gap-2.5">
           {FLOORING_OPTIONS.map((f) => (
-            <button
+            <OptionCard
               key={f.value}
+              label={f.label}
+              desc={f.desc}
+              selected={flooringPreference === f.value}
               onClick={() => onChange("flooring_preference", f.value)}
-              className={`text-left p-3 rounded-lg border-2 transition-all ${
-                flooringPreference === f.value
-                  ? "border-slate-900 bg-slate-50"
-                  : "border-slate-200 hover:border-slate-300"
-              }`}
-            >
-              <span className="font-medium text-sm text-slate-900">
-                {f.label}
-              </span>
-              <p className="text-[11px] text-slate-500 mt-0.5">{f.desc}</p>
-            </button>
+            />
           ))}
         </div>
       </div>
@@ -120,15 +129,17 @@ export function FinishesStep({
         <Button
           variant="outline"
           onClick={onBack}
-          className="flex-1 h-12 text-base"
+          className="flex-1 h-13 text-base bg-white hover:bg-slate-50"
         >
+          <ArrowLeft className="h-4 w-4 mr-2" />
           Back
         </Button>
         <Button
           onClick={onNext}
-          className="flex-1 h-12 text-base bg-slate-900 hover:bg-slate-800"
+          className="flex-1 h-13 text-base font-semibold bg-brand-700 hover:bg-brand-600 shadow-lg hover:shadow-xl transition-all"
         >
           Next: Extras
+          <ArrowRight className="h-4 w-4 ml-2" />
         </Button>
       </div>
     </div>
