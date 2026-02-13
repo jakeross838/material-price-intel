@@ -105,6 +105,7 @@ export function ProjectDetailPage() {
   } | null>(null);
   const [autoEstimateResult, setAutoEstimateResult] = useState<string | null>(null);
   const [showPricing, setShowPricing] = useState(true);
+  const [showImages, setShowImages] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const autoEstimate = useAutoEstimate();
   const updateProject = useUpdateProject();
@@ -593,7 +594,7 @@ export function ProjectDetailPage() {
               </CardHeader>
               <CardContent>
                 {selectedRoomId ? (
-                  <SelectionEditor roomId={selectedRoomId} projectId={id!} />
+                  <SelectionEditor roomId={selectedRoomId} projectId={id!} roomName={selectedRoom?.name} />
                 ) : (
                   <p className="text-sm text-muted-foreground text-center py-8">
                     Select a room to view and manage its material selections.
@@ -643,6 +644,15 @@ export function ProjectDetailPage() {
               />
               Show Pricing
             </label>
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showImages}
+                onChange={(e) => setShowImages(e.target.checked)}
+                className="rounded border-border"
+              />
+              Show Images
+            </label>
             <span className="text-xs text-muted-foreground ml-auto">
               Date: {new Date().toLocaleDateString("en-US", {
                 year: "numeric",
@@ -658,6 +668,7 @@ export function ProjectDetailPage() {
               projectId={id!}
               project={project}
               showPricing={showPricing}
+              showImages={showImages}
             />
           </div>
         </div>

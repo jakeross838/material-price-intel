@@ -3,7 +3,8 @@ import { useProjectRooms } from "@/hooks/useProjectRooms";
 import { useProjectSelections } from "@/hooks/useProjectSelections";
 import type { SelectionWithJoins } from "@/hooks/useProjectSelections";
 import type { Project, ProjectRoom } from "@/lib/types";
-import { Loader2 } from "lucide-react";
+import { Loader2, Camera } from "lucide-react";
+import { usePrimaryImage, getImageDisplayUrl } from "@/hooks/useSelectionImages";
 
 // ===========================================
 // Props
@@ -13,6 +14,7 @@ type SelectionSheetProps = {
   projectId: string;
   project: Project;
   showPricing: boolean;
+  showImages?: boolean;
 };
 
 // ===========================================
@@ -88,14 +90,38 @@ function bestTotal(sel: SelectionWithJoins): number | null {
 // Room Table
 // ===========================================
 
+function SelectionImageCell({ selectionId }: { selectionId: string }) {
+  const { data: primaryImage } = usePrimaryImage(selectionId);
+  const url = primaryImage ? getImageDisplayUrl(primaryImage) : null;
+
+  return (
+    <td className="px-2 py-1.5 border border-slate-200 w-16">
+      {url ? (
+        <img
+          src={url}
+          alt=""
+          className="w-12 h-12 object-cover rounded"
+          loading="lazy"
+        />
+      ) : (
+        <div className="w-12 h-12 rounded bg-slate-100 flex items-center justify-center">
+          <Camera className="h-4 w-4 text-slate-300" />
+        </div>
+      )}
+    </td>
+  );
+}
+
 function RoomSection({
   room,
   selections,
   showPricing,
+  showImages,
 }: {
   room: ProjectRoom;
   selections: SelectionWithJoins[];
   showPricing: boolean;
+  showImages: boolean;
 }) {
   const roomTotal = selections.reduce((sum, s) => sum + (bestTotal(s) ?? 0), 0);
 
@@ -108,6 +134,11 @@ function RoomSection({
       <table className="selection-sheet-table w-full text-sm border-collapse">
         <thead>
           <tr className="bg-slate-50">
+            {showImages && (
+              <th className="text-center px-2 py-1.5 border border-slate-200 font-medium w-16">
+                Image
+              </th>
+            )}
             <th className="text-left px-2 py-1.5 border border-slate-200 font-medium">
               Item
             </th>
@@ -142,7 +173,7 @@ function RoomSection({
           {selections.length === 0 ? (
             <tr>
               <td
-                colSpan={showPricing ? 8 : 6}
+                colSpan={(showPricing ? 8 : 6) + (showImages ? 1 : 0)}
                 className="text-center text-slate-400 py-3 border border-slate-200"
               >
                 No selections for this room
@@ -157,6 +188,7 @@ function RoomSection({
 
               return (
                 <tr key={sel.id}>
+                  {showImages && <SelectionImageCell selectionId={sel.id} />}
                   <td className="px-2 py-1.5 border border-slate-200">
                     {sel.selection_name}
                   </td>
@@ -192,7 +224,7 @@ function RoomSection({
           {showPricing && selections.length > 0 && (
             <tr className="bg-slate-50 font-medium">
               <td
-                colSpan={6}
+                colSpan={6 + (showImages ? 1 : 0)}
                 className="px-2 py-1.5 border border-slate-200 text-right"
               >
                 Room Subtotal
@@ -217,6 +249,7 @@ export function SelectionSheet({
   projectId,
   project,
   showPricing,
+  showImages = false,
 }: SelectionSheetProps) {
   const { data: rooms, isLoading: roomsLoading } = useProjectRooms(projectId);
   const { data: allSelections, isLoading: selectionsLoading } =
@@ -304,6 +337,7 @@ export function SelectionSheet({
             room={room}
             selections={selectionsByRoom.get(room.id) ?? []}
             showPricing={showPricing}
+            showImages={showImages}
           />
         ))}
       </div>

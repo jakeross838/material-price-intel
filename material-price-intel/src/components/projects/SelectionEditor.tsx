@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Plus, X, Pencil, Check, Loader2, BarChart3 } from "lucide-react";
+import { Plus, X, Pencil, Check, Loader2, BarChart3, Camera, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/lib/supabase";
@@ -14,6 +14,8 @@ import {
 import type { SelectionWithJoins } from "@/hooks/useProjectSelections";
 import type { MaterialCategory, UpgradeStatus } from "@/lib/types";
 import { EstimateBuilder } from "@/components/projects/EstimateBuilder";
+import { SelectionImagePanel } from "@/components/projects/SelectionImagePanel";
+import { usePrimaryImage, getImageDisplayUrl } from "@/hooks/useSelectionImages";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -203,19 +205,51 @@ function AddSelectionForm({ roomId, categories, materials }: AddFormProps) {
 }
 
 // ---------------------------------------------------------------------------
+// Thumbnail (shows primary image or placeholder)
+// ---------------------------------------------------------------------------
+
+function SelectionThumbnail({
+  selectionId,
+  onClick,
+}: {
+  selectionId: string;
+  onClick: () => void;
+}) {
+  const { data: primaryImage } = usePrimaryImage(selectionId);
+  const url = primaryImage ? getImageDisplayUrl(primaryImage) : null;
+
+  return (
+    <button
+      onClick={onClick}
+      className="w-10 h-10 rounded border bg-muted/30 overflow-hidden flex items-center justify-center shrink-0 hover:ring-2 hover:ring-primary/50 transition-all"
+      title="Toggle image panel"
+    >
+      {url ? (
+        <img src={url} alt="" className="w-full h-full object-cover" />
+      ) : (
+        <Camera className="h-4 w-4 text-muted-foreground/50" />
+      )}
+    </button>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Selection row (view + inline edit)
 // ---------------------------------------------------------------------------
 
 type SelectionRowProps = {
   sel: SelectionWithJoins;
   roomId: string;
+  roomName?: string;
   categories: MaterialCategory[];
   materials: ReturnType<typeof useMaterials>["data"];
   isExpanded: boolean;
   onToggleExpand: () => void;
+  isImagePanelOpen: boolean;
+  onToggleImagePanel: () => void;
 };
 
-function SelectionRow({ sel, roomId, categories, materials, isExpanded, onToggleExpand }: SelectionRowProps) {
+function SelectionRow({ sel, roomId, roomName, categories, materials, isExpanded, onToggleExpand, isImagePanelOpen, onToggleImagePanel }: SelectionRowProps) {
   const updateSelection = useUpdateSelection();
   const deleteSelection = useDeleteSelection();
   const [editing, setEditing] = useState(false);
@@ -314,6 +348,12 @@ function SelectionRow({ sel, roomId, categories, materials, isExpanded, onToggle
   if (editing) {
     return (
       <tr className="bg-muted/30">
+        <td className="px-1 py-1">
+          <SelectionThumbnail
+            selectionId={sel.id}
+            onClick={onToggleImagePanel}
+          />
+        </td>
         <td className="px-2 py-1.5">
           <Input
             value={editName}
@@ -431,6 +471,12 @@ function SelectionRow({ sel, roomId, categories, materials, isExpanded, onToggle
   return (
     <>
       <tr className="hover:bg-muted/30 transition-colors group">
+        <td className="px-1 py-1">
+          <SelectionThumbnail
+            selectionId={sel.id}
+            onClick={onToggleImagePanel}
+          />
+        </td>
         <td className="px-2 py-1.5 text-sm font-medium">
           <div className="flex items-center gap-1">
             {sel.selection_name}
@@ -521,8 +567,19 @@ function SelectionRow({ sel, roomId, categories, materials, isExpanded, onToggle
       </tr>
       {isExpanded && sel.material_id && (
         <tr>
-          <td colSpan={9} className="px-2 py-2">
+          <td colSpan={10} className="px-2 py-2">
             <EstimateBuilder selection={sel} roomId={roomId} />
+          </td>
+        </tr>
+      )}
+      {isImagePanelOpen && (
+        <tr>
+          <td colSpan={10} className="px-2 py-2">
+            <SelectionImagePanel
+              selection={sel}
+              roomId={roomId}
+              roomName={roomName}
+            />
           </td>
         </tr>
       )}
@@ -537,13 +594,15 @@ function SelectionRow({ sel, roomId, categories, materials, isExpanded, onToggle
 type SelectionEditorProps = {
   roomId: string;
   projectId: string;
+  roomName?: string;
 };
 
-export function SelectionEditor({ roomId, projectId }: SelectionEditorProps) {
+export function SelectionEditor({ roomId, projectId, roomName }: SelectionEditorProps) {
   const { data: selections, isLoading } = useRoomSelections(roomId);
   const { data: categories } = useMaterialCategories();
   const { data: materials } = useMaterials();
   const [expandedSelectionId, setExpandedSelectionId] = useState<string | null>(null);
+  const [imagePanelSelectionId, setImagePanelSelectionId] = useState<string | null>(null);
 
   // Suppress unused variable warning -- projectId reserved for future use
   void projectId;
@@ -568,6 +627,9 @@ export function SelectionEditor({ roomId, projectId }: SelectionEditorProps) {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b text-xs text-muted-foreground">
+                <th className="px-1 py-1.5 w-12">
+                  <ImageIcon className="h-3.5 w-3.5 mx-auto text-muted-foreground/50" />
+                </th>
                 <th className="px-2 py-1.5 font-medium">Selection</th>
                 <th className="px-2 py-1.5 font-medium">Category</th>
                 <th className="px-2 py-1.5 font-medium">Material</th>
@@ -595,12 +657,19 @@ export function SelectionEditor({ roomId, projectId }: SelectionEditorProps) {
                   key={sel.id}
                   sel={sel}
                   roomId={roomId}
+                  roomName={roomName}
                   categories={categories ?? []}
                   materials={materials}
                   isExpanded={expandedSelectionId === sel.id}
                   onToggleExpand={() =>
                     setExpandedSelectionId(
                       expandedSelectionId === sel.id ? null : sel.id
+                    )
+                  }
+                  isImagePanelOpen={imagePanelSelectionId === sel.id}
+                  onToggleImagePanel={() =>
+                    setImagePanelSelectionId(
+                      imagePanelSelectionId === sel.id ? null : sel.id
                     )
                   }
                 />

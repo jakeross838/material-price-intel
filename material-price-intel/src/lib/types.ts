@@ -125,8 +125,41 @@ export type ProjectSelection = {
   supplier_id: string | null;
   sort_order: number;
   notes: string | null;
+  ai_analysis: AiAnalysis | null;
   created_at: string;
   updated_at: string;
+};
+
+// ===========================================
+// Selection Images & AI Analysis types
+// ===========================================
+
+export type SelectionImageType = 'product_url' | 'upload' | 'web_search' | 'ai_render';
+
+export type SelectionImage = {
+  id: string;
+  selection_id: string;
+  image_type: SelectionImageType;
+  storage_path: string | null;
+  external_url: string | null;
+  thumbnail_url: string | null;
+  caption: string | null;
+  source: string | null;
+  is_primary: boolean;
+  sort_order: number;
+  metadata: Record<string, unknown>;
+  created_at: string;
+};
+
+export type AiAnalysis = {
+  summary: string;
+  specs: Record<string, string>;
+  pros: string[];
+  cons: string[];
+  durability_rating: number;
+  best_uses: string[];
+  florida_notes: string | null;
+  analyzed_at: string;
 };
 
 export type ProcurementStatus = 'not_quoted' | 'rfq_sent' | 'quoted' | 'awarded' | 'ordered' | 'delivered' | 'installed';
@@ -373,6 +406,20 @@ export type Database = {
             columns: ["supplier_id"];
             isOneToOne: false;
             referencedRelation: "suppliers";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      selection_images: {
+        Row: SelectionImage;
+        Insert: Pick<SelectionImage, "selection_id"> & Partial<Omit<SelectionImage, "id" | "created_at">>;
+        Update: Partial<Omit<SelectionImage, "id" | "created_at">>;
+        Relationships: [
+          {
+            foreignKeyName: "selection_images_selection_id_fkey";
+            columns: ["selection_id"];
+            isOneToOne: false;
+            referencedRelation: "project_selections";
             referencedColumns: ["id"];
           },
         ];
