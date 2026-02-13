@@ -8,11 +8,11 @@
 ## Current Position
 
 Phase: 11 of 16 (Material Catalog & Visual Library)
-Plan: 3 of 4
-Status: In progress
-Last activity: 2026-02-13 - Completed 11-03-PLAN.md (Catalog UI Components)
+Plan: 4 of 4
+Status: Awaiting checkpoint verification
+Last activity: 2026-02-13 - 11-04-PLAN.md Tasks 1-3 complete, awaiting human verification
 
-Progress: [===_______] 3/4 plans in Phase 11
+Progress: [===*______] 3.75/4 plans in Phase 11
 
 ## Phase Progress
 
@@ -142,6 +142,8 @@ Progress: [===_______] 3/4 plans in Phase 11
 | 2026-02-13 | useRoomTypes returns static config, not a query | Room types defined in code (roomCategoryDefaults.ts), not fetched from DB |
 | 2026-02-13 | MaterialCard/CategoryFilter created in 11-02 ahead of schedule | Components identical to 11-03 plan spec; no rework needed |
 | 2026-02-13 | Map-based grouping for MaterialDocumentList doc types | Section headers shown only when multiple types exist |
+| 2026-02-13 | Admin section in sidebar for Catalog and Estimator links | Separated admin nav items from main nav with section header |
+| 2026-02-13 | Public catalog at /catalog outside ProtectedRoute (same pattern as /estimate) | Anonymous Supabase client with public SELECT RLS policies |
 
 ## Blockers
 
@@ -151,7 +153,7 @@ None.
 
 | Phase | Name | Status | Plans |
 |-------|------|--------|-------|
-| 11 | Material Catalog & Visual Library | In progress | 3/4 |
+| 11 | Material Catalog & Visual Library | Checkpoint | 3.75/4 |
 | 12 | Dream Home Designer - Room Selection | Not started | 0/0 |
 | 13 | AI Room Visualization | Not started | 0/0 |
 | 14 | Public Project Dashboard | Not started | 0/0 |
@@ -161,9 +163,10 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: Completed 11-03-PLAN.md (Catalog UI Components)
-Resume file: None
-Created: MaterialImageGallery.tsx, MaterialDocumentList.tsx
+Stopped at: 11-04-PLAN.md checkpoint -- awaiting human verification of catalog pages
+Resume file: .planning/phases/11-material-catalog/11-04-PLAN.md
+Created: CatalogPage.tsx, CatalogDetailPage.tsx, AdminCatalogPage.tsx
+Modified: App.tsx, AppLayout.tsx
 
 ---
 *Initialized: 2026-02-06*
