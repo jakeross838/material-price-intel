@@ -58,6 +58,34 @@ export function useEstimatorOrgId() {
 // Inserts a lead from the public form.
 // ===========================================
 
+// ===========================================
+// useAllEstimatorConfig
+// Fetches ALL estimator_config rows (all finish levels).
+// Used by the room-by-room estimator that needs
+// every category x finish_level combination.
+// Public RLS — no auth required.
+// ===========================================
+
+export function useAllEstimatorConfig() {
+  return useQuery({
+    queryKey: ["estimator_config_all"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("estimator_config")
+        .select("*")
+        .order("sort_order");
+      if (error) throw error;
+      return data as EstimatorConfig[];
+    },
+    staleTime: 30 * 60 * 1000, // 30 min — config rarely changes
+  });
+}
+
+// ===========================================
+// useSubmitLead
+// Inserts a lead from the public form.
+// ===========================================
+
 export function useSubmitLead() {
   return useMutation({
     mutationFn: async (input: {

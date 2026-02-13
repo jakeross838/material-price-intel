@@ -239,5 +239,155 @@ Phase 8 (Polish) ◄── Phase 7 (Quote Mgmt) ◄── Phase 6 (Search) ◄�
 | 1, 2, 4, 6, 7, 8 | No | Standard, well-documented patterns |
 
 ---
+
+## Milestone v4 — Dream Home Designer & Platform Intelligence
+
+**Created:** 2026-02-13
+**Depth:** Comprehensive (6 phases)
+**Core Value:** Turn the simple cost estimator into a full Dream Home Designer — a 20-30 minute guided experience where customers walk room-by-room selecting materials, seeing AI-generated room renders, and getting real builder pricing. Internally, add intelligence metrics (install times, duration predictions) and two-way sync so public selections flow into the procurement pipeline.
+
+### Phase 11: Material Catalog & Visual Library
+**Goal:** Build a browseable material catalog with product images, spec sheets, and installation guides. This is the visual foundation everything else depends on — you can't pick materials in a room-by-room flow without seeing what they look like. Integrates with the existing product_data tables and extends them with room-category mappings.
+
+**Requirements:** CATALOG-01, CATALOG-02, CATALOG-03, CATALOG-04
+**Success Criteria:**
+1. Materials have product images (uploaded or scraped) displayed as visual cards with name, price range, and key specs
+2. Spec sheets and installation guides linked to materials, viewable inline or downloadable
+3. Materials tagged with room-appropriate categories (e.g., "Kitchen: countertops, cabinets, backsplash, flooring, fixtures")
+4. Category-to-room mapping table so the selection flow knows which categories to show per room type
+5. Image gallery per material showing multiple angles/options
+6. Integration with existing product_data hub (URL scraping, category-aware specs)
+7. Public-facing catalog endpoint (no auth required) for the estimator to consume
+
+**Research needed:** YES — need to understand image sourcing (supplier catalogs, manufacturer sites, manual upload), optimal image sizes for the selection UX, and how to map construction material categories to residential rooms.
+**Status:** Not started
+
+---
+
+### Phase 12: Dream Home Designer — Room-by-Room Selection
+**Goal:** Replace the simple 4-step estimator with a comprehensive room-by-room material selection experience. Customers define their rooms, then walk through each room selecting materials category-by-category with visual previews and real-time pricing. This is the core 20-30 minute guided experience — Linear-style UX where each choice is a focused decision.
+
+**Requirements:** DREAM-01, DREAM-02, DREAM-03, DREAM-04, DREAM-05, DREAM-06, DREAM-07
+**Success Criteria:**
+1. Room definition step: user picks which rooms their home has (Master Bath, Kitchen, Great Room, etc.) with room templates
+2. Per-room selection flow: for each room, walk through relevant categories (flooring → baseboards → trim → paint → fixtures → etc.)
+3. Linear-style selection UX: one decision at a time, focused card interface, not an overwhelming grid
+4. Material picker shows visual cards with images, price range, key specs from the catalog (Phase 11)
+5. Running cost total in a persistent sidebar/header — updates in real-time as selections are made
+6. Save/resume capability — users can leave and come back, progress is persisted
+7. Progress indicator shows which rooms are complete and which categories remain
+8. Responsive design works on tablet (common at showrooms) and desktop
+9. Selections stored in a structure compatible with the internal project system for future sync
+
+**Research needed:** YES — need UX research on Linear/Notion-style progressive disclosure patterns for construction material selection. Study how BuilderPad, Buildxact, and CoConstruct handle selection sheets.
+**Status:** Not started
+
+---
+
+### Phase 13: AI Room Visualization
+**Goal:** Generate AI images for each room based on the customer's material selections, giving them a visual preview of what their space will look like. This is the "wow factor" that differentiates the Dream Home Designer from a spreadsheet.
+
+**Requirements:** RENDER-01, RENDER-02, RENDER-03, RENDER-04
+**Success Criteria:**
+1. After completing selections for a room, user can generate an AI render showing the room with their chosen materials
+2. AI prompt constructed from: room type, selected materials (flooring, countertops, paint color, fixtures), and style preference
+3. Style-aware generation: user picks a style (modern, coastal, farmhouse, transitional) that influences the render
+4. Gallery view showing all room renders side-by-side for the complete home vision
+5. Renders stored and linked to the selection set — regenerate if selections change
+6. Image generation uses a reliable API (DALL-E, Stability AI, or similar) with appropriate quality/cost balance
+7. Loading states and fallback for when generation takes time
+
+**Research needed:** YES — need to evaluate AI image generation APIs (DALL-E 3, Stability AI SDXL, Midjourney API), cost per image, quality for interior design renders, and prompt engineering for material-specific room visualization.
+**Status:** Not started
+
+---
+
+### Phase 14: Public Project Dashboard
+**Goal:** Give customers the same rich project view that exists in the internal Material Price Intel app. After completing their Dream Home Designer selections, customers see a full project dashboard with selections by room, budget breakdown, AI renders gallery, spec sheets, and a printable selection summary. This duplicates the internal ProjectDetailPage experience for public access.
+
+**Requirements:** PUBLIC-01, PUBLIC-02, PUBLIC-03, PUBLIC-04, PUBLIC-05
+**Success Criteria:**
+1. Public project view (no auth) accessible via unique link — shows all selections organized by room
+2. Budget breakdown with per-room and per-category totals, matching internal project dashboard style
+3. AI renders gallery showing all generated room visualizations
+4. Per-selection detail: material name, image, price, spec sheet link, installation guide
+5. Print-friendly selection sheet (reuses/adapts the internal selection sheet component)
+6. Mobile-responsive — customers will share this link on phones
+7. Optional: PDF export of the full project summary for email/offline review
+
+**Research needed:** No — mirrors existing internal components (ProjectDetailPage, SelectionSheet). Main work is adapting for public access and unauthenticated data fetching.
+**Status:** Not started
+
+---
+
+### Phase 15: Savings Advisor & Performance Metrics
+**Goal:** Add a savings calculator showing customers how much builder pricing saves vs retail, display social proof ("Ross Built has saved customers $X"), and internally track installation time metrics from historical data to predict project timelines and durations per material category.
+
+**Requirements:** SAVINGS-01, SAVINGS-02, METRICS-01, METRICS-02, METRICS-03
+**Success Criteria:**
+1. Savings calculator: for each selection, show builder price vs estimated retail price with dollar savings
+2. Aggregate savings displayed prominently: "Your selections save $X,XXX vs retail pricing"
+3. Social proof banner: "Ross Built has saved customers over $X in material costs" (aggregated from all leads/projects)
+4. Internal metrics dashboard: installation time tracking per material category from project data logs
+5. Duration estimates: "Hardwood flooring: 3-5 days for 2,500 sqft" based on historical install data
+6. Project timeline prediction: estimated total build duration based on selected materials and scope
+7. Metrics data entry: simple log for tracking actual install start/end times per category per project
+
+**Research needed:** YES — need to understand how install time data is currently tracked (if at all), what historical data exists, and how to source retail vs builder pricing for the savings comparison.
+**Status:** Not started
+
+---
+
+### Phase 16: Two-Way Sync & Smart Recommendations
+**Goal:** Connect the public Dream Home Designer to the internal project and procurement system. When a lead converts, their selections automatically populate an internal project. The system recommends materials based on room type, style, budget, and what similar projects used. Finalized selections can kick off procurement workflows.
+
+**Requirements:** SYNC-01, SYNC-02, SMART-01, SMART-02, SMART-03
+**Success Criteria:**
+1. Lead-to-project conversion: when a lead is approved, create an internal project with all selections pre-populated from their Dream Home Designer session
+2. Bidirectional sync: changes to selections in the internal app reflect in the public view, and vice versa (with approval gates)
+3. AI material recommendations: suggest materials based on room type, selected style, and budget tier
+4. "Similar projects used" recommendations: based on historical project data, surface popular material choices
+5. Procurement kickoff: finalized selections can trigger procurement items in the internal system
+6. Notification when public customer updates their selections after lead submission
+
+**Research needed:** YES — need to design the sync architecture (real-time vs batch, conflict resolution), understand the approval workflow for customer-initiated changes, and determine how much historical data exists for "similar projects" recommendations.
+**Status:** Not started
+
+---
+
+## v4 Phase Ordering Rationale
+
+```
+Phase 11 (Catalog) ──→ Phase 12 (Room Selection) ──→ Phase 13 (AI Renders)
+                                    │                          │
+                                    ▼                          ▼
+                            Phase 14 (Public Dashboard) ◄──────┘
+                                    │
+                                    ▼
+                            Phase 15 (Savings + Metrics)
+                                    │
+                                    ▼
+                            Phase 16 (Sync + Smart Recs)
+```
+
+- **Catalog before selection** (11→12): Can't pick materials visually without images/specs
+- **Selection before renders** (12→13): Need material choices to generate room images
+- **Selection before dashboard** (12→14): Dashboard displays the selections
+- **Renders feed dashboard** (13→14): AI renders are a key dashboard feature
+- **Dashboard before savings** (14→15): Savings calculator enhances the existing dashboard
+- **Everything before sync** (→16): Sync connects what's already built to the internal system
+
+## v4 Research Flags
+
+| Phase | Research Needed | Reason |
+|-------|----------------|--------|
+| 11 | YES | Image sourcing strategy, room-category mappings, product data integration |
+| 12 | YES | UX patterns for progressive material selection, competitor analysis |
+| 13 | YES | AI image generation API evaluation, prompt engineering for interior renders |
+| 14 | No | Mirrors existing internal components |
+| 15 | YES | Install time data availability, retail pricing sources for savings comparison |
+| 16 | YES | Sync architecture, conflict resolution, recommendation data requirements |
+
+---
 *Roadmap created: 2026-02-06*
-*Last updated: 2026-02-06*
+*v4 milestone added: 2026-02-13*

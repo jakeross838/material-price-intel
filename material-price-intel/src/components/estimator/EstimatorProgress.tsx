@@ -1,6 +1,6 @@
 import { Check } from "lucide-react";
 
-const STEPS = ["Home Basics", "Interior", "Finishes", "Extras"];
+const STEPS = ["Home Basics", "Your Rooms", "Design", "Estimate"];
 
 type Props = {
   currentStep: number; // 0-3

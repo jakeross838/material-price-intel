@@ -99,6 +99,58 @@ Deferred to future release. Tracked but not in current roadmap.
 - **DQUAL-04**: Unit of measure conversion for comparison (per piece ↔ per LF ↔ per BF)
 - **DQUAL-05**: Bulk material list pricing — "what should I expect to pay for this material list?"
 
+## v4 Requirements — Dream Home Designer & Platform Intelligence
+
+Requirements for transforming the public estimator into a full Dream Home Designer experience and adding intelligence/metrics to the internal platform.
+
+### Material Catalog & Visuals
+
+- [ ] **CATALOG-01**: Materials have product images (photos/renderings) browseable in a visual catalog
+- [ ] **CATALOG-02**: Spec sheets and installation guides linked to materials and viewable inline
+- [ ] **CATALOG-03**: Visual material cards showing image, name, price range, and key specs
+- [ ] **CATALOG-04**: Materials organized by room-appropriate categories (e.g., Kitchen → countertops, cabinets, backsplash, flooring)
+
+### Room-by-Room Selection (Dream Home Designer)
+
+- [ ] **DREAM-01**: Linear room-by-room flow — user walks through each room selecting materials per category
+- [ ] **DREAM-02**: Per-room categories appropriate to room type (bathroom gets tile/vanity/fixtures, kitchen gets counters/cabinets/appliances)
+- [ ] **DREAM-03**: Material picker shows visual previews with images, price ranges, and key specs
+- [ ] **DREAM-04**: 20-30 minute guided experience with save/resume capability
+- [ ] **DREAM-05**: Progress tracking shows completion across all rooms
+- [ ] **DREAM-06**: Linear-style item selection UX for granular choices (baseboards, trim profiles, paint colors)
+- [ ] **DREAM-07**: Running cost total updates in real-time as selections are made
+
+### AI Room Visualization
+
+- [ ] **RENDER-01**: AI generates room images based on selected materials, finishes, and style
+- [ ] **RENDER-02**: Per-room renders showing what the space will look like with chosen selections
+- [ ] **RENDER-03**: Gallery view of all room renders for the complete home vision
+- [ ] **RENDER-04**: Style-aware generation (modern, coastal, farmhouse, transitional, etc.)
+
+### Public Project Dashboard
+
+- [ ] **PUBLIC-01**: Public project view mirrors internal project detail (selections, budget, AI renders)
+- [ ] **PUBLIC-02**: Selection sheet viewable by homeowner showing all rooms, materials, suppliers, prices
+- [ ] **PUBLIC-03**: AI analysis and product photos visible per selection
+- [ ] **PUBLIC-04**: Spec sheets and installation guides accessible per material
+- [ ] **PUBLIC-05**: Print-friendly project summary for offline review
+
+### Savings Advisor & Metrics
+
+- [ ] **SAVINGS-01**: Savings calculator shows how much builder pricing saves vs retail
+- [ ] **SAVINGS-02**: Social proof: "Ross Built has saved customers $X" with real aggregated data
+- [ ] **METRICS-01**: Installation time tracking from historical project data logs
+- [ ] **METRICS-02**: Duration estimates per material/category (e.g., "hardwood flooring: 3-5 days for 2,500 sqft")
+- [ ] **METRICS-03**: Project timeline predictions based on selections and historical install data
+
+### Two-Way Sync & Smart Recommendations
+
+- [ ] **SYNC-01**: Public estimator selections sync bidirectionally with internal project system
+- [ ] **SYNC-02**: Lead-to-project conversion — approved leads become internal projects with selections pre-populated
+- [ ] **SMART-01**: AI-powered material recommendations based on room type, style, and budget
+- [ ] **SMART-02**: Smart material suggestions based on what other similar projects used
+- [ ] **SMART-03**: Automated procurement kickoff from finalized public selections
+
 ## Out of Scope
 
 Explicitly excluded. Documented to prevent scope creep.
@@ -109,7 +161,7 @@ Explicitly excluded. Documented to prevent scope creep.
 | Purchase order generation | Handled by the Ross Built Intelligence Platform, not this pricing module |
 | Supplier CRM / relationship management | Different product; main platform handles supplier relationships |
 | Real-time market price feeds | No reliable API exists for construction materials at the SKU level |
-| Estimating / takeoff from blueprints | Completely different product (STACK, PlanSwift territory) |
+| Estimating / takeoff from blueprints | Different product (STACK, PlanSwift territory) — our estimator uses selection-based pricing, not blueprint takeoffs |
 | Inventory / warehouse management | Physical inventory is a different workflow with different users |
 | Accounting / QuickBooks integration | High complexity, low value for price intelligence; export CSV instead |
 | Client-facing cost transparency | Internal tool only; sharing pricing with clients creates negotiation problems |
@@ -149,11 +201,51 @@ Which phases cover which requirements. Updated by create-roadmap.
 | PLAT-03 | 2, 8 | Pending |
 | PLAT-04 | 1 | Complete |
 
-**Coverage:**
+**v1 Coverage:**
 - v1 requirements: 25 total
 - Mapped to phases: 25 ✅
 - Unmapped: 0
 
+## v4 Traceability
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| CATALOG-01 | 11 | Not started |
+| CATALOG-02 | 11 | Not started |
+| CATALOG-03 | 11 | Not started |
+| CATALOG-04 | 11 | Not started |
+| DREAM-01 | 12 | Not started |
+| DREAM-02 | 12 | Not started |
+| DREAM-03 | 12 | Not started |
+| DREAM-04 | 12 | Not started |
+| DREAM-05 | 12 | Not started |
+| DREAM-06 | 12 | Not started |
+| DREAM-07 | 12 | Not started |
+| RENDER-01 | 13 | Not started |
+| RENDER-02 | 13 | Not started |
+| RENDER-03 | 13 | Not started |
+| RENDER-04 | 13 | Not started |
+| PUBLIC-01 | 14 | Not started |
+| PUBLIC-02 | 14 | Not started |
+| PUBLIC-03 | 14 | Not started |
+| PUBLIC-04 | 14 | Not started |
+| PUBLIC-05 | 14 | Not started |
+| SAVINGS-01 | 15 | Not started |
+| SAVINGS-02 | 15 | Not started |
+| METRICS-01 | 15 | Not started |
+| METRICS-02 | 15 | Not started |
+| METRICS-03 | 15 | Not started |
+| SYNC-01 | 16 | Not started |
+| SYNC-02 | 16 | Not started |
+| SMART-01 | 16 | Not started |
+| SMART-02 | 16 | Not started |
+| SMART-03 | 16 | Not started |
+
+**v4 Coverage:**
+- v4 requirements: 30 total
+- Mapped to phases: 30 ✅
+- Unmapped: 0
+
 ---
 *Requirements defined: 2026-02-06*
-*Last updated: 2026-02-09 after Phase 4 completion*
+*v4 requirements added: 2026-02-13*

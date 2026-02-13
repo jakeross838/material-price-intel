@@ -1,4 +1,4 @@
-import { Home, ArrowRight } from "lucide-react";
+import { Home, ArrowRight, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,11 +16,21 @@ type Props = {
   sqft: number;
   stories: number;
   style: string;
+  bedrooms: number;
+  bathrooms: number;
   onChange: (field: string, value: number | string) => void;
   onNext: () => void;
 };
 
-export function HomeBasicsStep({ sqft, stories, style, onChange, onNext }: Props) {
+export function HomeBasicsStep({
+  sqft,
+  stories,
+  style,
+  bedrooms,
+  bathrooms,
+  onChange,
+  onNext,
+}: Props) {
   const isValid = sqft >= 1200 && sqft <= 10000;
 
   return (
@@ -96,6 +106,62 @@ export function HomeBasicsStep({ sqft, stories, style, onChange, onNext }: Props
         </div>
       </div>
 
+      {/* Bedrooms & Bathrooms */}
+      <div className="grid grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl border border-brand-200/60 p-5 shadow-sm space-y-3">
+          <p className="text-sm font-semibold text-brand-800">Bedrooms</p>
+          <div className="flex items-center justify-center gap-4">
+            <Button
+              size="icon-sm"
+              variant="outline"
+              onClick={() => onChange("bedrooms", Math.max(1, bedrooms - 1))}
+              disabled={bedrooms <= 1}
+              className="rounded-full"
+            >
+              <Minus className="h-4 w-4" />
+            </Button>
+            <span className="text-3xl font-bold text-brand-800 w-10 text-center tabular-nums">
+              {bedrooms}
+            </span>
+            <Button
+              size="icon-sm"
+              variant="outline"
+              onClick={() => onChange("bedrooms", Math.min(8, bedrooms + 1))}
+              disabled={bedrooms >= 8}
+              className="rounded-full"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+        <div className="bg-white rounded-xl border border-brand-200/60 p-5 shadow-sm space-y-3">
+          <p className="text-sm font-semibold text-brand-800">Bathrooms</p>
+          <div className="flex items-center justify-center gap-4">
+            <Button
+              size="icon-sm"
+              variant="outline"
+              onClick={() => onChange("bathrooms", Math.max(1, bathrooms - 1))}
+              disabled={bathrooms <= 1}
+              className="rounded-full"
+            >
+              <Minus className="h-4 w-4" />
+            </Button>
+            <span className="text-3xl font-bold text-brand-800 w-10 text-center tabular-nums">
+              {bathrooms}
+            </span>
+            <Button
+              size="icon-sm"
+              variant="outline"
+              onClick={() => onChange("bathrooms", Math.min(6, bathrooms + 1))}
+              disabled={bathrooms >= 6}
+              className="rounded-full"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
       {/* Style */}
       <div className="space-y-3">
         <Label className="text-sm font-semibold text-brand-800">Home Style</Label>
@@ -121,7 +187,7 @@ export function HomeBasicsStep({ sqft, stories, style, onChange, onNext }: Props
         disabled={!isValid}
         className="w-full h-13 text-base font-semibold bg-brand-700 hover:bg-brand-600 shadow-lg hover:shadow-xl transition-all"
       >
-        Next: Interior Details
+        Next: Select Your Rooms
         <ArrowRight className="h-4 w-4 ml-2" />
       </Button>
     </div>
