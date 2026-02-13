@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Building2, Phone, Loader2, Package, LayoutGrid, Home } from "lucide-react";
+import { Building2, Phone, Package, LayoutGrid, Home } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useCatalogMaterials, useRoomCategoryMappings, useRoomTypes } from "@/hooks/useCatalog";
 import { MaterialCard } from "@/components/catalog/MaterialCard";

@@ -15,12 +15,17 @@ import { ProjectCreatePage } from "./pages/ProjectCreatePage";
 import { ProjectDetailPage } from "./pages/ProjectDetailPage";
 import { EstimatePage } from "./pages/EstimatePage";
 import { AdminEstimatorPage } from "./pages/AdminEstimatorPage";
+import { CatalogPage } from "./pages/CatalogPage";
+import { CatalogDetailPage } from "./pages/CatalogDetailPage";
+import { AdminCatalogPage } from "./pages/AdminCatalogPage";
 
 function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/estimate" element={<EstimatePage />} />
+      <Route path="/catalog" element={<CatalogPage />} />
+      <Route path="/catalog/:id" element={<CatalogDetailPage />} />
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="/" element={<DashboardPage />} />
@@ -37,6 +42,7 @@ function App() {
             path="/admin/estimator"
             element={<AdminEstimatorPage />}
           />
+          <Route path="/admin/catalog" element={<AdminCatalogPage />} />
         </Route>
       </Route>
       <Route path="*" element={<NotFoundPage />} />
