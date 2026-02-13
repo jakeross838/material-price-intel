@@ -8,11 +8,11 @@
 ## Current Position
 
 Phase: 11 of 16 (Material Catalog & Visual Library)
-Plan: 1 of 4
+Plan: 2 of 4
 Status: In progress
-Last activity: 2026-02-13 - Completed 11-01-PLAN.md (Catalog Schema)
+Last activity: 2026-02-13 - Completed 11-02-PLAN.md (Catalog Data Hooks)
 
-Progress: [=_________] 1/4 plans in Phase 11
+Progress: [==________] 2/4 plans in Phase 11
 
 ## Phase Progress
 
@@ -137,6 +137,9 @@ Progress: [=_________] 1/4 plans in Phase 11
 | 2026-02-13 | room_category_mapping is global (not org-scoped) | Shared reference data; admin-only write access |
 | 2026-02-13 | material-catalog storage bucket is public (true) | Catalog images need to be publicly accessible for browsing |
 | 2026-02-13 | CatalogRoomType named to avoid collision with existing RoomType | Existing RoomType (interior/exterior/utility/common) used by project_rooms |
+| 2026-02-13 | 30-min staleTime for room_category_mapping hooks | Rarely-changing reference data; 5-min default too aggressive |
+| 2026-02-13 | Image/document mutations invalidate catalog query caches | Cross-entity invalidation keeps parent views fresh |
+| 2026-02-13 | useRoomTypes returns static config, not a query | Room types defined in code (roomCategoryDefaults.ts), not fetched from DB |
 
 ## Blockers
 
@@ -146,7 +149,7 @@ None.
 
 | Phase | Name | Status | Plans |
 |-------|------|--------|-------|
-| 11 | Material Catalog & Visual Library | In progress | 1/4 |
+| 11 | Material Catalog & Visual Library | In progress | 2/4 |
 | 12 | Dream Home Designer - Room Selection | Not started | 0/0 |
 | 13 | AI Room Visualization | Not started | 0/0 |
 | 14 | Public Project Dashboard | Not started | 0/0 |
@@ -156,9 +159,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: Completed 11-01-PLAN.md (Catalog Schema)
+Stopped at: Completed 11-02-PLAN.md (Catalog Data Hooks)
 Resume file: None
-Modified: 016_catalog_schema.sql, types.ts
+Created: roomCategoryDefaults.ts, useCatalog.ts, useMaterialImages.ts, useMaterialDocuments.ts
 
 ---
 *Initialized: 2026-02-06*
