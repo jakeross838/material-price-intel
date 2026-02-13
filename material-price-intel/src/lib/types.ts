@@ -311,6 +311,68 @@ export type LineItem = {
 //   const supabase = createClient<Database>(url, key);
 //   // Now supabase.from('quotes').select() returns typed Quote rows
 // ===========================================
+// ===========================================
+// Estimator types
+// ===========================================
+
+export type FinishLevel = 'builder' | 'standard' | 'premium' | 'luxury';
+
+export type EstimatorConfig = {
+  id: string;
+  organization_id: string;
+  category: string;
+  finish_level: FinishLevel;
+  cost_per_sqft_low: number;
+  cost_per_sqft_high: number;
+  display_name: string;
+  sort_order: number;
+  notes: string | null;
+  updated_at: string;
+  created_at: string;
+};
+
+export type EstimatorLeadStatus = 'new' | 'contacted' | 'qualified' | 'converted' | 'archived';
+
+export type EstimatorLead = {
+  id: string;
+  organization_id: string;
+  contact_name: string;
+  contact_email: string;
+  contact_phone: string | null;
+  contact_message: string | null;
+  estimate_params: EstimateParams;
+  estimate_low: number;
+  estimate_high: number;
+  estimate_breakdown: EstimateBreakdownItem[];
+  status: EstimatorLeadStatus;
+  admin_notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type EstimateParams = {
+  square_footage: number;
+  stories: number;
+  style: string;
+  finish_level: FinishLevel;
+  bedrooms: number;
+  bathrooms: number;
+  kitchen_tier: string;
+  bath_tier: string;
+  flooring_preference: string;
+  roofing_type: string;
+  window_grade: string;
+  exterior_type: string;
+  special_features: string[];
+};
+
+export type EstimateBreakdownItem = {
+  category: string;
+  display_name: string;
+  low: number;
+  high: number;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -480,6 +542,21 @@ export type Database = {
             referencedColumns: ["id"];
           },
         ];
+      };
+      estimator_config: {
+        Row: EstimatorConfig;
+        Insert: Omit<EstimatorConfig, "id" | "created_at" | "updated_at">;
+        Update: Partial<Omit<EstimatorConfig, "id" | "created_at">>;
+        Relationships: [];
+      };
+      estimator_leads: {
+        Row: EstimatorLead;
+        Insert: Pick<EstimatorLead, "organization_id" | "contact_name" | "contact_email" | "estimate_low" | "estimate_high"> & {
+          estimate_params: Record<string, unknown>;
+          estimate_breakdown: Record<string, unknown>;
+        } & Partial<Pick<EstimatorLead, "contact_phone" | "contact_message" | "status" | "admin_notes">>;
+        Update: Partial<Omit<EstimatorLead, "id" | "created_at">>;
+        Relationships: [];
       };
     };
     Views: {

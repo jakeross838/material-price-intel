@@ -13,11 +13,13 @@ import { ReportsPage } from "./pages/ReportsPage";
 import { ProjectsListPage } from "./pages/ProjectsListPage";
 import { ProjectCreatePage } from "./pages/ProjectCreatePage";
 import { ProjectDetailPage } from "./pages/ProjectDetailPage";
+import { EstimatePage } from "./pages/EstimatePage";
 
 function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/estimate" element={<EstimatePage />} />
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="/" element={<DashboardPage />} />
