@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect, useCallback } from "react";
 import { Loader2 } from "lucide-react";
 import { EstimatorLayout } from "@/components/estimator/EstimatorLayout";
 import { EstimatorProgress } from "@/components/estimator/EstimatorProgress";
+import { GettingStartedStep } from "@/components/estimator/steps/GettingStartedStep";
 import { HomeBasicsStep } from "@/components/estimator/steps/HomeBasicsStep";
 import { RoomSelectionStep } from "@/components/estimator/steps/RoomSelectionStep";
 import { RoomDesignStep } from "@/components/estimator/steps/RoomDesignStep";
@@ -11,6 +12,7 @@ import { useAllEstimatorConfig } from "@/hooks/useEstimator";
 import { calculateRoomEstimate } from "@/lib/estimateCalculator";
 import type { RoomSelections, RoomEstimateResult } from "@/lib/estimateCalculator";
 import type { FinishLevel, EstimateParams } from "@/lib/types";
+import type { FloorPlanExtractionResult } from "@/lib/floorPlanTypes";
 import { ROOM_TEMPLATES } from "@/lib/roomEstimatorData";
 
 // -------------------------------------------
@@ -166,6 +168,66 @@ function buildInitialRoomList(
 }
 
 /**
+ * Build room list from AI floor plan extraction results.
+ * Maps extracted room_types to SelectedRoom entries, ensuring locked rooms are always present.
+ */
+function buildRoomListFromExtraction(
+  extraction: FloorPlanExtractionResult,
+  bedrooms: number,
+  bathrooms: number
+): SelectedRoom[] {
+  const rooms: SelectedRoom[] = [];
+  const seen = new Set<string>();
+
+  for (const extractedRoom of extraction.rooms) {
+    const roomType = extractedRoom.room_type;
+    if (seen.has(roomType)) continue;
+    seen.add(roomType);
+
+    switch (roomType) {
+      case "kitchen":
+        rooms.push({ roomId: "kitchen", displayName: "Kitchen", count: 1 });
+        break;
+      case "great_room":
+        rooms.push({ roomId: "great_room", displayName: "Great Room", count: 1 });
+        break;
+      case "master_suite":
+        rooms.push({ roomId: "master_suite", displayName: "Master Suite", count: 1 });
+        break;
+      case "guest_bedrooms":
+        rooms.push({ roomId: "guest_bedrooms", displayName: "Guest Bedrooms", count: Math.max(1, bedrooms - 1) });
+        break;
+      case "guest_bathrooms":
+        rooms.push({ roomId: "guest_bathrooms", displayName: "Guest Bathrooms", count: Math.max(1, bathrooms - 1) });
+        break;
+      case "dining_room":
+        rooms.push({ roomId: "dining_room", displayName: "Dining Room", count: 1 });
+        break;
+      case "office":
+        rooms.push({ roomId: "office", displayName: "Office", count: 1 });
+        break;
+      case "laundry":
+        rooms.push({ roomId: "laundry", displayName: "Laundry", count: 1 });
+        break;
+      case "garage":
+        rooms.push({ roomId: "garage", displayName: "Garage", count: 1 });
+        break;
+      case "outdoor_living":
+        rooms.push({ roomId: "outdoor_living", displayName: "Outdoor Living", count: 1 });
+        break;
+    }
+  }
+
+  // Ensure locked rooms are always present
+  if (!seen.has("kitchen")) rooms.unshift({ roomId: "kitchen", displayName: "Kitchen", count: 1 });
+  if (!seen.has("great_room")) rooms.splice(1, 0, { roomId: "great_room", displayName: "Great Room", count: 1 });
+  if (!seen.has("master_suite")) rooms.splice(2, 0, { roomId: "master_suite", displayName: "Master Suite", count: 1 });
+  rooms.push({ roomId: "exterior", displayName: "Exterior", count: 1 });
+
+  return rooms;
+}
+
+/**
  * Build a RoomSelections[] for the calculator from expanded rooms + category selections.
  */
 function buildRoomSelectionsForCalc(
@@ -225,7 +287,7 @@ function buildEstimateParams(
 // -------------------------------------------
 
 export function EstimatePage() {
-  // Step tracking: 0=HomeBasics, 1=RoomSelection, 2=Design, 3=Results
+  // Step tracking: 0=GettingStarted, 1=HomeBasics, 2=RoomSelection, 3=Design, 4=Results
   const [step, setStep] = useState(0);
 
   // Home basics
@@ -234,6 +296,9 @@ export function EstimatePage() {
   const [style, setStyle] = useState("Coastal");
   const [bedrooms, setBedrooms] = useState(3);
   const [bathrooms, setBathrooms] = useState(2);
+
+  // AI floor plan extraction
+  const [aiExtraction, setAiExtraction] = useState<FloorPlanExtractionResult | null>(null);
 
   // Room-based state
   const [selectedRooms, setSelectedRooms] = useState<SelectedRoom[]>([]);
@@ -274,11 +339,33 @@ export function EstimatePage() {
     }
   }
 
+  // GettingStartedStep: user chose "Start from Scratch"
+  function handleStartFromScratch() {
+    setAiExtraction(null);
+    setStep(1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // GettingStartedStep: AI extraction completed
+  function handleFloorPlanExtracted(result: FloorPlanExtractionResult) {
+    setAiExtraction(result);
+    setSqft(result.total_sqft);
+    setStories(result.stories);
+    setBedrooms(result.bedrooms);
+    setBathrooms(result.bathrooms);
+    if (result.style) setStyle(result.style);
+    setStep(1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   // Advance from Home Basics to Room Selection
   function handleBasicsNext() {
-    // Auto-populate rooms based on bedroom/bathroom counts
-    setSelectedRooms(buildInitialRoomList(bedrooms, bathrooms));
-    setStep(1);
+    if (aiExtraction) {
+      setSelectedRooms(buildRoomListFromExtraction(aiExtraction, bedrooms, bathrooms));
+    } else {
+      setSelectedRooms(buildInitialRoomList(bedrooms, bathrooms));
+    }
+    setStep(2);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -291,7 +378,7 @@ export function EstimatePage() {
     setSelections((prev) =>
       prev.filter((s) => expandedRoomIds.has(s.roomId))
     );
-    setStep(2);
+    setStep(3);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -314,7 +401,7 @@ export function EstimatePage() {
     const result = calculateRoomEstimate(roomSelections, allConfig);
     setEstimate(result);
     setShowResults(true);
-    setStep(3);
+    setStep(4);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -353,6 +440,7 @@ export function EstimatePage() {
               onClick={() => {
                 setShowResults(false);
                 setEstimate(null);
+                setAiExtraction(null);
                 setStep(0);
                 setSelections([]);
                 setSelectedRooms([]);
@@ -368,7 +456,7 @@ export function EstimatePage() {
   }
 
   // Loading config
-  if (configLoading && step > 0) {
+  if (configLoading && step > 1) {
     return (
       <EstimatorLayout>
         <div className="flex items-center justify-center py-20 text-slate-400">
@@ -383,8 +471,14 @@ export function EstimatePage() {
   return (
     <EstimatorLayout>
       <EstimatorProgress currentStep={step} />
-      <div className={step === 2 ? "max-w-5xl mx-auto" : "max-w-2xl mx-auto"}>
+      <div className={step === 3 ? "max-w-5xl mx-auto" : "max-w-2xl mx-auto"}>
         {step === 0 && (
+          <GettingStartedStep
+            onStartFromScratch={handleStartFromScratch}
+            onFloorPlanExtracted={handleFloorPlanExtracted}
+          />
+        )}
+        {step === 1 && (
           <HomeBasicsStep
             sqft={sqft}
             stories={stories}
@@ -393,19 +487,20 @@ export function EstimatePage() {
             bathrooms={bathrooms}
             onChange={updateBasics}
             onNext={handleBasicsNext}
+            aiExtracted={!!aiExtraction}
           />
         )}
-        {step === 1 && (
+        {step === 2 && (
           <RoomSelectionStep
             selectedRooms={selectedRooms}
             onChange={setSelectedRooms}
             bedrooms={bedrooms}
             bathrooms={bathrooms}
             onNext={handleRoomSelectionNext}
-            onBack={() => setStep(0)}
+            onBack={() => setStep(1)}
           />
         )}
-        {step === 2 && allConfig && (
+        {step === 3 && allConfig && (
           <RoomDesignStep
             rooms={designRooms}
             selections={selections}
@@ -413,7 +508,7 @@ export function EstimatePage() {
             sqft={sqft}
             allConfig={allConfig}
             onNext={handleDesignNext}
-            onBack={() => setStep(1)}
+            onBack={() => setStep(2)}
           />
         )}
       </div>

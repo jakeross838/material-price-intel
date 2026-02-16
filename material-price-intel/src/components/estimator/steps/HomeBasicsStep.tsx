@@ -1,4 +1,4 @@
-import { Home, ArrowRight, Minus, Plus } from "lucide-react";
+import { Home, ArrowRight, Minus, Plus, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +20,7 @@ type Props = {
   bathrooms: number;
   onChange: (field: string, value: number | string) => void;
   onNext: () => void;
+  aiExtracted?: boolean;
 };
 
 export function HomeBasicsStep({
@@ -30,6 +31,7 @@ export function HomeBasicsStep({
   bathrooms,
   onChange,
   onNext,
+  aiExtracted,
 }: Props) {
   const isValid = sqft >= 1200 && sqft <= 10000;
 
@@ -46,6 +48,18 @@ export function HomeBasicsStep({
           Start with the basics — we'll get more specific in the next steps.
         </p>
       </div>
+
+      {aiExtracted && (
+        <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-xl text-sm text-green-800">
+          <Sparkles className="h-5 w-5 text-green-600 shrink-0" />
+          <div>
+            <p className="font-semibold">AI-extracted from your floor plans</p>
+            <p className="text-green-600 text-xs mt-0.5">
+              Review the details below and adjust anything that doesn't look right.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Square Footage */}
       <div className="space-y-3 bg-white rounded-xl border border-brand-200/60 p-5 shadow-sm">

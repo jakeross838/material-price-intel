@@ -1,9 +1,9 @@
 import { Check } from "lucide-react";
 
-const STEPS = ["Home Basics", "Your Rooms", "Design", "Estimate"];
+const STEPS = ["Get Started", "Home Basics", "Your Rooms", "Design", "Estimate"];
 
 type Props = {
-  currentStep: number; // 0-3
+  currentStep: number; // 0-4
 };
 
 export function EstimatorProgress({ currentStep }: Props) {
