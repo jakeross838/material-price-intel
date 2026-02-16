@@ -230,7 +230,7 @@ export const SELECTION_OPTIONS: Record<string, SelectionOption[]> = {
       description:
         "Mid-range stainless steel appliance suite with gas range, French-door refrigerator, and quiet dishwasher. Includes convection oven and built-in microwave. Wi-Fi enabled for smart home integration.",
       imageUrl:
-        "https://images.unsplash.com/photo-1556909114-ecbb6b72e6b4?w=400&h=300&fit=crop",
+        "https://images.unsplash.com/photo-1556909212-d5b604d0c90d?w=400&h=300&fit=crop",
     },
     {
       finishLevel: "premium",
@@ -238,7 +238,7 @@ export const SELECTION_OPTIONS: Record<string, SelectionOption[]> = {
       description:
         "Professional-grade appliances from brands like KitchenAid or Bosch. Includes 36-inch gas rangetop, wall oven, built-in refrigerator, and panel-ready dishwasher. Superior cooking performance with commercial-style aesthetics.",
       imageUrl:
-        "https://images.unsplash.com/photo-1556909172-bd5315ff1569?w=400&h=300&fit=crop",
+        "https://images.unsplash.com/photo-1600585152220-90363fe7e115?w=400&h=300&fit=crop",
     },
     {
       finishLevel: "luxury",
@@ -374,7 +374,7 @@ export const SELECTION_OPTIONS: Record<string, SelectionOption[]> = {
       description:
         "Furniture-style vanity with an undermount ceramic sink and stone top. Tiled shower surround with glass door and built-in niche. Frameless mirror with integrated LED backlighting.",
       imageUrl:
-        "https://images.unsplash.com/photo-1600566752447-f4e219bfc648?w=400&h=300&fit=crop",
+        "https://images.unsplash.com/photo-1620626011761-996317b8d101?w=400&h=300&fit=crop",
     },
     {
       finishLevel: "premium",
