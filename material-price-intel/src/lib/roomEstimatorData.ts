@@ -19,6 +19,8 @@ export type RoomTemplate = {
   defaultSqftPercent: number; // percentage of total home sqft
   categories: string[]; // keys matching estimator_config.category
   defaultCount: number; // how many of this room in a typical home
+  isUpgrade?: boolean;
+  upgradeDescription?: string;
 };
 
 export type SelectionOption = {
@@ -37,20 +39,13 @@ export type SelectionOption = {
 // Total for a typical home: ~100%.
 
 export const ROOM_TEMPLATES: RoomTemplate[] = [
+  // --- Core rooms ---
   {
     id: "kitchen",
     displayName: "Kitchen",
     icon: "ChefHat",
     defaultSqftPercent: 10,
-    categories: ["cabinets", "countertops", "backsplash", "appliances", "flooring", "lighting", "hardware"],
-    defaultCount: 1,
-  },
-  {
-    id: "master_bath",
-    displayName: "Master Bath",
-    icon: "Bath",
-    defaultSqftPercent: 5,
-    categories: ["plumbing", "fixtures", "tile", "flooring", "lighting", "hardware"],
+    categories: ["cabinets", "countertops", "backsplash", "appliances", "flooring", "lighting", "hardware", "plumbing", "fixtures", "tile", "paint", "trim", "baseboard", "doors", "windows", "ceiling", "electrical", "drywall"],
     defaultCount: 1,
   },
   {
@@ -58,7 +53,15 @@ export const ROOM_TEMPLATES: RoomTemplate[] = [
     displayName: "Master Bedroom",
     icon: "Bed",
     defaultSqftPercent: 12,
-    categories: ["flooring", "lighting", "paint", "closets", "ceiling", "trim"],
+    categories: ["flooring", "lighting", "paint", "closets", "ceiling", "trim", "baseboard", "doors", "windows", "hardware", "electrical", "drywall", "smart_home", "hvac"],
+    defaultCount: 1,
+  },
+  {
+    id: "master_bath",
+    displayName: "Master Bath",
+    icon: "Bath",
+    defaultSqftPercent: 5,
+    categories: ["plumbing", "fixtures", "tile", "flooring", "lighting", "hardware", "toilets", "shower_enclosure", "vanity", "paint", "trim", "baseboard", "doors", "ceiling", "electrical", "windows"],
     defaultCount: 1,
   },
   {
@@ -66,7 +69,7 @@ export const ROOM_TEMPLATES: RoomTemplate[] = [
     displayName: "Guest Bedroom",
     icon: "BedDouble",
     defaultSqftPercent: 8,
-    categories: ["flooring", "lighting", "paint", "closets", "doors"],
+    categories: ["flooring", "lighting", "paint", "closets", "doors", "trim", "baseboard", "windows", "hardware", "ceiling", "electrical", "drywall"],
     defaultCount: 3,
   },
   {
@@ -74,7 +77,7 @@ export const ROOM_TEMPLATES: RoomTemplate[] = [
     displayName: "Guest Bath",
     icon: "ShowerHead",
     defaultSqftPercent: 2,
-    categories: ["plumbing", "fixtures", "tile", "flooring", "hardware"],
+    categories: ["plumbing", "fixtures", "tile", "flooring", "hardware", "toilets", "shower_enclosure", "vanity", "paint", "trim", "baseboard", "doors", "lighting"],
     defaultCount: 2,
   },
   {
@@ -82,7 +85,7 @@ export const ROOM_TEMPLATES: RoomTemplate[] = [
     displayName: "Great Room",
     icon: "Sofa",
     defaultSqftPercent: 18,
-    categories: ["flooring", "lighting", "windows", "paint", "fireplace", "ceiling", "trim"],
+    categories: ["flooring", "lighting", "windows", "paint", "fireplace", "ceiling", "trim", "baseboard", "doors", "hardware", "electrical", "drywall", "insulation", "smart_home", "hvac"],
     defaultCount: 1,
   },
   {
@@ -90,15 +93,7 @@ export const ROOM_TEMPLATES: RoomTemplate[] = [
     displayName: "Dining Room",
     icon: "UtensilsCrossed",
     defaultSqftPercent: 6,
-    categories: ["flooring", "lighting", "paint", "ceiling", "trim"],
-    defaultCount: 1,
-  },
-  {
-    id: "office",
-    displayName: "Office",
-    icon: "Monitor",
-    defaultSqftPercent: 5,
-    categories: ["flooring", "lighting", "paint", "closets", "doors"],
+    categories: ["flooring", "lighting", "paint", "ceiling", "trim", "baseboard", "windows", "doors", "hardware", "electrical", "drywall"],
     defaultCount: 1,
   },
   {
@@ -106,7 +101,7 @@ export const ROOM_TEMPLATES: RoomTemplate[] = [
     displayName: "Laundry",
     icon: "WashingMachine",
     defaultSqftPercent: 3,
-    categories: ["cabinets", "countertops", "plumbing", "flooring"],
+    categories: ["cabinets", "countertops", "plumbing", "flooring", "lighting", "tile", "doors", "hardware", "electrical", "baseboard"],
     defaultCount: 1,
   },
   {
@@ -114,24 +109,87 @@ export const ROOM_TEMPLATES: RoomTemplate[] = [
     displayName: "Garage",
     icon: "Car",
     defaultSqftPercent: 10,
-    categories: ["flooring", "paint", "garage_door"],
+    categories: ["flooring", "paint", "garage_door", "lighting", "electrical", "doors", "drywall", "smart_home"],
     defaultCount: 1,
   },
   {
     id: "exterior",
-    displayName: "Exterior",
+    displayName: "Exterior & Structure",
     icon: "Home",
     defaultSqftPercent: 8,
-    categories: ["roofing", "windows", "siding", "front_door", "driveway", "landscaping", "smart_home"],
+    categories: ["roofing", "windows", "siding", "front_door", "driveway", "landscaping", "smart_home", "exterior_paint", "structural_framing", "foundation", "insulation", "electrical", "hvac", "outdoor_lighting"],
     defaultCount: 1,
   },
+  // --- Upgrade rooms ---
   {
-    id: "outdoor_living",
-    displayName: "Outdoor Living",
-    icon: "TreePalm",
-    defaultSqftPercent: 5,
-    categories: ["landscaping", "lighting"],
+    id: "pool_bath",
+    displayName: "Pool Bath",
+    icon: "ShowerHead",
+    defaultSqftPercent: 2,
+    categories: ["plumbing", "fixtures", "tile", "flooring", "hardware", "toilets", "shower_enclosure", "vanity", "paint", "lighting", "doors"],
     defaultCount: 1,
+    isUpgrade: true,
+    upgradeDescription: "Dedicated bathroom for the pool area",
+  },
+  {
+    id: "media_room",
+    displayName: "Media Room",
+    icon: "Tv",
+    defaultSqftPercent: 6,
+    categories: ["flooring", "lighting", "paint", "ceiling", "trim", "baseboard", "doors", "windows", "hardware", "electrical", "drywall", "smart_home"],
+    defaultCount: 1,
+    isUpgrade: true,
+    upgradeDescription: "Home theater & entertainment space",
+  },
+  {
+    id: "wine_cellar",
+    displayName: "Wine Cellar",
+    icon: "Wine",
+    defaultSqftPercent: 2,
+    categories: ["flooring", "lighting", "paint", "doors", "ceiling", "trim", "baseboard", "hardware", "electrical", "hvac"],
+    defaultCount: 1,
+    isUpgrade: true,
+    upgradeDescription: "Climate-controlled wine storage",
+  },
+  {
+    id: "spa_room",
+    displayName: "Spa / Wellness",
+    icon: "Sparkles",
+    defaultSqftPercent: 4,
+    categories: ["plumbing", "fixtures", "tile", "flooring", "lighting", "hardware", "paint", "ceiling", "doors", "electrical", "hvac", "smart_home"],
+    defaultCount: 1,
+    isUpgrade: true,
+    upgradeDescription: "Steam room, sauna, or wellness suite",
+  },
+  {
+    id: "home_gym",
+    displayName: "Home Gym",
+    icon: "Dumbbell",
+    defaultSqftPercent: 5,
+    categories: ["flooring", "lighting", "paint", "ceiling", "doors", "windows", "electrical", "hvac", "drywall", "smart_home"],
+    defaultCount: 1,
+    isUpgrade: true,
+    upgradeDescription: "Dedicated fitness & exercise room",
+  },
+  {
+    id: "outdoor_kitchen",
+    displayName: "Outdoor Kitchen",
+    icon: "Flame",
+    defaultSqftPercent: 3,
+    categories: ["cabinets", "countertops", "appliances", "plumbing", "flooring", "lighting", "electrical", "outdoor_lighting", "hardware", "landscaping"],
+    defaultCount: 1,
+    isUpgrade: true,
+    upgradeDescription: "Full outdoor cooking & dining area",
+  },
+  {
+    id: "pool",
+    displayName: "Swimming Pool",
+    icon: "Waves",
+    defaultSqftPercent: 5,
+    categories: ["pool", "landscaping", "lighting", "outdoor_lighting", "electrical", "plumbing"],
+    defaultCount: 1,
+    isUpgrade: true,
+    upgradeDescription: "In-ground pool with equipment",
   },
 ];
 
@@ -1005,6 +1063,510 @@ export const SELECTION_OPTIONS: Record<string, SelectionOption[]> = {
         "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=400&h=300&fit=crop",
     },
   ],
+
+  // ----- TOILETS -----
+  toilets: [
+    {
+      finishLevel: "builder",
+      label: "Standard Elongated Toilet",
+      description:
+        "ADA-height elongated bowl toilet with standard flush mechanism. Chrome trip lever with durable vitreous china construction. Reliable 1.6 GPF single-flush with basic slow-close seat.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1585412727339-54e4bae3bbf9?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Comfort Height Toilet",
+      description:
+        "Comfort-height elongated toilet with dual-flush technology (1.1/1.6 GPF). Skirted trapway for easy cleaning and modern look. Includes soft-close seat with quick-release hinges.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "One-Piece with Bidet Seat",
+      description:
+        "Sleek one-piece toilet with integrated bidet seat featuring heated water, adjustable spray, and warm air dryer. Low-profile design with concealed trapway. Includes night light and deodorizer.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1564540586988-aa4e53ab3394?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Smart Toilet",
+      description:
+        "TOTO Neorest or Kohler Veil intelligent toilet with auto open/close lid, heated seat, UV sanitization, and hands-free flush. Integrated bidet with oscillating and pulsating wash modes. Self-cleaning with electrolyzed water technology.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- BASEBOARDS -----
+  baseboard: [
+    {
+      finishLevel: "builder",
+      label: "MDF Baseboard 3.25\"",
+      description:
+        "Pre-primed MDF baseboard in standard 3.25-inch height with simple rounded profile. Paint-grade material that installs quickly with brad nails. Clean, functional finish for every room.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Pine Baseboard 5.25\"",
+      description:
+        "Solid pine baseboard at 5.25-inch height with classic ogee or colonial profile. Stain or paint-grade with smooth finish. Includes coordinating shoe molding at the floor line.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Hardwood Baseboard 7\"",
+      description:
+        "Select hardwood baseboard in oak, maple, or poplar at 7-inch height with stepped or layered profile detail. Site-finished to match door casing and crown molding for a unified millwork package.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Custom Millwork Baseboard",
+      description:
+        "Hand-milled baseboard with multi-piece built-up profiles reaching 9+ inches. Features integrated cable management channels and custom router-cut details. Each profile is designed to match the architectural period of the home.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- STRUCTURAL FRAMING -----
+  structural_framing: [
+    {
+      finishLevel: "builder",
+      label: "Wood Stick Frame",
+      description:
+        "Conventional 2x4 or 2x6 wood stick framing with standard spacing. Engineered trusses for the roof system. Meets all Florida building code requirements for wind resistance and structural loads.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Engineered Wood Frame",
+      description:
+        "Engineered lumber (LVL beams, I-joists, LSL headers) combined with advanced wood framing techniques. Reduced thermal bridging with better insulation performance. Straighter walls and fewer callbacks.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "CMU Block Construction",
+      description:
+        "Concrete masonry unit (CMU) block walls with reinforced concrete fill and rebar. Superior wind and impact resistance ideal for Florida hurricane zones. Excellent thermal mass and sound dampening properties.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1590274853856-f22d5ee3d228?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Steel & ICF Hybrid",
+      description:
+        "Insulated Concrete Form (ICF) walls with structural steel beams for long spans and open floor plans. Highest wind and flood resistance available. Superior energy efficiency with continuous insulation and virtually airtight construction.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- FOUNDATION -----
+  foundation: [
+    {
+      finishLevel: "builder",
+      label: "Monolithic Slab",
+      description:
+        "Standard monolithic slab-on-grade foundation with thickened edges and wire mesh reinforcement. 4-inch concrete over vapor barrier with standard compaction. Meets code for most residential applications.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Stem Wall Foundation",
+      description:
+        "Stem wall foundation with separate footing and slab pour. Elevated above grade for better moisture protection and ventilation. Includes termite pre-treatment and moisture barrier with French drain system.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Deep Pilings",
+      description:
+        "Driven or augured concrete pilings reaching stable soil or bedrock. Required for waterfront, elevated, or challenging soil conditions. Includes grade beams and engineered pile cap connections for superior structural support.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1590274853856-f22d5ee3d228?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Post-Tension Slab",
+      description:
+        "Post-tensioned concrete slab with high-strength steel tendons for crack-free performance on expansive or variable soils. Allows thinner slabs with longer spans. Premium waterproofing membrane and under-slab insulation for maximum durability.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- EXTERIOR PAINT -----
+  exterior_paint: [
+    {
+      finishLevel: "builder",
+      label: "Basic Latex Exterior",
+      description:
+        "100% acrylic latex exterior paint in standard body and trim colors. Two coats over primer with basic prep and caulking. 10-year warranty with fade-resistant formula for Florida sun.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Premium Acrylic Exterior",
+      description:
+        "Sherwin-Williams Duration or Benjamin Moore Aura exterior with advanced color technology. Full prep including power washing, scraping, and priming. Three-color scheme with accent trim and architectural detail highlighting.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Elastomeric Coating",
+      description:
+        "High-build elastomeric coating that bridges hairline cracks and expands with the substrate. Superior waterproofing and UV protection with 20-year warranty. Ideal for stucco homes in Florida's harsh sun and rain conditions.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Lime Wash / Venetian Plaster",
+      description:
+        "Traditional lime wash or exterior Venetian plaster finish with depth and character that improves with age. Hand-applied by artisan plasterers for a unique, European-inspired aesthetic. Self-healing micro-cracks and breathable for superior moisture management.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- SHOWER ENCLOSURE -----
+  shower_enclosure: [
+    {
+      finishLevel: "builder",
+      label: "Framed Glass Slider",
+      description:
+        "Aluminum-framed sliding glass shower door with clear tempered glass. Chrome finish on frame and handle hardware. Standard bypass design for tub/shower combos with towel bar handle.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Semi-Frameless Pivot Door",
+      description:
+        "Semi-frameless pivot or hinged glass shower door with minimal hardware. 3/8-inch clear tempered glass with brushed nickel or matte black frame accents. Clean modern look with easy-clean glass coating.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1620626011761-996317b8d101?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Frameless Glass Enclosure",
+      description:
+        "Full frameless shower enclosure with 1/2-inch clear tempered glass panels. Heavy-duty stainless steel hinges and clamps in matte black or brushed gold. Includes fixed panel, hinged door, and optional return panel.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Custom Steam Shower Glass",
+      description:
+        "Floor-to-ceiling frameless glass steam shower enclosure with transom panel for full height sealing. Includes integrated steam generator, aromatherapy port, and chromotherapy LED lighting. Low-iron ultra-clear glass with custom etching or frosted privacy zones.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- VANITY -----
+  vanity: [
+    {
+      finishLevel: "builder",
+      label: "Stock Vanity Cabinet",
+      description:
+        "Pre-assembled stock vanity in standard widths (30/36/48-inch) with laminate countertop and white ceramic sink. Basic chrome faucet included. Available in white, espresso, or gray finishes.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Furniture-Style Vanity",
+      description:
+        "Furniture-style vanity cabinet with soft-close drawers, stone top, and undermount ceramic sink. Available in single or double configurations. Coordinated brushed nickel or matte black hardware included.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1620626011761-996317b8d101?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Custom Built-In Vanity",
+      description:
+        "Custom-built vanity cabinetry designed to fit your exact space and storage needs. Quartz or marble top with undermount rectangular sinks. Features include pull-out organizers, built-in hamper, and integrated electrical outlets.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Floating Stone Vanity",
+      description:
+        "Wall-mounted floating vanity with integrated natural stone vessel basin carved from a single block. Custom exotic wood or lacquered finish with concealed drawer mechanisms. Includes wall-mounted faucet with separate hot/cold handles in unlacquered brass.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- OUTDOOR LIGHTING -----
+  outdoor_lighting: [
+    {
+      finishLevel: "builder",
+      label: "Basic Path & Porch Lights",
+      description:
+        "Solar-powered path lights along walkways and standard porch ceiling fixture. Motion-sensor flood lights at garage and rear entry. Basic security lighting coverage meeting code requirements.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1558904541-efa843a96f01?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Landscape Lighting Package",
+      description:
+        "Professional low-voltage LED landscape lighting with up-lights on specimen trees, path lights, and accent wash lighting on facade. Includes transformer and photocell timer. Designed for curb appeal and safety.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Full LED Lighting Design",
+      description:
+        "Comprehensive outdoor LED lighting design with color-temperature tuning, step lights, pool lighting, and hardscape integration. Includes smart controls with scheduling, dimming, and color scenes. Illuminated address markers and driveway bollards.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Architectural Lighting Design",
+      description:
+        "Custom-designed architectural lighting scheme by a lighting designer. Features include fiber-optic starfield effects, underwater pool lighting choreography, and facade grazing with hidden fixtures. Integrated with home automation for theatrical scene programming.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- ELECTRICAL -----
+  electrical: [
+    {
+      finishLevel: "builder",
+      label: "Code Minimum Electrical",
+      description:
+        "Standard electrical service (200A panel) with code-minimum outlet and circuit layout. Basic toggle switches and white cover plates throughout. Includes standard smoke detectors and GFCI protection in wet areas.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1558002038-1055907df827?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Upgraded Electrical Package",
+      description:
+        "200A panel with dedicated circuits for kitchen, garage, and office. USB outlets in kitchen and bedrooms, decora-style switches throughout. Includes whole-home surge protector and pre-wired for EV charger in garage.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Smart Electrical System",
+      description:
+        "400A service with sub-panels for major zones. Smart switches and dimmers throughout with scene programming. Includes whole-home generator transfer switch, EV charger, and structured wiring for networking and A/V distribution.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Fully Automated Electrical",
+      description:
+        "Commercial-grade electrical system with redundant panels, battery backup (Tesla Powerwall or similar), and solar-ready inverter. Automated load management, occupancy-sensing outlets, and flush-mounted designer switches. Complete home automation wiring with dedicated equipment closet.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- HVAC -----
+  hvac: [
+    {
+      finishLevel: "builder",
+      label: "Central Air Conditioning",
+      description:
+        "Standard 14 SEER central air conditioning with single-zone thermostat. Gas or electric furnace/air handler with basic ductwork. Programmable thermostat with standard filter system. Meets current energy code requirements.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1558002038-1055907df827?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Zoned HVAC System",
+      description:
+        "16 SEER high-efficiency system with two-zone damper control for upstairs/downstairs comfort. Smart thermostat with Wi-Fi and learning capabilities. Includes UV air purifier and upgraded MERV-13 filtration for improved indoor air quality.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Variable Speed Heat Pump",
+      description:
+        "20+ SEER variable-speed heat pump with inverter-driven compressor for precise temperature control. Multi-zone with individual room thermostats. Includes whole-home dehumidifier, HEPA filtration, and fresh air ventilation with energy recovery.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Geothermal / VRF System",
+      description:
+        "Geothermal ground-source heat pump or variable refrigerant flow (VRF) system for ultimate efficiency (30+ EER). Individual room control with concealed ceiling cassettes or ducted units. Virtually silent operation with 50%+ energy savings. Includes radiant floor heating in bathrooms and master bedroom.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- INSULATION -----
+  insulation: [
+    {
+      finishLevel: "builder",
+      label: "Blown Fiberglass",
+      description:
+        "Blown-in fiberglass insulation in attic spaces and batt insulation in walls. Meets code-minimum R-values (R-30 attic, R-13 walls). Cost-effective thermal barrier with standard vapor retarder where required.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Batt + Radiant Barrier",
+      description:
+        "High-density fiberglass batt insulation (R-19 walls, R-38 attic) with radiant barrier roof decking. Significantly reduces attic heat gain in Florida summers. Includes proper air sealing at penetrations and rim joists.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Open-Cell Spray Foam",
+      description:
+        "Open-cell spray foam insulation throughout creating a complete air seal. R-3.7 per inch with excellent sound dampening. Creates a semi-conditioned attic space when applied to roof deck, protecting ductwork and reducing energy costs.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1590274853856-f22d5ee3d228?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Closed-Cell Spray Foam",
+      description:
+        "Closed-cell spray foam insulation (R-6.5 per inch) providing both air and vapor barrier in a single application. Adds structural rigidity to wall assemblies and qualifies for hurricane insurance discounts. Combined with continuous exterior insulation for a thermal-bridge-free building envelope.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- DRYWALL -----
+  drywall: [
+    {
+      finishLevel: "builder",
+      label: "Standard Knockdown Texture",
+      description:
+        "1/2-inch regular drywall with standard knockdown texture finish. Level 3 finish on walls with basic taping, mudding, and sanding. Clean and consistent texture that hides minor imperfections.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Smooth Finish Drywall",
+      description:
+        "1/2-inch drywall with Level 4 smooth finish throughout. No texture — clean modern walls that look great with any paint finish. Includes moisture-resistant greenboard in wet areas and fire-rated Type X where required.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Level 5 Premium Finish",
+      description:
+        "Level 5 drywall finish with skim coat over entire surface for perfectly flat walls. Required for glossy paint finishes and critical lighting conditions. Includes sound-dampening QuietRock in bedroom and media room walls.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Venetian Plaster Walls",
+      description:
+        "Hand-applied Venetian plaster or specialty wall finishes throughout main living areas. Multi-layer technique creates depth, movement, and a luminous quality unique to each wall. Includes moisture-resistant plaster systems in wet areas and sound-isolated wall assemblies in bedrooms.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- SWIMMING POOL -----
+  pool: [
+    {
+      finishLevel: "builder",
+      label: "Fiberglass Pool",
+      description:
+        "Pre-formed fiberglass pool shell in standard shapes and sizes (12x24 to 16x32). Quick installation with smooth gel-coat finish. Includes basic pool pump, filter, and single-speed equipment. Standard safety fence and basic concrete deck.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Vinyl Liner Pool",
+      description:
+        "Custom-shaped vinyl liner pool with pattern selection and upgraded equipment. Variable-speed pump with cartridge filter for energy savings. Includes paver or stamped concrete deck, LED pool light, and automatic chlorinator.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Concrete Gunite Pool",
+      description:
+        "Custom-designed gunite/shotcrete pool with pebble or quartz aggregate finish. Includes spa/hot tub, water features (sheer descent or scuppers), and color-changing LED lighting. Salt chlorine generator with automation system for remote control.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Infinity Edge Resort Pool",
+      description:
+        "Architect-designed infinity edge or perimeter overflow pool with vanishing edge, built-in grotto, and swim-up bar. Glass tile finish with fire and water features. Full automation with app control, in-floor cleaning, and heated spa with spillover. Includes cabana and outdoor shower.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- OUTDOOR KITCHEN EQUIPMENT -----
+  outdoor_kitchen_equip: [
+    {
+      finishLevel: "builder",
+      label: "Built-In Grill Station",
+      description:
+        "Stainless steel built-in gas grill (36-inch) on a simple masonry or stucco island. Includes side burner and basic storage cabinet. Granite or concrete countertop with standard electrical outlet.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Outdoor Island with Sink",
+      description:
+        "L-shaped outdoor kitchen island with built-in grill, sink with hot/cold water, and under-counter refrigerator. Tile or stone facade with granite countertops. Includes task lighting and overhead ventilation hood.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Full Outdoor Kitchen",
+      description:
+        "Complete outdoor kitchen with 42-inch professional grill, smoker, pizza oven, sink, dishwasher, and beverage center. Custom cabinetry with marine-grade stainless steel. Includes bar seating, TV mount, and ceiling fan.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Resort-Style Outdoor Kitchen",
+      description:
+        "Magazine-worthy outdoor kitchen pavilion with Kalamazoo or Lynx professional-grade appliances. Includes teppanyaki grill, wood-fired pizza oven, rotisserie, wine cooler, and ice maker. Full outdoor dining room with custom lighting and sound system under a timber or aluminum pergola.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=300&fit=crop",
+    },
+  ],
 };
 
 // -------------------------------------------
@@ -1050,9 +1612,13 @@ export function getAllCategories(): string[] {
  * Expands rooms with defaultCount > 1 into individual entries.
  * Example: guest_bedroom with defaultCount=3 becomes
  * "Guest Bedroom 1", "Guest Bedroom 2", "Guest Bedroom 3".
+ *
+ * Upgrade rooms are excluded by default. Pass their IDs in
+ * upgradeRoomIds to include them.
  */
 export function buildDefaultRoomList(
-  overrides?: Partial<Record<string, number>>
+  overrides?: Partial<Record<string, number>>,
+  upgradeRoomIds?: string[]
 ): Array<{ roomId: string; displayName: string; templateId: string }> {
   const rooms: Array<{
     roomId: string;
@@ -1061,6 +1627,9 @@ export function buildDefaultRoomList(
   }> = [];
 
   for (const template of ROOM_TEMPLATES) {
+    // Skip upgrade rooms unless explicitly included
+    if (template.isUpgrade && !upgradeRoomIds?.includes(template.id)) continue;
+
     const count = overrides?.[template.id] ?? template.defaultCount;
     if (count <= 0) continue;
 
@@ -1082,4 +1651,11 @@ export function buildDefaultRoomList(
   }
 
   return rooms;
+}
+
+/**
+ * Get all upgrade room templates (rooms that can be toggled on/off).
+ */
+export function getUpgradeRoomTemplates(): RoomTemplate[] {
+  return ROOM_TEMPLATES.filter((t) => t.isUpgrade);
 }
