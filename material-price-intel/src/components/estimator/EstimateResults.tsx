@@ -25,6 +25,7 @@ import { SELECTION_OPTIONS } from "@/lib/roomEstimatorData";
 import type { SelectionOption } from "@/lib/roomEstimatorData";
 import type { RoomBreakdown } from "@/lib/estimateCalculator";
 import type { EstimateBreakdownItem } from "@/lib/types";
+import { FinancingCalculator } from "@/components/estimator/FinancingCalculator";
 
 type Props = {
   low: number;
@@ -108,6 +109,7 @@ export function EstimateResults({
 
   const totalLow = low + taxLow + permitLow + deliveryLow + insuranceLow + overheadLow;
   const totalHigh = high + taxHigh + permitHigh + deliveryHigh + insuranceHigh + overheadHigh;
+  const outTheDoorMidpoint = Math.round((totalLow + totalHigh) / 2);
 
   // Track which rooms are expanded
   const [expandedRooms, setExpandedRooms] = useState<Set<string>>(() => {
@@ -707,6 +709,9 @@ export function EstimateResults({
       </div>
       </>
       )}
+
+      {/* ========== Financing Calculator (always visible) ========== */}
+      <FinancingCalculator outTheDoorMidpoint={outTheDoorMidpoint} />
     </div>
   );
 }

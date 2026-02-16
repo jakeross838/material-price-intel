@@ -17,6 +17,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { formatDistanceToNow } from "date-fns";
 import { useFloorPlanExtraction } from "@/hooks/useFloorPlanExtraction";
 import type { FloorPlanExtractionResult } from "@/lib/floorPlanTypes";
 
@@ -24,6 +25,8 @@ import type { FloorPlanExtractionResult } from "@/lib/floorPlanTypes";
 type Props = {
   onStartFromScratch: () => void;
   onFloorPlanExtracted: (result: FloorPlanExtractionResult) => void;
+  draft?: { savedAt: number; step: number } | null;
+  onResume?: () => void;
 };
 
 type UploadState = "choice" | "upload" | "analyzing" | "success" | "error";
@@ -44,6 +47,8 @@ async function readFileAsBase64(
 export function GettingStartedStep({
   onStartFromScratch,
   onFloorPlanExtracted,
+  draft,
+  onResume,
 }: Props) {
   const [state, setState] = useState<UploadState>("choice");
   const [files, setFiles] = useState<File[]>([]);
@@ -156,6 +161,28 @@ export function GettingStartedStep({
             scratch.
           </p>
         </div>
+
+        {/* Resume banner */}
+        {draft && onResume && (
+          <button
+            type="button"
+            onClick={onResume}
+            className="w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-brand-400 bg-brand-50 hover:bg-brand-100 hover:border-brand-500 transition-all duration-200 text-left"
+          >
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-brand-200 shrink-0">
+              <RotateCcw className="h-6 w-6 text-brand-700" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-base font-bold text-brand-900">
+                Resume Your Estimate
+              </h3>
+              <p className="text-xs text-brand-600/70 mt-0.5">
+                Pick up where you left off ({formatDistanceToNow(draft.savedAt, { addSuffix: true })})
+              </p>
+            </div>
+            <ArrowRight className="h-5 w-5 text-brand-500 shrink-0" />
+          </button>
+        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Upload Plans Card */}

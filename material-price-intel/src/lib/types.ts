@@ -415,6 +415,20 @@ export type EstimateBreakdownItem = {
   finishLevel?: string;
 };
 
+/** Room entry as tracked by the estimator wizard's room selection step. */
+export type SelectedRoom = {
+  roomId: string;
+  displayName: string;
+  count: number;
+};
+
+/** Per-room, per-category finish choice as tracked by the design step. */
+export type RoomCategorySelection = {
+  roomId: string;
+  category: string;
+  finishLevel: FinishLevel;
+};
+
 export type Database = {
   public: {
     Tables: {

@@ -19,12 +19,7 @@ import {
   Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-type SelectedRoom = {
-  roomId: string;
-  displayName: string;
-  count: number;
-};
+import type { SelectedRoom } from "@/lib/types";
 
 type Props = {
   selectedRooms: SelectedRoom[];

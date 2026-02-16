@@ -1,26 +1,14 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
-import { Check, ArrowRight, ArrowLeft, ChevronRight } from "lucide-react";
+import { Check, ArrowRight, ArrowLeft, ChevronRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ROOM_TEMPLATES, SELECTION_OPTIONS } from "@/lib/roomEstimatorData";
-import type { FinishLevel, EstimatorConfig } from "@/lib/types";
+import type { FinishLevel, EstimatorConfig, SelectedRoom, RoomCategorySelection } from "@/lib/types";
 import type { SelectionOption } from "@/lib/roomEstimatorData";
 
 // -------------------------------------------
 // Types
 // -------------------------------------------
-
-type SelectedRoom = {
-  roomId: string;
-  displayName: string;
-  count: number;
-};
-
-type RoomCategorySelection = {
-  roomId: string;
-  category: string;
-  finishLevel: FinishLevel;
-};
 
 type Props = {
   rooms: SelectedRoom[];
@@ -581,6 +569,21 @@ export function RoomDesignStep({
     activeCategoryIndex === roomCategories.length - 1 &&
     activeRoomIndex === rooms.length - 1;
 
+  // Quick Fill — batch-fill all rooms with a single finish level
+  const handleQuickFill = useCallback(
+    (level: FinishLevel) => {
+      const batch: RoomCategorySelection[] = [];
+      for (const room of rooms) {
+        const categories = getCategoriesForRoom(room);
+        for (const category of categories) {
+          batch.push({ roomId: room.roomId, category, finishLevel: level });
+        }
+      }
+      onSelectionsChange(batch);
+    },
+    [rooms, onSelectionsChange]
+  );
+
   if (!activeRoom || !activeCategory) return null;
 
   return (
@@ -592,6 +595,35 @@ export function RoomDesignStep({
         completedRooms={completedRooms}
         onRoomClick={handleRoomClick}
       />
+
+      {/* Quick Fill bar */}
+      <div className="mb-6 p-4 bg-gradient-to-r from-brand-50 to-white rounded-xl border border-brand-200/50">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <div className="flex items-center gap-2 text-sm font-semibold text-brand-800 shrink-0">
+            <Sparkles className="h-4 w-4 text-brand-500" />
+            Quick Fill:
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {FINISH_LEVELS.map((level) => {
+              const badge = FINISH_LEVEL_BADGES[level];
+              return (
+                <Button
+                  key={level}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleQuickFill(level)}
+                  className={cn("text-xs font-semibold", badge.color)}
+                >
+                  {badge.label}
+                </Button>
+              );
+            })}
+          </div>
+          <span className="text-[11px] text-brand-400 sm:ml-auto">
+            You can customize individual rooms after
+          </span>
+        </div>
+      </div>
 
       <div className="flex gap-8">
         {/* Desktop sidebar */}

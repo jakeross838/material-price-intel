@@ -9,29 +9,12 @@ import { RoomDesignStep } from "@/components/estimator/steps/RoomDesignStep";
 import { EstimateResults } from "@/components/estimator/EstimateResults";
 import { LeadCaptureForm } from "@/components/estimator/LeadCaptureForm";
 import { useAllEstimatorConfig } from "@/hooks/useEstimator";
+import { useEstimateDraft } from "@/hooks/useEstimateDraft";
 import { calculateRoomEstimate } from "@/lib/estimateCalculator";
 import type { RoomSelections, RoomEstimateResult } from "@/lib/estimateCalculator";
-import type { FinishLevel, EstimateParams } from "@/lib/types";
+import type { FinishLevel, EstimateParams, SelectedRoom, RoomCategorySelection } from "@/lib/types";
 import type { FloorPlanExtractionResult } from "@/lib/floorPlanTypes";
 import { ROOM_TEMPLATES } from "@/lib/roomEstimatorData";
-
-// -------------------------------------------
-// Local types for room selection / design state
-// -------------------------------------------
-
-/** Room entry as tracked by RoomSelectionStep (grouped, with count). */
-type SelectedRoom = {
-  roomId: string;
-  displayName: string;
-  count: number;
-};
-
-/** Per-room, per-category finish choice as tracked by RoomDesignStep. */
-type RoomCategorySelection = {
-  roomId: string;
-  category: string;
-  finishLevel: FinishLevel;
-};
 
 // -------------------------------------------
 // Mapping from selection step room IDs to
@@ -312,12 +295,21 @@ export function EstimatePage() {
   // Fetch ALL estimator config (all finish levels)
   const { data: allConfig, isLoading: configLoading } = useAllEstimatorConfig();
 
+  // Save & Resume
+  const { draft, saveDraft, clearDraft } = useEstimateDraft();
+
   useEffect(() => {
     document.title = "Dream Home Designer | Ross Built Custom Homes";
     return () => {
       document.title = "Material Price Intel";
     };
   }, []);
+
+  // Auto-save wizard progress to localStorage
+  useEffect(() => {
+    if (step < 1) return;
+    saveDraft({ step, sqft, stories, style, bedrooms, bathrooms, selectedRooms, selections });
+  }, [step, sqft, stories, style, bedrooms, bathrooms, selectedRooms, selections, saveDraft]);
 
   // Generic field updater for HomeBasicsStep
   function updateBasics(field: string, value: string | number) {
@@ -346,6 +338,20 @@ export function EstimatePage() {
     setStep(1);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
+
+  // Resume from saved draft
+  const handleResume = useCallback(() => {
+    if (!draft) return;
+    setSqft(draft.sqft);
+    setStories(draft.stories);
+    setStyle(draft.style);
+    setBedrooms(draft.bedrooms);
+    setBathrooms(draft.bathrooms);
+    setSelectedRooms(draft.selectedRooms);
+    setSelections(draft.selections);
+    setStep(draft.step);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [draft]);
 
   // GettingStartedStep: AI extraction completed
   function handleFloorPlanExtracted(result: FloorPlanExtractionResult) {
@@ -403,6 +409,7 @@ export function EstimatePage() {
     setEstimate(result);
     setShowResults(true);
     setStep(4);
+    clearDraft();
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -449,6 +456,7 @@ export function EstimatePage() {
                 setStep(0);
                 setSelections([]);
                 setSelectedRooms([]);
+                clearDraft();
               }}
               className="text-sm text-slate-400 hover:text-slate-600 underline"
             >
@@ -481,6 +489,8 @@ export function EstimatePage() {
           <GettingStartedStep
             onStartFromScratch={handleStartFromScratch}
             onFloorPlanExtracted={handleFloorPlanExtracted}
+            draft={draft}
+            onResume={handleResume}
           />
         )}
         {step === 1 && (
