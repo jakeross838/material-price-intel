@@ -67,7 +67,7 @@ const TAX_RATE = 0.07; // 7% FL sales tax on materials
 const PERMIT_RATE = 0.015; // ~1.5% for building permits
 const DELIVERY_RATE = 0.02; // ~2% delivery & logistics
 const INSURANCE_RATE = 0.025; // ~2.5% builder's risk insurance
-const OVERHEAD_RATE = 0.08; // ~8% general contractor overhead
+const OVERHEAD_RATE = 0.20; // ~20% builder overhead & profit
 
 /**
  * Look up the matching SelectionOption for a breakdown item.
@@ -370,7 +370,7 @@ export function EstimateResults({
                 <td className="py-2.5 text-right text-brand-500 tabular-nums">{fmt(insuranceHigh)}</td>
               </tr>
               <tr className="border-b border-brand-100">
-                <td className="py-2.5 text-brand-600 pl-4">GC Overhead (~8%)</td>
+                <td className="py-2.5 text-brand-600 pl-4">Builder Overhead & Profit (20%)</td>
                 <td className="py-2.5 text-right text-brand-500 tabular-nums">{fmt(overheadLow)}</td>
                 <td className="py-2.5 text-right text-brand-500 tabular-nums">{fmt(overheadHigh)}</td>
               </tr>

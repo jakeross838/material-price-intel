@@ -58,6 +58,20 @@ const CATEGORY_DISPLAY_NAMES: Record<string, string> = {
   front_door: "Entry Door",
   ceiling: "Ceiling Treatment",
   smart_home: "Smart Home Technology",
+  toilets: "Toilets",
+  baseboard: "Baseboards",
+  structural_framing: "Structural Framing",
+  foundation: "Foundation",
+  exterior_paint: "Exterior Paint",
+  shower_enclosure: "Shower Enclosure",
+  vanity: "Vanities",
+  outdoor_lighting: "Outdoor Lighting",
+  electrical: "Electrical",
+  hvac: "HVAC Systems",
+  insulation: "Insulation",
+  drywall: "Drywall & Finish",
+  pool: "Swimming Pool",
+  outdoor_kitchen_equip: "Outdoor Kitchen",
 };
 
 // -------------------------------------------

@@ -152,16 +152,54 @@ export function calculateRoomEstimate(
 
 export const LOCATION_MULTIPLIERS: Record<string, { label: string; multiplier: number }> = {
   bradenton: { label: "Bradenton", multiplier: 1.0 },
-  sarasota: { label: "Sarasota", multiplier: 1.08 },
-  lakewood_ranch: { label: "Lakewood Ranch", multiplier: 1.12 },
-  siesta_key: { label: "Siesta Key", multiplier: 1.18 },
-  longboat_key: { label: "Longboat Key", multiplier: 1.22 },
+  sarasota: { label: "Sarasota", multiplier: 1.02 },
+  lakewood_ranch: { label: "Lakewood Ranch", multiplier: 1.03 },
+  siesta_key: { label: "Siesta Key", multiplier: 1.04 },
+  longboat_key: { label: "Longboat Key", multiplier: 1.05 },
 };
 
 // -------------------------------------------
-// Special feature fixed costs
+// Designer estimate calculator (room-by-room + location)
 // -------------------------------------------
 
+/**
+ * Calculate a home estimate from full room-by-room selections.
+ * Applies location multiplier to all amounts.
+ */
+export function calculateDesignerEstimate(
+  rooms: RoomSelections[],
+  allConfig: EstimatorConfig[],
+  location: string
+): RoomEstimateResult {
+  const result = calculateRoomEstimate(rooms, allConfig);
+
+  // Apply location multiplier
+  const mult = LOCATION_MULTIPLIERS[location]?.multiplier ?? 1.0;
+  if (mult !== 1.0) {
+    for (const rb of result.roomBreakdowns) {
+      rb.roomLow = Math.round(rb.roomLow * mult);
+      rb.roomHigh = Math.round(rb.roomHigh * mult);
+      for (const item of rb.items) {
+        item.low = Math.round(item.low * mult);
+        item.high = Math.round(item.high * mult);
+      }
+    }
+    for (const item of result.breakdown) {
+      item.low = Math.round(item.low * mult);
+      item.high = Math.round(item.high * mult);
+    }
+    result.low = Math.round(result.low * mult);
+    result.high = Math.round(result.high * mult);
+  }
+
+  return result;
+}
+
+// -------------------------------------------
+// Special feature fixed costs (LEGACY — kept for simplified calculator)
+// -------------------------------------------
+
+/** @deprecated Use upgrade rooms instead of special features. */
 export type SpecialFeatureDef = {
   id: string;
   label: string;
@@ -169,6 +207,7 @@ export type SpecialFeatureDef = {
   high: number;
 };
 
+/** @deprecated Use upgrade rooms instead of special features. */
 export const SPECIAL_FEATURES: SpecialFeatureDef[] = [
   { id: "pool", label: "Swimming Pool", low: 35000, high: 80000 },
   { id: "outdoor_kitchen", label: "Outdoor Kitchen", low: 15000, high: 40000 },
@@ -179,9 +218,10 @@ export const SPECIAL_FEATURES: SpecialFeatureDef[] = [
 ];
 
 // -------------------------------------------
-// Simplified calculator (NEW — single finish level)
+// Simplified calculator (LEGACY — single finish level)
 // -------------------------------------------
 
+/** @deprecated Use calculateDesignerEstimate for the new room-by-room flow. */
 export type SimplifiedEstimateInput = {
   sqft: number;
   stories: number;
