@@ -1,5 +1,5 @@
 import { Outlet, NavLink } from "react-router";
-import { LayoutDashboard, Upload, FileText, Layers, Search, BarChart3, FolderKanban, LogOut, Palette, Calculator } from "lucide-react";
+import { LayoutDashboard, Upload, FileText, Layers, Search, BarChart3, FolderKanban, LogOut, Palette, Calculator, Users } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 
@@ -16,6 +16,7 @@ const navItems = [
 const adminItems = [
   { to: "/admin/catalog", label: "Catalog", icon: Palette },
   { to: "/admin/estimator", label: "Estimator", icon: Calculator },
+  { to: "/admin/leads", label: "Leads", icon: Users },
 ];
 
 export function AppLayout() {

@@ -11,6 +11,8 @@ import {
   FileText,
   Info,
   Lock,
+  Loader2,
+  Image as ImageIcon,
 } from "lucide-react";
 import {
   BarChart,
@@ -24,8 +26,9 @@ import {
 import { SELECTION_OPTIONS } from "@/lib/roomEstimatorData";
 import type { SelectionOption } from "@/lib/roomEstimatorData";
 import type { RoomBreakdown } from "@/lib/estimateCalculator";
-import type { EstimateBreakdownItem } from "@/lib/types";
+import type { EstimateBreakdownItem, FinishLevel } from "@/lib/types";
 import { FinancingCalculator } from "@/components/estimator/FinancingCalculator";
+import { useAiRender } from "@/hooks/useAiRender";
 
 type Props = {
   low: number;
@@ -34,6 +37,8 @@ type Props = {
   roomBreakdowns: RoomBreakdown[];
   breakdown: EstimateBreakdownItem[]; // flat list for chart
   gated?: boolean; // when true, only show hero — blur the rest
+  finishLevel?: FinishLevel;
+  style?: string;
 };
 
 function fmt(val: number) {
@@ -82,6 +87,16 @@ function findSelectionOption(
   return options.find((opt) => opt.label === displayName);
 }
 
+// -------------------------------------------
+// AI Render room definitions
+// -------------------------------------------
+
+const AI_RENDER_ROOMS = [
+  { roomName: "Kitchen", category: "cabinets", selectionName: "Cabinets" },
+  { roomName: "Great Room", category: "flooring", selectionName: "Flooring" },
+  { roomName: "Master Bath", category: "fixtures", selectionName: "Bath Fixtures" },
+];
+
 export function EstimateResults({
   low,
   high,
@@ -89,9 +104,13 @@ export function EstimateResults({
   roomBreakdowns,
   breakdown,
   gated = false,
+  finishLevel,
+  style,
 }: Props) {
   const printRef = useRef<HTMLDivElement>(null);
   const midpoint = Math.round((low + high) / 2);
+  const aiRender = useAiRender();
+  const [renders, setRenders] = useState<Record<string, { url: string; loading: boolean; error?: string }>>({});
   const perSqftLow = Math.round(low / sqft);
   const perSqftHigh = Math.round(high / sqft);
 
@@ -685,26 +704,104 @@ export function EstimateResults({
         </table>
       </div>
 
-      {/* ========== Section 7: AI Visualization (Placeholder) ========== */}
+      {/* ========== Section 7: AI Room Visualization ========== */}
       <div className="no-print bg-gradient-to-br from-brand-50 via-white to-brand-50/60 rounded-2xl border border-brand-200/50 overflow-hidden shadow-sm">
-        <div className="px-6 py-8 text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-brand-100 mb-4">
-            <Sparkles className="h-6 w-6 text-brand-600" />
+        <div className="px-5 py-4 bg-gradient-to-r from-brand-50 to-white border-b border-brand-100">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-brand-600" />
+            <p className="text-sm font-semibold text-brand-800">
+              AI Home Visualization
+            </p>
+            <span className="text-[10px] text-brand-400 ml-auto">
+              ~$0.04 per render
+            </span>
           </div>
-          <h3 className="text-lg font-bold text-brand-900 mb-2">
-            AI Home Visualization
-          </h3>
-          <p className="text-sm text-brand-600 max-w-md mx-auto mb-4">
-            See what your dream home could look like based on your selections.
-            Our AI will generate custom renderings of your rooms with your chosen finishes.
+        </div>
+        <div className="p-4 sm:p-5">
+          <p className="text-xs text-brand-600/70 mb-4">
+            Generate AI-powered renderings of your rooms with your chosen finishes.
           </p>
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-800 text-white text-sm font-medium opacity-60 cursor-not-allowed">
-            <Sparkles className="h-4 w-4" />
-            Generate Room Renders
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {AI_RENDER_ROOMS.map((room) => {
+              const key = room.roomName;
+              const state = renders[key];
+              const option = finishLevel
+                ? SELECTION_OPTIONS[room.category]?.find((o) => o.finishLevel === finishLevel)
+                : undefined;
+              const materialName = option?.label ?? room.selectionName;
+
+              return (
+                <div
+                  key={key}
+                  className="rounded-xl border border-brand-200/60 overflow-hidden bg-white shadow-sm"
+                >
+                  {/* Image area */}
+                  <div className="aspect-square bg-brand-100 relative flex items-center justify-center">
+                    {state?.url ? (
+                      <img
+                        src={state.url}
+                        alt={`AI render of ${room.roomName}`}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : state?.loading ? (
+                      <div className="text-center">
+                        <Loader2 className="h-8 w-8 text-brand-400 animate-spin mx-auto mb-2" />
+                        <p className="text-xs text-brand-500">Generating...</p>
+                      </div>
+                    ) : (
+                      <ImageIcon className="h-10 w-10 text-brand-300" />
+                    )}
+                    {state?.error && (
+                      <div className="absolute inset-0 bg-red-50/90 flex items-center justify-center p-3">
+                        <p className="text-xs text-red-600 text-center">{state.error}</p>
+                      </div>
+                    )}
+                  </div>
+                  {/* Info + button */}
+                  <div className="p-3">
+                    <p className="text-sm font-semibold text-brand-900">{room.roomName}</p>
+                    <p className="text-[11px] text-brand-500 mt-0.5">{materialName}</p>
+                    {!state?.url && (
+                      <button
+                        onClick={async () => {
+                          setRenders((prev) => ({
+                            ...prev,
+                            [key]: { url: "", loading: true },
+                          }));
+                          try {
+                            const result = await aiRender.mutateAsync({
+                              selection_name: room.selectionName,
+                              material_name: materialName,
+                              room_name: room.roomName,
+                              style_notes: style ? `${style} style home` : undefined,
+                            });
+                            setRenders((prev) => ({
+                              ...prev,
+                              [key]: { url: result.image_url, loading: false },
+                            }));
+                          } catch (err) {
+                            setRenders((prev) => ({
+                              ...prev,
+                              [key]: {
+                                url: "",
+                                loading: false,
+                                error: err instanceof Error ? err.message : "Failed to generate",
+                              },
+                            }));
+                          }
+                        }}
+                        disabled={state?.loading}
+                        className="mt-2 w-full inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-700 hover:bg-brand-600 text-white text-xs font-medium transition-colors disabled:opacity-50"
+                      >
+                        <Sparkles className="h-3 w-3" />
+                        Generate Render
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
-          <p className="text-xs text-brand-400 mt-3">
-            Coming soon &mdash; AI rendering will be available after you save your estimate
-          </p>
         </div>
       </div>
       </>

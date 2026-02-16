@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import type { SelectedRoom, RoomCategorySelection } from "@/lib/types";
+import type { FinishLevel } from "@/lib/types";
 
 const STORAGE_KEY = "rossbuilt-estimate-draft";
 
@@ -10,8 +10,9 @@ export type EstimateDraft = {
   style: string;
   bedrooms: number;
   bathrooms: number;
-  selectedRooms: SelectedRoom[];
-  selections: RoomCategorySelection[];
+  location: string;
+  finishLevel: FinishLevel;
+  specialFeatures: string[];
   savedAt: number;
 };
 

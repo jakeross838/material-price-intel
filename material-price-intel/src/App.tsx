@@ -18,6 +18,7 @@ import { AdminEstimatorPage } from "./pages/AdminEstimatorPage";
 import { CatalogPage } from "./pages/CatalogPage";
 import { CatalogDetailPage } from "./pages/CatalogDetailPage";
 import { AdminCatalogPage } from "./pages/AdminCatalogPage";
+import { AdminLeadsPage } from "./pages/AdminLeadsPage";
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
             element={<AdminEstimatorPage />}
           />
           <Route path="/admin/catalog" element={<AdminCatalogPage />} />
+          <Route path="/admin/leads" element={<AdminLeadsPage />} />
         </Route>
       </Route>
       <Route path="*" element={<NotFoundPage />} />

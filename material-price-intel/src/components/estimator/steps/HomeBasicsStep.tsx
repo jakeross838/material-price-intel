@@ -1,7 +1,8 @@
-import { Home, ArrowRight, Minus, Plus, Sparkles } from "lucide-react";
+import { Home, ArrowRight, Minus, Plus, Sparkles, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LOCATION_MULTIPLIERS } from "@/lib/estimateCalculator";
 
 const STYLES = [
   "Ranch",
@@ -10,7 +11,19 @@ const STYLES = [
   "Contemporary",
   "Craftsman",
   "Coastal",
+  "Farmhouse",
+  "Mid-Century Modern",
+  "Tudor",
+  "Cape Cod",
+  "Spanish Revival",
+  "Key West",
 ];
+
+const LOCATIONS = Object.entries(LOCATION_MULTIPLIERS).map(([id, info]) => ({
+  id,
+  label: info.label,
+  tag: info.multiplier === 1.0 ? "Baseline" : `+${Math.round((info.multiplier - 1) * 100)}%`,
+}));
 
 type Props = {
   sqft: number;
@@ -18,6 +31,7 @@ type Props = {
   style: string;
   bedrooms: number;
   bathrooms: number;
+  location: string;
   onChange: (field: string, value: number | string) => void;
   onNext: () => void;
   aiExtracted?: boolean;
@@ -29,6 +43,7 @@ export function HomeBasicsStep({
   style,
   bedrooms,
   bathrooms,
+  location,
   onChange,
   onNext,
   aiExtracted,
@@ -196,12 +211,42 @@ export function HomeBasicsStep({
         </div>
       </div>
 
+      {/* Location */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <MapPin className="h-4 w-4 text-brand-600" />
+          <Label className="text-sm font-semibold text-brand-800">Build Location</Label>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+          {LOCATIONS.map((loc) => (
+            <button
+              key={loc.id}
+              onClick={() => onChange("location", loc.id)}
+              className={`py-3 px-2 rounded-xl border-2 text-sm font-semibold transition-all duration-200 ${
+                location === loc.id
+                  ? "border-brand-600 bg-brand-600 text-white shadow-md"
+                  : "border-slate-200 text-slate-600 hover:border-brand-300 hover:shadow-sm bg-white"
+              }`}
+            >
+              {loc.label}
+              <span
+                className={`block text-[10px] font-normal mt-0.5 ${
+                  location === loc.id ? "text-brand-200" : "text-slate-400"
+                }`}
+              >
+                {loc.tag}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       <Button
         onClick={onNext}
         disabled={!isValid}
         className="w-full h-13 text-base font-semibold bg-brand-700 hover:bg-brand-600 shadow-lg hover:shadow-xl transition-all"
       >
-        Next: Select Your Rooms
+        Next: Customize
         <ArrowRight className="h-4 w-4 ml-2" />
       </Button>
     </div>
