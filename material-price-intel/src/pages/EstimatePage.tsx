@@ -339,6 +339,7 @@ export function EstimatePage() {
             low={estimate.low}
             high={estimate.high}
             sqft={sqft}
+            roomBreakdowns={estimate.roomBreakdowns}
             breakdown={estimate.breakdown}
           />
           <LeadCaptureForm

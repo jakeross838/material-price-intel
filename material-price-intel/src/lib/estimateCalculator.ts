@@ -98,6 +98,7 @@ export function calculateRoomEstimate(
       items.push({
         category: selection.category,
         display_name: cfg.display_name,
+        finishLevel: selection.finishLevel,
         low,
         high,
       });

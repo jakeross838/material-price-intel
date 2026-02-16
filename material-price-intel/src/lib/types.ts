@@ -412,6 +412,7 @@ export type EstimateBreakdownItem = {
   display_name: string;
   low: number;
   high: number;
+  finishLevel?: string;
 };
 
 export type Database = {
