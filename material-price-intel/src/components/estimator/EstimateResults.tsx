@@ -10,6 +10,7 @@ import {
   Sparkles,
   FileText,
   Info,
+  Lock,
 } from "lucide-react";
 import {
   BarChart,
@@ -31,6 +32,7 @@ type Props = {
   sqft: number;
   roomBreakdowns: RoomBreakdown[];
   breakdown: EstimateBreakdownItem[]; // flat list for chart
+  gated?: boolean; // when true, only show hero — blur the rest
 };
 
 function fmt(val: number) {
@@ -85,6 +87,7 @@ export function EstimateResults({
   sqft,
   roomBreakdowns,
   breakdown,
+  gated = false,
 }: Props) {
   const printRef = useRef<HTMLDivElement>(null);
   const midpoint = Math.round((low + high) / 2);
@@ -204,16 +207,18 @@ export function EstimateResults({
         }
       `}</style>
 
-      {/* ========== Action Bar ========== */}
-      <div className="flex items-center justify-end gap-3 no-print">
-        <button
-          onClick={handlePrint}
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-brand-700 bg-white border border-brand-200 rounded-lg hover:bg-brand-50 transition-colors shadow-sm"
-        >
-          <Printer className="h-4 w-4" />
-          Print / Save PDF
-        </button>
-      </div>
+      {/* ========== Action Bar (hidden when gated) ========== */}
+      {!gated && (
+        <div className="flex items-center justify-end gap-3 no-print">
+          <button
+            onClick={handlePrint}
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-brand-700 bg-white border border-brand-200 rounded-lg hover:bg-brand-50 transition-colors shadow-sm"
+          >
+            <Printer className="h-4 w-4" />
+            Print / Save PDF
+          </button>
+        </div>
+      )}
 
       {/* ========== Section 1: Hero Estimate ========== */}
       <div className="print-area relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-800 via-brand-900 to-brand-950 text-white px-6 py-10 sm:py-12 shadow-xl">
@@ -242,6 +247,63 @@ export function EstimateResults({
         </div>
       </div>
 
+      {/* ========== Gated sections (2-7) ========== */}
+      {gated ? (
+        <div className="relative">
+          {/* Blurred preview of out-the-door pricing */}
+          <div className="max-h-[280px] overflow-hidden pointer-events-none select-none" aria-hidden="true">
+            <div className="blur-[6px] opacity-40">
+              <div className="bg-white rounded-2xl border border-brand-200/50 overflow-hidden shadow-sm">
+                <div className="px-5 py-4 bg-gradient-to-r from-brand-50 to-white border-b border-brand-100">
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="h-4 w-4 text-brand-600" />
+                    <p className="text-sm font-semibold text-brand-800">Out-the-Door Pricing</p>
+                  </div>
+                </div>
+                <div className="p-5">
+                  <table className="w-full text-sm">
+                    <tbody>
+                      <tr className="border-b border-brand-100">
+                        <td className="py-3 font-medium text-brand-800">Material &amp; Labor (Base)</td>
+                        <td className="py-3 text-right text-brand-700 tabular-nums">{fmt(low)}</td>
+                        <td className="py-3 text-right text-brand-700 tabular-nums">{fmt(high)}</td>
+                      </tr>
+                      <tr className="border-b border-brand-50">
+                        <td className="py-2.5 text-brand-600 pl-4">FL Sales Tax (7%)</td>
+                        <td className="py-2.5 text-right text-brand-500 tabular-nums">{fmt(taxLow)}</td>
+                        <td className="py-2.5 text-right text-brand-500 tabular-nums">{fmt(taxHigh)}</td>
+                      </tr>
+                      <tr className="border-b border-brand-50">
+                        <td className="py-2.5 text-brand-600 pl-4">Building Permits (~1.5%)</td>
+                        <td className="py-2.5 text-right text-brand-500 tabular-nums">{fmt(permitLow)}</td>
+                        <td className="py-2.5 text-right text-brand-500 tabular-nums">{fmt(permitHigh)}</td>
+                      </tr>
+                      <tr className="border-b border-brand-50">
+                        <td className="py-2.5 text-brand-600 pl-4">Delivery &amp; Logistics (~2%)</td>
+                        <td className="py-2.5 text-right text-brand-500 tabular-nums">{fmt(deliveryLow)}</td>
+                        <td className="py-2.5 text-right text-brand-500 tabular-nums">{fmt(deliveryHigh)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* Gradient fade overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/80 to-white pointer-events-none" />
+          {/* CTA */}
+          <div className="relative -mt-6 text-center py-6">
+            <div className="inline-flex items-center gap-2 text-brand-700 bg-brand-50 border border-brand-200 rounded-full px-5 py-2.5 text-sm font-semibold shadow-sm">
+              <Lock className="h-4 w-4" />
+              Enter your info below to unlock the full breakdown
+            </div>
+            <p className="text-xs text-brand-400 mt-2 max-w-sm mx-auto">
+              Room-by-room costs, material selections gallery, charts, line-by-line detail &mdash; plus we'll email you a copy.
+            </p>
+          </div>
+        </div>
+      ) : (
+      <>
       {/* ========== Section 2: Out-the-Door Pricing ========== */}
       <div className="print-area bg-white rounded-2xl border border-brand-200/50 overflow-hidden shadow-sm">
         <div className="px-5 py-4 bg-gradient-to-r from-brand-50 to-white border-b border-brand-100">
@@ -643,6 +705,8 @@ export function EstimateResults({
           </p>
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }

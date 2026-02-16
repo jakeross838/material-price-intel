@@ -307,6 +307,7 @@ export function EstimatePage() {
   // Results
   const [showResults, setShowResults] = useState(false);
   const [estimate, setEstimate] = useState<RoomEstimateResult | null>(null);
+  const [leadCaptured, setLeadCaptured] = useState(false);
 
   // Fetch ALL estimator config (all finish levels)
   const { data: allConfig, isLoading: configLoading } = useAllEstimatorConfig();
@@ -428,12 +429,15 @@ export function EstimatePage() {
             sqft={sqft}
             roomBreakdowns={estimate.roomBreakdowns}
             breakdown={estimate.breakdown}
+            gated={!leadCaptured}
           />
           <LeadCaptureForm
             estimateParams={estimateParams}
             estimateLow={estimate.low}
             estimateHigh={estimate.high}
             breakdown={estimate.breakdown}
+            roomBreakdowns={estimate.roomBreakdowns}
+            onLeadCaptured={() => setLeadCaptured(true)}
           />
           <div className="text-center">
             <button
@@ -441,6 +445,7 @@ export function EstimatePage() {
                 setShowResults(false);
                 setEstimate(null);
                 setAiExtraction(null);
+                setLeadCaptured(false);
                 setStep(0);
                 setSelections([]);
                 setSelectedRooms([]);

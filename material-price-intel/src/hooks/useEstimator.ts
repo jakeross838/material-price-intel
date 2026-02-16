@@ -112,11 +112,8 @@ export function useSubmitLead() {
           estimate_high: input.estimate_high,
           estimate_breakdown: input.estimate_breakdown as unknown as Record<string, unknown>,
           status: "new",
-        })
-        .select()
-        .single();
+        });
       if (error) throw error;
-      return data as EstimatorLead;
     },
   });
 }

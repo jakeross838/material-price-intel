@@ -1,16 +1,20 @@
 import { useState } from "react";
-import { Loader2, Send, Calendar, CheckCircle2, Shield } from "lucide-react";
+import { Loader2, Send, Calendar, CheckCircle2, Shield, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useSubmitLead, useEstimatorOrgId } from "@/hooks/useEstimator";
+import { useSendEstimateEmail } from "@/hooks/useSendEstimateEmail";
 import type { EstimateParams, EstimateBreakdownItem } from "@/lib/types";
+import type { RoomBreakdown } from "@/lib/estimateCalculator";
 
 type Props = {
   estimateParams: EstimateParams;
   estimateLow: number;
   estimateHigh: number;
   breakdown: EstimateBreakdownItem[];
+  roomBreakdowns: RoomBreakdown[];
+  onLeadCaptured?: () => void;
 };
 
 export function LeadCaptureForm({
@@ -18,8 +22,11 @@ export function LeadCaptureForm({
   estimateLow,
   estimateHigh,
   breakdown,
+  roomBreakdowns,
+  onLeadCaptured,
 }: Props) {
   const submitLead = useSubmitLead();
+  const sendEmail = useSendEstimateEmail();
   const { data: orgId } = useEstimatorOrgId();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -31,6 +38,7 @@ export function LeadCaptureForm({
     e.preventDefault();
     if (!orgId || !name.trim() || !email.trim()) return;
 
+    // 1. Save lead to DB (critical — must complete)
     await submitLead.mutateAsync({
       organization_id: orgId,
       contact_name: name.trim(),
@@ -42,7 +50,49 @@ export function LeadCaptureForm({
       estimate_high: estimateHigh,
       estimate_breakdown: breakdown,
     });
+
+    // 2. Send emails — fire-and-forget (don't block on failure)
+    const roomSummaries = roomBreakdowns.map((r) => {
+      // Determine dominant finish level for the room
+      const finishCounts = new Map<string, number>();
+      for (const item of r.items) {
+        const fl = item.finishLevel ?? "standard";
+        finishCounts.set(fl, (finishCounts.get(fl) ?? 0) + 1);
+      }
+      let dominantFinish = "standard";
+      let maxCount = 0;
+      for (const [fl, count] of finishCounts) {
+        if (count > maxCount) {
+          dominantFinish = fl;
+          maxCount = count;
+        }
+      }
+      return {
+        roomName: r.roomName,
+        finishLevel: dominantFinish,
+        low: r.roomLow,
+        high: r.roomHigh,
+      };
+    });
+
+    sendEmail.mutate({
+      contact_name: name.trim(),
+      contact_email: email.trim(),
+      contact_phone: phone.trim() || undefined,
+      contact_message: message.trim() || undefined,
+      estimate_low: estimateLow,
+      estimate_high: estimateHigh,
+      sqft: estimateParams.square_footage,
+      stories: estimateParams.stories,
+      style: estimateParams.style,
+      bedrooms: estimateParams.bedrooms,
+      bathrooms: estimateParams.bathrooms,
+      room_summaries: roomSummaries,
+    });
+
+    // 3. Update UI
     setSubmitted(true);
+    onLeadCaptured?.();
   }
 
   if (submitted) {
@@ -55,9 +105,14 @@ export function LeadCaptureForm({
           Thank you, {name.split(" ")[0]}!
         </h3>
         <p className="text-brand-700 max-w-md mx-auto">
-          We've received your estimate request. A member of our team will reach
-          out within 24 hours to discuss your custom home project.
+          We've sent your full estimate to{" "}
+          <strong className="text-brand-900">{email}</strong>. A member of our
+          team will reach out within 24 hours to discuss your custom home project.
         </p>
+        <div className="inline-flex items-center gap-2 text-sm text-brand-500 bg-white rounded-full px-4 py-2 border border-brand-200">
+          <Mail className="h-4 w-4" />
+          Check your inbox for the full breakdown
+        </div>
         <p className="text-sm text-brand-400">
           Your estimate: ${estimateLow.toLocaleString()} &ndash; $
           {estimateHigh.toLocaleString()}
