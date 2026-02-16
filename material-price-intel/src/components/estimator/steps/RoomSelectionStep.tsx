@@ -143,7 +143,7 @@ const ROOM_DEFINITIONS: RoomDefinition[] = [
   {
     id: "exterior",
     name: "Exterior",
-    description: "Siding, roofing, driveway, landscaping",
+    description: "Roofing, siding, entry door, driveway, smart home",
     icon: Home,
     locked: true,
     defaultSelected: true,

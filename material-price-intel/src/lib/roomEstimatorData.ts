@@ -42,7 +42,7 @@ export const ROOM_TEMPLATES: RoomTemplate[] = [
     displayName: "Kitchen",
     icon: "ChefHat",
     defaultSqftPercent: 10,
-    categories: ["cabinets", "countertops", "appliances", "flooring", "lighting"],
+    categories: ["cabinets", "countertops", "backsplash", "appliances", "flooring", "lighting", "hardware"],
     defaultCount: 1,
   },
   {
@@ -50,7 +50,7 @@ export const ROOM_TEMPLATES: RoomTemplate[] = [
     displayName: "Master Bath",
     icon: "Bath",
     defaultSqftPercent: 5,
-    categories: ["plumbing", "fixtures", "flooring", "lighting"],
+    categories: ["plumbing", "fixtures", "tile", "flooring", "lighting", "hardware"],
     defaultCount: 1,
   },
   {
@@ -58,7 +58,7 @@ export const ROOM_TEMPLATES: RoomTemplate[] = [
     displayName: "Master Bedroom",
     icon: "Bed",
     defaultSqftPercent: 12,
-    categories: ["flooring", "lighting", "paint"],
+    categories: ["flooring", "lighting", "paint", "closets", "ceiling", "trim"],
     defaultCount: 1,
   },
   {
@@ -66,7 +66,7 @@ export const ROOM_TEMPLATES: RoomTemplate[] = [
     displayName: "Guest Bedroom",
     icon: "BedDouble",
     defaultSqftPercent: 8,
-    categories: ["flooring", "lighting", "paint"],
+    categories: ["flooring", "lighting", "paint", "closets", "doors"],
     defaultCount: 3,
   },
   {
@@ -74,7 +74,7 @@ export const ROOM_TEMPLATES: RoomTemplate[] = [
     displayName: "Guest Bath",
     icon: "ShowerHead",
     defaultSqftPercent: 2,
-    categories: ["plumbing", "fixtures", "flooring"],
+    categories: ["plumbing", "fixtures", "tile", "flooring", "hardware"],
     defaultCount: 2,
   },
   {
@@ -82,7 +82,7 @@ export const ROOM_TEMPLATES: RoomTemplate[] = [
     displayName: "Great Room",
     icon: "Sofa",
     defaultSqftPercent: 18,
-    categories: ["flooring", "lighting", "windows", "paint"],
+    categories: ["flooring", "lighting", "windows", "paint", "fireplace", "ceiling", "trim"],
     defaultCount: 1,
   },
   {
@@ -90,7 +90,7 @@ export const ROOM_TEMPLATES: RoomTemplate[] = [
     displayName: "Dining Room",
     icon: "UtensilsCrossed",
     defaultSqftPercent: 6,
-    categories: ["flooring", "lighting", "paint"],
+    categories: ["flooring", "lighting", "paint", "ceiling", "trim"],
     defaultCount: 1,
   },
   {
@@ -98,7 +98,7 @@ export const ROOM_TEMPLATES: RoomTemplate[] = [
     displayName: "Office",
     icon: "Monitor",
     defaultSqftPercent: 5,
-    categories: ["flooring", "lighting", "paint"],
+    categories: ["flooring", "lighting", "paint", "closets", "doors"],
     defaultCount: 1,
   },
   {
@@ -106,7 +106,7 @@ export const ROOM_TEMPLATES: RoomTemplate[] = [
     displayName: "Laundry",
     icon: "WashingMachine",
     defaultSqftPercent: 3,
-    categories: ["cabinets", "plumbing", "flooring"],
+    categories: ["cabinets", "countertops", "plumbing", "flooring"],
     defaultCount: 1,
   },
   {
@@ -114,7 +114,7 @@ export const ROOM_TEMPLATES: RoomTemplate[] = [
     displayName: "Garage",
     icon: "Car",
     defaultSqftPercent: 10,
-    categories: ["flooring", "paint"],
+    categories: ["flooring", "paint", "garage_door"],
     defaultCount: 1,
   },
   {
@@ -122,7 +122,7 @@ export const ROOM_TEMPLATES: RoomTemplate[] = [
     displayName: "Exterior",
     icon: "Home",
     defaultSqftPercent: 8,
-    categories: ["roofing", "windows", "siding", "landscaping"],
+    categories: ["roofing", "windows", "siding", "front_door", "driveway", "landscaping", "smart_home"],
     defaultCount: 1,
   },
   {
@@ -130,7 +130,7 @@ export const ROOM_TEMPLATES: RoomTemplate[] = [
     displayName: "Outdoor Living",
     icon: "TreePalm",
     defaultSqftPercent: 5,
-    categories: ["landscaping"],
+    categories: ["landscaping", "lighting"],
     defaultCount: 1,
   },
 ];
@@ -571,6 +571,438 @@ export const SELECTION_OPTIONS: Record<string, SelectionOption[]> = {
         "Landscape architect-designed grounds with mature specimen trees, water features, and sculptural elements. Automated smart irrigation with soil moisture sensors. Includes outdoor kitchen hardscape, pergola structures, and resort-style pool surround.",
       imageUrl:
         "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- BACKSPLASH -----
+  backsplash: [
+    {
+      finishLevel: "builder",
+      label: "Ceramic Subway Tile",
+      description:
+        "Classic 3x6 ceramic subway tile in white or neutral tones. Clean, timeless look with standard grout lines. Easy to maintain and pairs well with any countertop material.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600585152220-90363fe7e115?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Glass Mosaic Tile",
+      description:
+        "Glass mosaic backsplash with a blend of colors and textures. Adds depth and shimmer to the kitchen with light-catching surfaces. Available in herringbone, stacked, or traditional patterns.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Natural Stone Backsplash",
+      description:
+        "Honed marble, travertine, or slate backsplash with natural veining and texture. Available in full-height slab or patterned tile layouts. Sealed for durability with a sophisticated organic look.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600573472550-8090b5e0745e?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Custom Artisan Backsplash",
+      description:
+        "Hand-crafted zellige tiles, book-matched marble slabs, or bespoke metallic mosaic designs. Each piece is individually placed for a one-of-a-kind statement wall. Includes integrated lighting behind translucent materials.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- HARDWARE -----
+  hardware: [
+    {
+      finishLevel: "builder",
+      label: "Basic Chrome Pulls",
+      description:
+        "Simple chrome bar pulls and knobs in standard sizes. Durable plated finish that resists tarnishing. Functional and clean with universal mounting patterns for easy installation.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Brushed Nickel Hardware",
+      description:
+        "Coordinated brushed nickel cabinet pulls, knobs, and hinges. Fingerprint-resistant satin finish with solid zinc construction. Modern transitional style that complements most cabinet finishes.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Matte Black Designer Hardware",
+      description:
+        "Matte black or champagne bronze pulls in architectural profiles. Solid brass or stainless steel construction with premium weight and feel. Includes matching appliance pulls and specialty cabinet hardware.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Custom Artisan Hardware",
+      description:
+        "Hand-forged or custom-cast hardware in unlacquered brass, oil-rubbed bronze, or burnished copper. Each piece develops a unique patina over time. Includes leather-wrapped pulls, crystal knobs, and integrated finger pulls.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- TILE (Bathroom) -----
+  tile: [
+    {
+      finishLevel: "builder",
+      label: "Ceramic Wall & Floor Tile",
+      description:
+        "Standard ceramic tile in 12x12 or 12x24 format for shower walls and bathroom floors. Clean white or neutral options with basic bullnose trim. Includes standard shower niche and simple grout patterns.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Porcelain Tile Package",
+      description:
+        "Large-format porcelain tiles with realistic stone or wood-look patterns. Includes accent border tiles and coordinating floor and wall designs. Features a tiled shower niche with decorative liner and minimal grout lines.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1620626011761-996317b8d101?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Natural Stone Tile",
+      description:
+        "Marble, travertine, or slate tile with custom patterns and layouts. Floor-to-ceiling shower tile with linear drain and curbless entry option. Heated tile floors with multiple accent features and decorative inlays.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Custom Mosaic & Slab Tile",
+      description:
+        "Book-matched marble slabs, hand-cut mosaics, or artisan-crafted tile murals. Waterjet-cut geometric patterns with precious stone inlays. Includes radiant floor heating, steam shower tile work, and bespoke niche designs with integrated lighting.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600566752584-e8c4eb4f7e44?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- TRIM & MOLDING -----
+  trim: [
+    {
+      finishLevel: "builder",
+      label: "MDF Colonial Trim",
+      description:
+        "Pre-primed MDF baseboards (3.25-inch) and colonial door casings. Clean paint-grade finish with simple profiles. Standard throughout all rooms with basic corner blocking.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Craftsman Style Trim",
+      description:
+        "5.25-inch baseboards with matching craftsman-style door and window casings. Includes chair rail in dining areas and wainscoting in bathrooms. Poplar or pine with a smooth painted finish throughout.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Crown Molding Package",
+      description:
+        "Full crown molding throughout with 7-inch baseboards and layered casing profiles. Includes wainscoting, picture rail, and window sills in select rooms. Hardwood trim with detailed paint or stain finishing.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Custom Millwork Package",
+      description:
+        "Hand-milled profiles, applied wall moldings, and architectural panel systems. Includes library-style built-ins, arched doorway casings, and custom rosettes at every intersection. Master-crafted from select hardwoods with museum-quality finishing.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- INTERIOR DOORS -----
+  doors: [
+    {
+      finishLevel: "builder",
+      label: "Hollow-Core Panel Doors",
+      description:
+        "6-panel hollow-core interior doors in pre-hung frames. Lightweight and cost-effective with standard passage knobs. Pre-primed and ready for a coat of white paint. Available in standard 6'8\" height.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Solid-Core Shaker Doors",
+      description:
+        "Solid-core doors in clean Shaker or 2-panel contemporary profiles. Superior sound dampening and solid feel. Includes satin nickel lever-style handles and adjustable hinges. Available in 7'0\" or 8'0\" heights.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Solid Wood Panel Doors",
+      description:
+        "True solid wood doors in alder, maple, or mahogany with raised or flat panel designs. Includes barn door hardware for select openings and pocket doors where space is tight. Premium matte black or brass hardware throughout.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Custom Architectural Doors",
+      description:
+        "Hand-crafted doors with glass inserts, iron detailing, or reclaimed wood panels. Includes oversized 10-foot pivot doors, hidden pocket doors, and custom arched openings. Each door is individually designed to complement the architectural style of the home.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- CLOSET SYSTEMS -----
+  closets: [
+    {
+      finishLevel: "builder",
+      label: "Wire Shelf System",
+      description:
+        "Ventilated wire shelving with a single hang rod and top shelf. Chrome-plated steel for durability with standard wall-mount brackets. Functional and easy to reconfigure as needs change.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1558997519-83ea9252edf8?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Laminate Closet Organizer",
+      description:
+        "Modular laminate closet system with double and single hang sections, built-in drawers, and adjustable shelving. Clean white or espresso finish with soft-close drawer glides. Designed for walk-in or reach-in closets.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Wood Built-In Closet",
+      description:
+        "Custom-built closet system in painted or stained wood with premium hardware. Features include pull-out valet rods, jewelry drawers, shoe cubbies, and integrated LED strip lighting. Designed specifically for your wardrobe and space.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Boutique Dressing Room",
+      description:
+        "Full boutique-style closet with island seating, lighted display cases, and floor-to-ceiling cabinetry in exotic woods. Includes automated garment carousels, climate-controlled sections for furs and leather, and a built-in vanity with Hollywood lighting.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- FIREPLACE -----
+  fireplace: [
+    {
+      finishLevel: "builder",
+      label: "Electric Fireplace Insert",
+      description:
+        "Linear electric fireplace insert with realistic flame effects and adjustable heat output. Simple wall-mount or recessed installation with standard drywall surround. Remote-controlled with multiple flame color options.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Direct-Vent Gas Fireplace",
+      description:
+        "Direct-vent gas fireplace with ceramic log set and adjustable flame. Includes simple stone or tile surround with painted wood mantel. Energy-efficient sealed combustion with remote control and thermostat.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Linear Gas Fireplace",
+      description:
+        "Wide-format linear gas fireplace with crushed glass or river rock media bed. Floor-to-ceiling natural stone surround with floating wood beam mantel. Smart home integrated with app control and ambient lighting.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Custom Masonry Fireplace",
+      description:
+        "Full masonry fireplace with hand-laid stone or custom-designed metal surround. Includes Rumford-style firebox for open-burning, custom iron doors, and reclaimed barn beam mantel. May include see-through design connecting two rooms or an outdoor extension.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- GARAGE DOOR -----
+  garage_door: [
+    {
+      finishLevel: "builder",
+      label: "Steel Raised-Panel Door",
+      description:
+        "Single-layer steel garage door with raised panel design in white or almond. Standard torsion spring system with basic chain-drive opener. Meets wind code requirements for the region.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Insulated Steel Door",
+      description:
+        "Double-layer insulated steel garage door with woodgrain embossed finish. R-12 insulation value for climate control and noise reduction. Includes belt-drive opener with smart home connectivity and LED lighting.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Carriage House Style Door",
+      description:
+        "Premium carriage house design with decorative hardware and window inserts. Triple-layer construction with R-18 insulation in faux wood or textured steel. Includes battery backup opener and MyQ smart technology.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Custom Wood Garage Door",
+      description:
+        "Real wood carriage doors in cedar, mahogany, or reclaimed barn wood. Custom glass panel designs with architectural detailing to match the home. Includes fully concealed jackshaft opener and integrated lighting with smart home automation.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- DRIVEWAY -----
+  driveway: [
+    {
+      finishLevel: "builder",
+      label: "Brushed Concrete Driveway",
+      description:
+        "Standard 4-inch reinforced concrete with broom finish. Includes expansion joints and proper drainage slope. Clean, durable surface that meets all code requirements for residential driveways.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Stamped Concrete Driveway",
+      description:
+        "Stamped and colored concrete with patterns mimicking stone, brick, or slate. Integral color with surface-applied release agent for depth. Sealed finish for enhanced color retention and stain resistance.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Paver Driveway",
+      description:
+        "Interlocking concrete pavers or natural stone pavers in herringbone or running bond pattern. Includes proper base preparation with compacted aggregate and polymeric sand joints. Available in endless color and pattern combinations.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Custom Stone Motor Court",
+      description:
+        "Full-depth natural stone, imported European pavers, or custom-designed motor court with decorative borders and medallions. Includes heated driveway option, LED border lighting, and integrated drainage systems. Designed by a landscape architect for maximum curb appeal.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- FRONT/ENTRY DOOR -----
+  front_door: [
+    {
+      finishLevel: "builder",
+      label: "Fiberglass Entry Door",
+      description:
+        "Smooth or textured fiberglass entry door with standard sidelite. Pre-finished in white or common colors with basic deadbolt and lever handle. Energy-efficient with insulated core and weatherstripping.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Decorative Glass Entry Door",
+      description:
+        "Fiberglass or steel entry door with decorative glass inserts and matching sidelites. Wood-grain texture with gel-stained finish for a natural look. Includes smart lock with keypad and app control.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Solid Wood Entry Door",
+      description:
+        "Solid mahogany or knotty alder entry door with hand-applied stain finish. Includes wrought iron or leaded glass details with full surround sidelites and transom. Multi-point locking system with premium oil-rubbed bronze hardware.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Custom Pivot Entry Door",
+      description:
+        "Oversized pivot entry door in solid wood, bronze-clad, or steel with custom glass art panels. Engineered pivot hinge system supports doors up to 12 feet tall and 500+ lbs. Each door is a commissioned architectural statement piece designed to match your home.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- CEILING TREATMENTS -----
+  ceiling: [
+    {
+      finishLevel: "builder",
+      label: "Flat Painted Ceiling",
+      description:
+        "Standard flat-white painted ceiling at 9-foot height. Smooth drywall finish with basic flush-mount lighting provisions. Clean and bright with standard knockdown texture option available.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Tray Ceiling",
+      description:
+        "Tray ceiling with recessed center and perimeter crown molding. Includes rope lighting in the tray for ambient uplighting effect. Accent paint color in the recessed area for added visual depth. 10-foot ceiling height in main living areas.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Coffered Ceiling",
+      description:
+        "Full coffered ceiling with detailed beam work and recessed panels. Painted in coordinating colors with integrated LED lighting in each coffer. Adds architectural gravitas to great rooms, dining rooms, and master bedrooms.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Custom Beam & Vault Ceiling",
+      description:
+        "Hand-hewn reclaimed wood beams, barrel-vaulted plaster, or tongue-and-groove planked ceilings at dramatic heights. May include hand-painted murals, gold-leaf accents, or artisan plaster textures. Each ceiling is a unique architectural feature of the home.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=300&fit=crop",
+    },
+  ],
+
+  // ----- SMART HOME -----
+  smart_home: [
+    {
+      finishLevel: "builder",
+      label: "Smart Thermostat & Locks",
+      description:
+        "Smart thermostat (Nest or Ecobee), smart deadbolt on the front door, and pre-wired CAT6 to main living areas. Basic Wi-Fi coverage with a single router. Ready for future expansion with smart-home-compatible wiring.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1558002038-1055907df827?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "standard",
+      label: "Connected Home Package",
+      description:
+        "Whole-home smart system including thermostat, door locks, video doorbell, and smart garage door. Mesh Wi-Fi for complete coverage. Smart switches and dimmers in main living areas with voice assistant integration (Alexa/Google).",
+      imageUrl:
+        "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "premium",
+      label: "Full Smart Home System",
+      description:
+        "Comprehensive Control4 or Savant system with touchscreen panels, whole-home audio, motorized shades, and smart lighting scenes. Includes security cameras, motion sensors, and professional monitoring. Enterprise-grade networking with dedicated access points per zone.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400&h=300&fit=crop",
+    },
+    {
+      finishLevel: "luxury",
+      label: "Integrated Home Automation",
+      description:
+        "Crestron or Savant whole-home automation with custom programming, dedicated equipment rack, and 24/7 remote support. Includes circadian lighting, climate zoning, motorized everything (shades, mirrors, TV lifts), and biometric entry. Full home theater with Dolby Atmos and 4K laser projection.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=400&h=300&fit=crop",
     },
   ],
 };

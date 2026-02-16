@@ -40,8 +40,6 @@ const CATEGORY_DISPLAY_NAMES: Record<string, string> = {
   backsplash: "Backsplash",
   appliances: "Appliances",
   fixtures: "Fixtures",
-  vanity: "Vanity",
-  shower_tile: "Shower Tile",
   lighting: "Lighting",
   paint: "Paint & Finishes",
   windows: "Windows",
@@ -49,6 +47,17 @@ const CATEGORY_DISPLAY_NAMES: Record<string, string> = {
   siding: "Exterior Siding",
   plumbing: "Plumbing",
   landscaping: "Landscaping",
+  hardware: "Cabinet & Door Hardware",
+  tile: "Tile Work",
+  trim: "Trim & Molding",
+  doors: "Interior Doors",
+  closets: "Closet Systems",
+  fireplace: "Fireplace",
+  garage_door: "Garage Door",
+  driveway: "Driveway",
+  front_door: "Entry Door",
+  ceiling: "Ceiling Treatment",
+  smart_home: "Smart Home Technology",
 };
 
 // -------------------------------------------
