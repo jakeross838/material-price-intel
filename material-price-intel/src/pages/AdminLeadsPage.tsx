@@ -174,6 +174,84 @@ export function AdminLeadsPage() {
 // Sub-component: Individual lead row with expandable details
 // ------------------------------------------------------------------
 
+// ------------------------------------------------------------------
+// V2 estimate details display
+// ------------------------------------------------------------------
+
+function DetailCell({ label, value }: { label: string; value: string | number | boolean }) {
+  const display = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : String(value);
+  return (
+    <div className="bg-background rounded-lg border p-3">
+      <p className="text-[10px] text-muted-foreground">{label}</p>
+      <p className="text-sm font-bold capitalize">{display}</p>
+    </div>
+  );
+}
+
+function V2EstimateDetails({ params }: { params: Record<string, unknown> }) {
+  const p = params as Record<string, string | number | boolean>;
+  const features: string[] = [];
+  if (p.pool && p.pool !== 'none') features.push(`Pool (${p.pool})`);
+  if (p.elevator && p.elevator !== 'none') features.push(`Elevator (${p.elevator})`);
+  if (p.outdoorKitchen) features.push('Outdoor Kitchen');
+  if (p.fireplace && p.fireplace !== 'none') features.push(`Fireplace (${p.fireplace})`);
+  if (p.smartHome && p.smartHome !== 'none') features.push(`Smart Home (${p.smartHome})`);
+  if (p.generator) features.push('Generator');
+  if (p.seawall) features.push('Seawall');
+  if (p.screenedPorch) features.push('Screened Porch');
+  if (Number(p.deckSqft) > 0) features.push(`Deck (${p.deckSqft} SF)`);
+
+  return (
+    <div className="space-y-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <DetailCell label="Sq Ft" value={Number(p.sqft).toLocaleString()} />
+        <DetailCell label="Bed / Bath" value={`${p.bedrooms} / ${p.bathrooms}`} />
+        <DetailCell label="Stories" value={p.stories} />
+        <DetailCell label="Location" value={String(p.location).replace(/_/g, ' ')} />
+        <DetailCell label="Arch Style" value={String(p.archStyle).replace(/_/g, ' ')} />
+        <DetailCell label="Finish Level" value={p.finishLevel} />
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <DetailCell label="Cladding" value={String(p.claddingType).replace(/_/g, ' ')} />
+        <DetailCell label="Roof" value={String(p.roofType).replace(/_/g, ' ')} />
+        <DetailCell label="Windows" value={String(p.windowGrade).replace(/_/g, ' ')} />
+        <DetailCell label="Flooring" value={String(p.flooringType).replace(/_/g, ' ')} />
+        <DetailCell label="Countertops" value={String(p.countertopMaterial).replace(/_/g, ' ')} />
+        <DetailCell label="Elevated" value={!!p.elevatedConstruction} />
+      </div>
+      {features.length > 0 && (
+        <div className="bg-background rounded-lg border p-3">
+          <p className="text-[10px] text-muted-foreground">Special Features</p>
+          <p className="text-xs font-medium mt-0.5">{features.join(', ')}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function LegacyEstimateDetails({ params }: { params: Record<string, unknown> }) {
+  const p = params as Record<string, string | number | string[]>;
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      <DetailCell label="Sq Ft" value={Number(p.square_footage).toLocaleString()} />
+      <DetailCell label="Bed / Bath" value={`${p.bedrooms} / ${p.bathrooms}`} />
+      <DetailCell label="Stories" value={p.stories} />
+      <DetailCell label="Style" value={p.style} />
+      <DetailCell label="Finish" value={p.finish_level} />
+      {Array.isArray(p.special_features) && p.special_features.length > 0 && (
+        <div className="bg-background rounded-lg border p-3 col-span-2 sm:col-span-1">
+          <p className="text-[10px] text-muted-foreground">Features</p>
+          <p className="text-xs font-medium mt-0.5">{p.special_features.join(', ')}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------
+// Sub-component: Individual lead row with expandable details
+// ------------------------------------------------------------------
+
 function LeadRow({
   lead,
   expanded,
@@ -198,6 +276,7 @@ function LeadRow({
   }
 
   const params = lead.estimate_params;
+  const isV2 = params && (params as Record<string, unknown>)._version === 'v2';
 
   return (
     <>
@@ -208,7 +287,14 @@ function LeadRow({
         onClick={onToggle}
       >
         <td className="px-4 py-3">
-          <p className="font-medium text-foreground">{lead.contact_name}</p>
+          <div className="flex items-center gap-2">
+            <p className="font-medium text-foreground">{lead.contact_name}</p>
+            {isV2 && (
+              <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-800">
+                V2
+              </span>
+            )}
+          </div>
         </td>
         <td className="px-4 py-3 hidden md:table-cell">
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
@@ -256,37 +342,14 @@ function LeadRow({
               <div className="space-y-4">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Estimate Details
+                  {isV2 && <span className="ml-2 text-amber-600">(V2 Configurator)</span>}
                 </p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  <div className="bg-background rounded-lg border p-3">
-                    <p className="text-[10px] text-muted-foreground">Sq Ft</p>
-                    <p className="text-sm font-bold">{params.square_footage?.toLocaleString()}</p>
-                  </div>
-                  <div className="bg-background rounded-lg border p-3">
-                    <p className="text-[10px] text-muted-foreground">Bed / Bath</p>
-                    <p className="text-sm font-bold">{params.bedrooms} / {params.bathrooms}</p>
-                  </div>
-                  <div className="bg-background rounded-lg border p-3">
-                    <p className="text-[10px] text-muted-foreground">Stories</p>
-                    <p className="text-sm font-bold">{params.stories}</p>
-                  </div>
-                  <div className="bg-background rounded-lg border p-3">
-                    <p className="text-[10px] text-muted-foreground">Style</p>
-                    <p className="text-sm font-bold">{params.style}</p>
-                  </div>
-                  <div className="bg-background rounded-lg border p-3">
-                    <p className="text-[10px] text-muted-foreground">Finish</p>
-                    <p className="text-sm font-bold capitalize">{params.finish_level}</p>
-                  </div>
-                  {params.special_features?.length > 0 && (
-                    <div className="bg-background rounded-lg border p-3 col-span-2 sm:col-span-1">
-                      <p className="text-[10px] text-muted-foreground">Features</p>
-                      <p className="text-xs font-medium mt-0.5">
-                        {params.special_features.join(", ")}
-                      </p>
-                    </div>
-                  )}
-                </div>
+
+                {isV2 ? (
+                  <V2EstimateDetails params={params as Record<string, unknown>} />
+                ) : (
+                  <LegacyEstimateDetails params={params} />
+                )}
 
                 {lead.contact_message && (
                   <div>

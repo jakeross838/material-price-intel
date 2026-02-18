@@ -1,0 +1,298 @@
+import { motion } from 'framer-motion';
+import {
+  Sparkles, Waves, ArrowUpDown, Flame, Wifi, Zap,
+  Anchor, TreePine, ScreenShare, UtensilsCrossed, Plus, Minus,
+} from 'lucide-react';
+import type {
+  EstimatorV2Input, PoolType, ElevatorType, FireplaceType, SmartHomeLevel,
+} from '@/lib/estimatorV2/types';
+import { calculateMonthlyPayment } from '@/lib/estimatorV2/types';
+
+type Props = {
+  input: EstimatorV2Input;
+  updateInput: <K extends keyof EstimatorV2Input>(key: K, value: EstimatorV2Input[K]) => void;
+};
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <h3 className="text-xs font-semibold text-[var(--ev2-text-dim)] uppercase tracking-wider mb-3">
+      {children}
+    </h3>
+  );
+}
+
+function fmtMonthly(amount: number): string {
+  const monthly = Math.round(calculateMonthlyPayment(amount));
+  return `+$${monthly.toLocaleString()}/mo`;
+}
+
+/** Toggle card for boolean features */
+function FeatureToggle({
+  icon: Icon,
+  label,
+  description,
+  monthlyEstimate,
+  active,
+  onClick,
+}: {
+  icon: React.ElementType;
+  label: string;
+  description: string;
+  monthlyEstimate: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.99 }}
+      className={`w-full flex items-start gap-3 p-4 rounded-xl text-left transition-all duration-200 ${
+        active
+          ? 'ring-2 ring-[var(--ev2-gold)] bg-[var(--ev2-gold-glow)]'
+          : 'bg-[var(--ev2-surface)] border border-[var(--ev2-border)] hover:bg-[var(--ev2-surface-hover)]'
+      }`}
+    >
+      <div className={`w-10 h-10 rounded-xl shrink-0 flex items-center justify-center transition-colors ${
+        active ? 'bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)]' : 'bg-[var(--ev2-navy-800)] text-[var(--ev2-text-dim)]'
+      }`}>
+        <Icon className="h-5 w-5" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-start justify-between gap-2">
+          <p className="text-sm font-semibold text-[var(--ev2-text)]">{label}</p>
+          <div className={`w-5 h-5 rounded-full shrink-0 flex items-center justify-center mt-0.5 transition-colors ${
+            active
+              ? 'bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)]'
+              : 'border border-[var(--ev2-border)]'
+          }`}>
+            {active && (
+              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            )}
+          </div>
+        </div>
+        <p className="text-xs text-[var(--ev2-text-muted)] mt-0.5">{description}</p>
+        <p className="text-[11px] text-[var(--ev2-gold)] font-medium mt-1">{monthlyEstimate}</p>
+      </div>
+    </motion.button>
+  );
+}
+
+/** Multi-option selector (e.g., pool type, elevator type) */
+function FeatureSelector<T extends string>({
+  icon: Icon,
+  label,
+  description,
+  value,
+  options,
+  onChange,
+}: {
+  icon: React.ElementType;
+  label: string;
+  description: string;
+  value: T;
+  options: { value: T; label: string; cost: number }[];
+  onChange: (v: T) => void;
+}) {
+  return (
+    <div className="bg-[var(--ev2-surface)] rounded-xl border border-[var(--ev2-border)] p-4">
+      <div className="flex items-center gap-3 mb-3">
+        <div className={`w-10 h-10 rounded-xl shrink-0 flex items-center justify-center transition-colors ${
+          value !== 'none' ? 'bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)]' : 'bg-[var(--ev2-navy-800)] text-[var(--ev2-text-dim)]'
+        }`}>
+          <Icon className="h-5 w-5" />
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-[var(--ev2-text)]">{label}</p>
+          <p className="text-xs text-[var(--ev2-text-muted)]">{description}</p>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        {options.map((opt) => (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => onChange(opt.value)}
+            className={`py-2.5 px-3 rounded-lg text-center transition-all duration-200 ${
+              value === opt.value
+                ? 'bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)] shadow-lg shadow-[var(--ev2-gold-glow)]'
+                : 'bg-[var(--ev2-navy-800)] text-[var(--ev2-text-muted)] hover:bg-[var(--ev2-navy-700)] hover:text-[var(--ev2-text)]'
+            }`}
+          >
+            <p className="text-xs font-semibold">{opt.label}</p>
+            {opt.cost > 0 && (
+              <p className={`text-[10px] mt-0.5 ${
+                value === opt.value ? 'text-[var(--ev2-navy-950)]/70' : 'text-[var(--ev2-text-dim)]'
+              }`}>
+                {fmtMonthly(opt.cost)}
+              </p>
+            )}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function SpecialFeaturesStep({ input, updateInput }: Props) {
+  const deckPercent = ((input.deckSqft) / 1500) * 100;
+
+  return (
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="text-center">
+        <div className="w-14 h-14 rounded-2xl bg-[var(--ev2-gold)]/10 flex items-center justify-center mx-auto mb-4">
+          <Sparkles className="h-7 w-7 text-[var(--ev2-gold)]" />
+        </div>
+        <h2 className="text-2xl font-bold text-[var(--ev2-text)]">Special Features</h2>
+        <p className="text-[var(--ev2-text-muted)] text-sm mt-1">
+          Add the features that make your home extraordinary
+        </p>
+      </div>
+
+      {/* Pool */}
+      <FeatureSelector<PoolType>
+        icon={Waves}
+        label="Swimming Pool"
+        description="Gunite pool with custom finishes"
+        value={input.pool}
+        onChange={(v) => updateInput('pool', v)}
+        options={[
+          { value: 'none', label: 'No Pool', cost: 0 },
+          { value: 'standard', label: 'Standard', cost: 80000 },
+          { value: 'infinity', label: 'Infinity Edge', cost: 150000 },
+        ]}
+      />
+
+      {/* Elevator */}
+      <FeatureSelector<ElevatorType>
+        icon={ArrowUpDown}
+        label="Residential Elevator"
+        description="Hydraulic or traction elevator"
+        value={input.elevator}
+        onChange={(v) => updateInput('elevator', v)}
+        options={[
+          { value: 'none', label: 'None', cost: 0 },
+          { value: '2stop', label: '2-Stop', cost: 50000 },
+          { value: '3stop', label: '3-Stop', cost: 75000 },
+        ]}
+      />
+
+      {/* Fireplace */}
+      <FeatureSelector<FireplaceType>
+        icon={Flame}
+        label="Fireplace"
+        description="Indoor gas or masonry fireplace"
+        value={input.fireplace}
+        onChange={(v) => updateInput('fireplace', v)}
+        options={[
+          { value: 'none', label: 'None', cost: 0 },
+          { value: 'linear', label: 'Linear Gas', cost: 8000 },
+          { value: 'custom', label: 'Custom Masonry', cost: 20000 },
+        ]}
+      />
+
+      {/* Smart Home */}
+      <FeatureSelector<SmartHomeLevel>
+        icon={Wifi}
+        label="Smart Home"
+        description="Home automation & controls"
+        value={input.smartHome}
+        onChange={(v) => updateInput('smartHome', v)}
+        options={[
+          { value: 'none', label: 'None', cost: 0 },
+          { value: 'basic', label: 'Basic', cost: 6000 },
+          { value: 'standard', label: 'Full System', cost: 25000 },
+          { value: 'full', label: 'Integrated', cost: 60000 },
+        ]}
+      />
+
+      {/* Boolean toggles */}
+      <div>
+        <SectionLabel>Additional Features</SectionLabel>
+        <div className="space-y-3">
+          <FeatureToggle
+            icon={UtensilsCrossed}
+            label="Outdoor Kitchen"
+            description="Built-in grill, sink, counters, and refrigeration"
+            monthlyEstimate={fmtMonthly(35000)}
+            active={input.outdoorKitchen}
+            onClick={() => updateInput('outdoorKitchen', !input.outdoorKitchen)}
+          />
+          <FeatureToggle
+            icon={Zap}
+            label="Whole-Home Generator"
+            description="Automatic backup power for the entire home"
+            monthlyEstimate={fmtMonthly(15000)}
+            active={input.generator}
+            onClick={() => updateInput('generator', !input.generator)}
+          />
+          <FeatureToggle
+            icon={Anchor}
+            label="Seawall / Bulkhead"
+            description="Waterfront protection and dock-ready infrastructure"
+            monthlyEstimate={fmtMonthly(65000)}
+            active={input.seawall}
+            onClick={() => updateInput('seawall', !input.seawall)}
+          />
+          <FeatureToggle
+            icon={ScreenShare}
+            label="Screened Porch / Lanai"
+            description="Bug-free outdoor living, approximately 10% of home size"
+            monthlyEstimate={fmtMonthly(input.sqft * 0.1 * 50)}
+            active={input.screenedPorch}
+            onClick={() => updateInput('screenedPorch', !input.screenedPorch)}
+          />
+        </div>
+      </div>
+
+      {/* Deck sqft */}
+      <div>
+        <SectionLabel>
+          <div className="flex items-center gap-1.5">
+            <TreePine className="h-3.5 w-3.5" />
+            Deck / Patio
+          </div>
+        </SectionLabel>
+        <div className="bg-[var(--ev2-surface)] rounded-xl border border-[var(--ev2-border)] p-4">
+          <div className="flex items-baseline justify-between mb-3">
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-bold text-[var(--ev2-text)] tabular-nums">
+                {input.deckSqft.toLocaleString()}
+              </span>
+              <span className="text-sm text-[var(--ev2-text-dim)]">SF</span>
+            </div>
+            {input.deckSqft > 0 && (
+              <span className="text-[11px] text-[var(--ev2-gold)] font-medium">
+                {fmtMonthly(input.deckSqft * 40)}
+              </span>
+            )}
+          </div>
+          <input
+            type="range"
+            min={0}
+            max={1500}
+            step={50}
+            value={input.deckSqft}
+            onChange={(e) => updateInput('deckSqft', parseInt(e.target.value))}
+            className="w-full h-2 rounded-full appearance-none cursor-pointer
+              [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5
+              [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--ev2-gold)]
+              [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:shadow-[var(--ev2-gold-glow)]
+              [&::-webkit-slider-thumb]:cursor-pointer"
+            style={{
+              background: `linear-gradient(to right, var(--ev2-gold) 0%, var(--ev2-gold) ${deckPercent}%, var(--ev2-navy-800) ${deckPercent}%, var(--ev2-navy-800) 100%)`,
+            }}
+          />
+          <div className="flex justify-between text-[10px] text-[var(--ev2-text-dim)] mt-1">
+            <span>None</span>
+            <span>1,500 SF</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

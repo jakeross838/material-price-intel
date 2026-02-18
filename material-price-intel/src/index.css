@@ -137,6 +137,30 @@
 }
 
 /* ===========================================
+   Estimator V2 Dark Luxury Theme
+   =========================================== */
+
+.estimator-v2 {
+  --ev2-navy-950: #0a0e1a;
+  --ev2-navy-900: #0f1629;
+  --ev2-navy-800: #162038;
+  --ev2-navy-700: #1e2d4a;
+  --ev2-navy-600: #2a3d5e;
+  --ev2-charcoal: #1a1d2e;
+  --ev2-gold: #c9a861;
+  --ev2-gold-light: #ddc48a;
+  --ev2-gold-dark: #a8893e;
+  --ev2-gold-glow: rgba(201, 168, 97, 0.15);
+  --ev2-text: #e8e4dc;
+  --ev2-text-muted: #8b8a85;
+  --ev2-text-dim: #5c5b57;
+  --ev2-surface: rgba(255, 255, 255, 0.04);
+  --ev2-surface-hover: rgba(255, 255, 255, 0.07);
+  --ev2-border: rgba(255, 255, 255, 0.08);
+  --ev2-border-gold: rgba(201, 168, 97, 0.3);
+}
+
+/* ===========================================
    Print styles for Selection Sheet
    =========================================== */
 
@@ -195,5 +219,41 @@
 
   @page {
     margin: 0.75in;
+  }
+
+  /* Estimator V2 print styles */
+  .estimator-v2 {
+    background: white !important;
+    color: black !important;
+  }
+
+  .estimator-v2 * {
+    color: black !important;
+    border-color: #ddd !important;
+  }
+
+  .estimator-v2 h3 {
+    font-size: 14px !important;
+  }
+
+  /* Override dark backgrounds for print */
+  .estimator-v2 div,
+  .estimator-v2 section,
+  .estimator-v2 main,
+  .estimator-v2 header,
+  .estimator-v2 footer {
+    background: transparent !important;
+  }
+}
+
+/* ===========================================
+   prefers-reduced-motion global fallback
+   =========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .estimator-v2 * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
