@@ -2,9 +2,11 @@ import { motion } from 'framer-motion';
 import {
   Sparkles, Waves, ArrowUpDown, Flame, Wifi, Zap,
   Anchor, TreePine, ScreenShare, UtensilsCrossed, Plus, Minus,
+  Sun, Car, Flower2, Fence, Droplets,
 } from 'lucide-react';
 import type {
   EstimatorV2Input, PoolType, ElevatorType, FireplaceType, SmartHomeLevel,
+  SolarOption, DrivewayType, LandscapingTier, FenceType,
 } from '@/lib/estimatorV2/types';
 import { calculateMonthlyPayment } from '@/lib/estimatorV2/types';
 
@@ -153,145 +155,213 @@ export function SpecialFeaturesStep({ input, updateInput }: Props) {
         </p>
       </div>
 
-      {/* Pool */}
-      <FeatureSelector<PoolType>
-        icon={Waves}
-        label="Swimming Pool"
-        description="Gunite pool with custom finishes"
-        value={input.pool}
-        onChange={(v) => updateInput('pool', v)}
-        options={[
-          { value: 'none', label: 'No Pool', cost: 0 },
-          { value: 'standard', label: 'Standard', cost: 80000 },
-          { value: 'infinity', label: 'Infinity Edge', cost: 150000 },
-        ]}
-      />
+      {/* Group 1: Entertainment & Living */}
+      <div className="space-y-4">
+        <SectionLabel>Entertainment & Living</SectionLabel>
 
-      {/* Elevator */}
-      <FeatureSelector<ElevatorType>
-        icon={ArrowUpDown}
-        label="Residential Elevator"
-        description="Hydraulic or traction elevator"
-        value={input.elevator}
-        onChange={(v) => updateInput('elevator', v)}
-        options={[
-          { value: 'none', label: 'None', cost: 0 },
-          { value: '2stop', label: '2-Stop', cost: 50000 },
-          { value: '3stop', label: '3-Stop', cost: 75000 },
-        ]}
-      />
+        <FeatureSelector<PoolType>
+          icon={Waves}
+          label="Swimming Pool"
+          description="Gunite pool with custom finishes"
+          value={input.pool}
+          onChange={(v) => updateInput('pool', v)}
+          options={[
+            { value: 'none', label: 'No Pool', cost: 0 },
+            { value: 'standard', label: 'Standard', cost: 80000 },
+            { value: 'infinity', label: 'Infinity Edge', cost: 150000 },
+          ]}
+        />
 
-      {/* Fireplace */}
-      <FeatureSelector<FireplaceType>
-        icon={Flame}
-        label="Fireplace"
-        description="Indoor gas or masonry fireplace"
-        value={input.fireplace}
-        onChange={(v) => updateInput('fireplace', v)}
-        options={[
-          { value: 'none', label: 'None', cost: 0 },
-          { value: 'linear', label: 'Linear Gas', cost: 8000 },
-          { value: 'custom', label: 'Custom Masonry', cost: 20000 },
-        ]}
-      />
+        <FeatureToggle
+          icon={UtensilsCrossed}
+          label="Outdoor Kitchen"
+          description="Built-in grill, sink, counters, and refrigeration"
+          monthlyEstimate={fmtMonthly(35000)}
+          active={input.outdoorKitchen}
+          onClick={() => updateInput('outdoorKitchen', !input.outdoorKitchen)}
+        />
 
-      {/* Smart Home */}
-      <FeatureSelector<SmartHomeLevel>
-        icon={Wifi}
-        label="Smart Home"
-        description="Home automation & controls"
-        value={input.smartHome}
-        onChange={(v) => updateInput('smartHome', v)}
-        options={[
-          { value: 'none', label: 'None', cost: 0 },
-          { value: 'basic', label: 'Basic', cost: 6000 },
-          { value: 'standard', label: 'Full System', cost: 25000 },
-          { value: 'full', label: 'Integrated', cost: 60000 },
-        ]}
-      />
+        <FeatureSelector<FireplaceType>
+          icon={Flame}
+          label="Fireplace"
+          description="Indoor gas or masonry fireplace"
+          value={input.fireplace}
+          onChange={(v) => updateInput('fireplace', v)}
+          options={[
+            { value: 'none', label: 'None', cost: 0 },
+            { value: 'linear', label: 'Linear Gas', cost: 8000 },
+            { value: 'custom', label: 'Custom Masonry', cost: 20000 },
+          ]}
+        />
 
-      {/* Boolean toggles */}
-      <div>
-        <SectionLabel>Additional Features</SectionLabel>
-        <div className="space-y-3">
-          <FeatureToggle
-            icon={UtensilsCrossed}
-            label="Outdoor Kitchen"
-            description="Built-in grill, sink, counters, and refrigeration"
-            monthlyEstimate={fmtMonthly(35000)}
-            active={input.outdoorKitchen}
-            onClick={() => updateInput('outdoorKitchen', !input.outdoorKitchen)}
-          />
-          <FeatureToggle
-            icon={Zap}
-            label="Whole-Home Generator"
-            description="Automatic backup power for the entire home"
-            monthlyEstimate={fmtMonthly(15000)}
-            active={input.generator}
-            onClick={() => updateInput('generator', !input.generator)}
-          />
-          <FeatureToggle
-            icon={Anchor}
-            label="Seawall / Bulkhead"
-            description="Waterfront protection and dock-ready infrastructure"
-            monthlyEstimate={fmtMonthly(65000)}
-            active={input.seawall}
-            onClick={() => updateInput('seawall', !input.seawall)}
-          />
-          <FeatureToggle
-            icon={ScreenShare}
-            label="Screened Porch / Lanai"
-            description="Bug-free outdoor living, approximately 10% of home size"
-            monthlyEstimate={fmtMonthly(input.sqft * 0.1 * 50)}
-            active={input.screenedPorch}
-            onClick={() => updateInput('screenedPorch', !input.screenedPorch)}
-          />
-        </div>
-      </div>
+        <FeatureToggle
+          icon={ScreenShare}
+          label="Screened Porch / Lanai"
+          description="Bug-free outdoor living, approximately 10% of home size"
+          monthlyEstimate={fmtMonthly(input.sqft * 0.1 * 50)}
+          active={input.screenedPorch}
+          onClick={() => updateInput('screenedPorch', !input.screenedPorch)}
+        />
 
-      {/* Deck sqft */}
-      <div>
-        <SectionLabel>
-          <div className="flex items-center gap-1.5">
+        {/* Deck sqft */}
+        <div>
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--ev2-text-dim)] uppercase tracking-wider mb-3">
             <TreePine className="h-3.5 w-3.5" />
             Deck / Patio
           </div>
-        </SectionLabel>
-        <div className="bg-[var(--ev2-surface)] rounded-xl border border-[var(--ev2-border)] p-4">
-          <div className="flex items-baseline justify-between mb-3">
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-[var(--ev2-text)] tabular-nums">
-                {input.deckSqft.toLocaleString()}
-              </span>
-              <span className="text-sm text-[var(--ev2-text-dim)]">SF</span>
+          <div className="bg-[var(--ev2-surface)] rounded-xl border border-[var(--ev2-border)] p-4">
+            <div className="flex items-baseline justify-between mb-3">
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-bold text-[var(--ev2-text)] tabular-nums">
+                  {input.deckSqft.toLocaleString()}
+                </span>
+                <span className="text-sm text-[var(--ev2-text-dim)]">SF</span>
+              </div>
+              {input.deckSqft > 0 && (
+                <span className="text-[11px] text-[var(--ev2-gold)] font-medium">
+                  {fmtMonthly(input.deckSqft * 40)}
+                </span>
+              )}
             </div>
-            {input.deckSqft > 0 && (
-              <span className="text-[11px] text-[var(--ev2-gold)] font-medium">
-                {fmtMonthly(input.deckSqft * 40)}
-              </span>
-            )}
-          </div>
-          <input
-            type="range"
-            min={0}
-            max={1500}
-            step={50}
-            value={input.deckSqft}
-            onChange={(e) => updateInput('deckSqft', parseInt(e.target.value))}
-            className="w-full h-2 rounded-full appearance-none cursor-pointer
-              [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5
-              [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--ev2-gold)]
-              [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:shadow-[var(--ev2-gold-glow)]
-              [&::-webkit-slider-thumb]:cursor-pointer"
-            style={{
-              background: `linear-gradient(to right, var(--ev2-gold) 0%, var(--ev2-gold) ${deckPercent}%, var(--ev2-navy-800) ${deckPercent}%, var(--ev2-navy-800) 100%)`,
-            }}
-          />
-          <div className="flex justify-between text-[10px] text-[var(--ev2-text-dim)] mt-1">
-            <span>None</span>
-            <span>1,500 SF</span>
+            <input
+              type="range"
+              min={0}
+              max={1500}
+              step={50}
+              value={input.deckSqft}
+              onChange={(e) => updateInput('deckSqft', parseInt(e.target.value))}
+              className="w-full h-2 rounded-full appearance-none cursor-pointer
+                [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5
+                [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--ev2-gold)]
+                [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:shadow-[var(--ev2-gold-glow)]
+                [&::-webkit-slider-thumb]:cursor-pointer"
+              style={{
+                background: `linear-gradient(to right, var(--ev2-gold) 0%, var(--ev2-gold) ${deckPercent}%, var(--ev2-navy-800) ${deckPercent}%, var(--ev2-navy-800) 100%)`,
+              }}
+            />
+            <div className="flex justify-between text-[10px] text-[var(--ev2-text-dim)] mt-1">
+              <span>None</span>
+              <span>1,500 SF</span>
+            </div>
           </div>
         </div>
+      </div>
+
+      {/* Group 2: Infrastructure & Site */}
+      <div className="space-y-4">
+        <SectionLabel>Infrastructure & Site</SectionLabel>
+
+        <FeatureSelector<SolarOption>
+          icon={Sun}
+          label="Solar Panels"
+          description="Rooftop solar array for energy savings"
+          value={input.solarPanels}
+          onChange={(v) => updateInput('solarPanels', v)}
+          options={[
+            { value: 'none', label: 'None', cost: 0 },
+            { value: 'partial', label: 'Partial Array', cost: 20000 },
+            { value: 'full', label: 'Full Roof', cost: 40000 },
+          ]}
+        />
+
+        <FeatureSelector<DrivewayType>
+          icon={Car}
+          label="Driveway"
+          description="Driveway material and finish"
+          value={input.drivewayType}
+          onChange={(v) => updateInput('drivewayType', v)}
+          options={[
+            { value: 'shell', label: 'Shell', cost: 0 },
+            { value: 'concrete', label: 'Concrete', cost: 5000 },
+            { value: 'pavers', label: 'Pavers', cost: 15000 },
+          ]}
+        />
+
+        <FeatureSelector<LandscapingTier>
+          icon={Flower2}
+          label="Landscaping"
+          description="Landscaping design and irrigation"
+          value={input.landscapingTier}
+          onChange={(v) => updateInput('landscapingTier', v)}
+          options={[
+            { value: 'sod', label: 'Sod Only', cost: 0 },
+            { value: 'basic', label: 'Basic', cost: 8000 },
+            { value: 'full', label: 'Full Design', cost: 25000 },
+          ]}
+        />
+
+        <FeatureSelector<FenceType>
+          icon={Fence}
+          label="Fence"
+          description="Property perimeter fencing"
+          value={input.fenceType}
+          onChange={(v) => updateInput('fenceType', v)}
+          options={[
+            { value: 'none', label: 'None', cost: 0 },
+            { value: 'vinyl', label: 'Vinyl', cost: 15000 },
+            { value: 'aluminum', label: 'Aluminum', cost: 20000 },
+            { value: 'wood', label: 'Wood Privacy', cost: 18000 },
+          ]}
+        />
+
+        <FeatureToggle
+          icon={Droplets}
+          label="Whole-Home Water Filtration"
+          description="Multi-stage filtration system for all water in the home"
+          monthlyEstimate={fmtMonthly(5500)}
+          active={input.waterFiltration}
+          onClick={() => updateInput('waterFiltration', !input.waterFiltration)}
+        />
+
+        <FeatureToggle
+          icon={Zap}
+          label="Whole-Home Generator"
+          description="Automatic backup power for the entire home"
+          monthlyEstimate={fmtMonthly(15000)}
+          active={input.generator}
+          onClick={() => updateInput('generator', !input.generator)}
+        />
+
+        <FeatureToggle
+          icon={Anchor}
+          label="Seawall / Bulkhead"
+          description="Waterfront protection and dock-ready infrastructure"
+          monthlyEstimate={fmtMonthly(65000)}
+          active={input.seawall}
+          onClick={() => updateInput('seawall', !input.seawall)}
+        />
+      </div>
+
+      {/* Group 3: Smart & Access */}
+      <div className="space-y-4">
+        <SectionLabel>Smart & Access</SectionLabel>
+
+        <FeatureSelector<SmartHomeLevel>
+          icon={Wifi}
+          label="Smart Home"
+          description="Home automation & controls"
+          value={input.smartHome}
+          onChange={(v) => updateInput('smartHome', v)}
+          options={[
+            { value: 'none', label: 'None', cost: 0 },
+            { value: 'basic', label: 'Basic', cost: 6000 },
+            { value: 'standard', label: 'Full System', cost: 25000 },
+            { value: 'full', label: 'Integrated', cost: 60000 },
+          ]}
+        />
+
+        <FeatureSelector<ElevatorType>
+          icon={ArrowUpDown}
+          label="Residential Elevator"
+          description="Hydraulic or traction elevator"
+          value={input.elevator}
+          onChange={(v) => updateInput('elevator', v)}
+          options={[
+            { value: 'none', label: 'None', cost: 0 },
+            { value: '2stop', label: '2-Stop', cost: 50000 },
+            { value: '3stop', label: '3-Stop', cost: 75000 },
+          ]}
+        />
       </div>
     </div>
   );

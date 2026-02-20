@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Lock } from 'lucide-react';
+import { Lock, Download } from 'lucide-react';
+import { Link } from 'react-router';
 import type { V2EstimateResult } from '@/lib/estimatorV2/types';
+import { printEstimate } from '@/lib/estimatorV2/printEstimate';
 import { HeroReveal } from './HeroReveal';
 import { OutTheDoorTable } from './OutTheDoorTable';
 import { CostBreakdownBars } from './CostBreakdownBars';
@@ -11,6 +13,9 @@ import { UpsellCards } from './UpsellCards';
 import { DetailedBreakdown } from './DetailedBreakdown';
 import { LeadCaptureFormV2 } from '../LeadCaptureFormV2';
 import { FinancingCalculatorV2 } from '../FinancingCalculatorV2';
+import { ShareEstimateButton } from './ShareEstimateButton';
+import { SaveEstimateButton } from './SaveEstimateButton';
+import { useSavedEstimates } from '@/hooks/useSavedEstimates';
 
 type Props = {
   estimate: V2EstimateResult;
@@ -19,6 +24,8 @@ type Props = {
 export function ResultsPageV2({ estimate }: Props) {
   const [leadCaptured, setLeadCaptured] = useState(false);
   const midpoint = Math.round((estimate.totalLow + estimate.totalHigh) / 2);
+  const { estimates: savedEstimates } = useSavedEstimates();
+  const savedCount = savedEstimates.length;
 
   return (
     <div className="space-y-12 sm:space-y-16 pb-8">
@@ -83,22 +90,44 @@ export function ResultsPageV2({ estimate }: Props) {
         </div>
       </div>
 
-      {/* Lead capture form again at bottom if already captured — for sharing */}
+      {/* Actions & CTA — visible after lead capture */}
       {leadCaptured && (
-        <div className="text-center space-y-3 py-8 border-t border-[var(--ev2-border)]">
-          <p className="text-sm text-[var(--ev2-text-muted)]">
-            Ready to take the next step?
+        <div className="text-center space-y-5 py-8 border-t border-[var(--ev2-border)]">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 flex-wrap">
+            <button
+              type="button"
+              onClick={() => printEstimate(estimate)}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold
+                border border-[var(--ev2-border)] text-[var(--ev2-text)]
+                hover:bg-[var(--ev2-surface-hover)] transition-colors"
+            >
+              <Download className="h-4 w-4" />
+              Save as PDF
+            </button>
+            <ShareEstimateButton estimate={estimate} />
+            <SaveEstimateButton input={estimate.input} />
+            <a
+              href="https://calendly.com/rossbuilt"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold
+                text-[var(--ev2-navy-950)] bg-[var(--ev2-gold)] hover:bg-[var(--ev2-gold-light)]
+                transition-colors shadow-lg shadow-[var(--ev2-gold-glow)]"
+            >
+              Schedule a Consultation
+            </a>
+          </div>
+          {savedCount >= 2 && (
+            <Link
+              to="/estimate/compare"
+              className="inline-flex items-center gap-2 text-sm font-medium text-[var(--ev2-gold)] hover:text-[var(--ev2-gold-light)] transition-colors"
+            >
+              Compare ({savedCount}) saved estimates &rarr;
+            </Link>
+          )}
+          <p className="text-xs text-[var(--ev2-text-dim)]">
+            Save your estimate to share or reference later
           </p>
-          <a
-            href="https://calendly.com/rossbuilt"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold
-              text-[var(--ev2-navy-950)] bg-[var(--ev2-gold)] hover:bg-[var(--ev2-gold-light)]
-              transition-colors shadow-lg shadow-[var(--ev2-gold-glow)]"
-          >
-            Schedule a Consultation
-          </a>
         </div>
       )}
     </div>

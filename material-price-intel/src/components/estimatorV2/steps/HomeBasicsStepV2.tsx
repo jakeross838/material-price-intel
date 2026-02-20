@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Home, MapPin, Plus, Minus } from 'lucide-react';
-import type { EstimatorV2Input, Stories, GarageSpaces } from '@/lib/estimatorV2/types';
+import type { EstimatorV2Input, Stories, GarageSpaces, CeilingHeight, SewerType, WaterSource } from '@/lib/estimatorV2/types';
 import { LOCATIONS } from '@/lib/estimatorV2/locations';
 
 type Props = {
@@ -191,6 +191,101 @@ export function HomeBasicsStepV2({ input, updateInput }: Props) {
         />
       </div>
 
+      {/* Site & Lot */}
+      <div>
+        <SectionLabel>Site & Lot</SectionLabel>
+        <div className="space-y-4">
+          {/* Lot Size */}
+          <div className="bg-[var(--ev2-surface)] rounded-xl border border-[var(--ev2-border)] p-4">
+            <div className="flex items-baseline justify-between mb-3">
+              <span className="text-3xl font-bold text-[var(--ev2-text)] tabular-nums">
+                {input.lotSize.toFixed(2)}
+              </span>
+              <span className="text-sm text-[var(--ev2-text-dim)]">acres</span>
+            </div>
+            <input
+              type="range"
+              min={0.1}
+              max={5}
+              step={0.05}
+              value={input.lotSize}
+              onChange={(e) => updateInput('lotSize', parseFloat(e.target.value))}
+              className="w-full h-2 rounded-full appearance-none cursor-pointer
+                [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5
+                [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--ev2-gold)]
+                [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:shadow-[var(--ev2-gold-glow)]
+                [&::-webkit-slider-thumb]:cursor-pointer"
+              style={{
+                background: `linear-gradient(to right, var(--ev2-gold) 0%, var(--ev2-gold) ${((input.lotSize - 0.1) / (5 - 0.1)) * 100}%, var(--ev2-navy-800) ${((input.lotSize - 0.1) / (5 - 0.1)) * 100}%, var(--ev2-navy-800) 100%)`,
+              }}
+            />
+            <div className="flex justify-between text-[10px] text-[var(--ev2-text-dim)] mt-1">
+              <span>0.10 acres</span>
+              <span>5.00 acres</span>
+            </div>
+          </div>
+
+          {/* Ceiling Height */}
+          <div>
+            <label className="block text-xs text-[var(--ev2-text-dim)] mb-1.5">Ceiling Height</label>
+            <ToggleGroup<CeilingHeight>
+              value={input.ceilingHeight}
+              options={[
+                { value: 9, label: '9 ft' },
+                { value: 10, label: '10 ft' },
+                { value: 12, label: '12 ft' },
+              ]}
+              onChange={(v) => updateInput('ceilingHeight', v)}
+            />
+          </div>
+
+          {/* Sewer */}
+          <div>
+            <label className="block text-xs text-[var(--ev2-text-dim)] mb-1.5">Sewer</label>
+            <ToggleGroup<SewerType>
+              value={input.sewerType}
+              options={[
+                { value: 'city', label: 'City Sewer' },
+                { value: 'septic', label: 'Septic' },
+              ]}
+              onChange={(v) => updateInput('sewerType', v)}
+            />
+          </div>
+
+          {/* Water Source */}
+          <div>
+            <label className="block text-xs text-[var(--ev2-text-dim)] mb-1.5">Water Source</label>
+            <ToggleGroup<WaterSource>
+              value={input.waterSource}
+              options={[
+                { value: 'city', label: 'City Water' },
+                { value: 'well', label: 'Well' },
+              ]}
+              onChange={(v) => updateInput('waterSource', v)}
+            />
+          </div>
+
+          {/* Flood Zone */}
+          <div>
+            <label className="block text-xs text-[var(--ev2-text-dim)] mb-1.5">Flood Zone</label>
+            <button
+              type="button"
+              onClick={() => updateInput('floodZone', !input.floodZone)}
+              className={`w-full py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                input.floodZone
+                  ? 'bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)] shadow-lg shadow-[var(--ev2-gold-glow)]'
+                  : 'bg-[var(--ev2-surface)] text-[var(--ev2-text-muted)] border border-[var(--ev2-border)] hover:bg-[var(--ev2-surface-hover)] hover:text-[var(--ev2-text)]'
+              }`}
+            >
+              {input.floodZone ? 'Yes — Flood Zone' : 'No Flood Zone'}
+            </button>
+            <p className="text-[10px] text-[var(--ev2-text-dim)] mt-1.5">
+              Adds elevated construction & flood zone premiums
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Location */}
       <div>
         <SectionLabel>
@@ -231,6 +326,24 @@ export function HomeBasicsStepV2({ input, updateInput }: Props) {
             {LOCATIONS.find((l) => l.id === input.location)?.description}
           </p>
         )}
+
+        {/* Lot Address */}
+        <div className="mt-4">
+          <label className="block text-xs text-[var(--ev2-text-dim)] mb-1.5">
+            Lot Address <span className="text-[var(--ev2-text-dim)]/60">(optional)</span>
+          </label>
+          <input
+            type="text"
+            value={input.lotAddress}
+            onChange={(e) => updateInput('lotAddress', e.target.value)}
+            placeholder="123 Main St, Bradenton, FL 34209"
+            className="w-full px-3 py-2.5 rounded-lg text-sm
+              bg-[var(--ev2-surface)] border border-[var(--ev2-border)]
+              text-[var(--ev2-text)] placeholder:text-[var(--ev2-text-dim)]/40
+              focus:outline-none focus:ring-2 focus:ring-[var(--ev2-gold)]/50 focus:border-[var(--ev2-gold)]
+              transition-colors"
+          />
+        </div>
       </div>
     </div>
   );

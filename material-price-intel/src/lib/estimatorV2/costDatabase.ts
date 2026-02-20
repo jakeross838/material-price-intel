@@ -32,10 +32,9 @@ function perimeter(i: EstimatorV2Input): number {
   return Math.round(side * 4);
 }
 
-/** Exterior wall area = perimeter * story height * stories */
+/** Exterior wall area = perimeter * ceiling height * stories */
 function wallArea(i: EstimatorV2Input): number {
-  const storyHeight = i.stories >= 2 ? 9.5 : 10;
-  return Math.round(perimeter(i) * storyHeight * i.stories);
+  return Math.round(perimeter(i) * i.ceilingHeight * i.stories);
 }
 
 /** Number of interior doors (~rooms * 1.5 + closets) */
@@ -78,6 +77,11 @@ function windowCount(i: EstimatorV2Input): number {
   return Math.max(base, 8);
 }
 
+/** Lot perimeter in linear feet (for fence quantity) */
+function lotPerimeter(i: EstimatorV2Input): number {
+  return Math.round(Math.sqrt(i.lotSize * 43560) * 4);
+}
+
 // -------------------------------------------
 // Cost Items — organized by CSI division
 // -------------------------------------------
@@ -97,7 +101,7 @@ export const COST_DATABASE: CostItemDef[] = [
       premium:  [12, 16],
       luxury:   [18, 24],
     },
-    quantityFn: (i) => footprint(i) * 1.5, // lot area ~1.5x footprint
+    quantityFn: (i) => Math.round(i.lotSize * 43560 * 0.3), // 30% of lot area
     tags: ['site'],
   },
   {
@@ -171,7 +175,7 @@ export const COST_DATABASE: CostItemDef[] = [
       premium:  [48, 65],
       luxury:   [65, 85],
     },
-    quantityFn: (i) => i.elevatedConstruction ? footprint(i) : 0,
+    quantityFn: (i) => (i.elevatedConstruction || i.floodZone) ? footprint(i) : 0,
     tags: ['structure', 'coastal'],
   },
 
@@ -189,7 +193,7 @@ export const COST_DATABASE: CostItemDef[] = [
       premium:  [68, 88],
       luxury:   [95, 125],
     },
-    quantityFn: (i) => i.sqft,
+    quantityFn: (i) => Math.round(i.sqft * (i.ceilingHeight / 10)),
     tags: ['structure'],
   },
   {
@@ -590,7 +594,7 @@ export const COST_DATABASE: CostItemDef[] = [
       premium:  [35, 48],
       luxury:   [55, 75],
     },
-    quantityFn: (i) => i.sqft,
+    quantityFn: (i) => Math.round(i.sqft * (i.ceilingHeight / 10)),
     tags: ['mechanical', 'hvac'],
   },
 
@@ -874,6 +878,122 @@ export const COST_DATABASE: CostItemDef[] = [
     },
     quantityFn: (i) => i.screenedPorch ? Math.round(i.sqft * 0.1) : 0, // ~10% of home
     tags: ['specialty', 'outdoor'],
+  },
+
+  // ==========================================
+  // INFRASTRUCTURE (conditional)
+  // ==========================================
+  {
+    id: 'septic_system',
+    displayName: 'Septic System',
+    csiDivision: 'sitework',
+    unit: 'fixed',
+    costPerUnit: {
+      builder:  [15000, 20000],
+      standard: [18000, 24000],
+      premium:  [22000, 28000],
+      luxury:   [26000, 30000],
+    },
+    quantityFn: (i) => i.sewerType === 'septic' ? 1 : 0,
+    tags: ['site', 'infrastructure'],
+  },
+  {
+    id: 'well_drilling',
+    displayName: 'Well Drilling & Pump',
+    csiDivision: 'sitework',
+    unit: 'fixed',
+    costPerUnit: {
+      builder:  [8000, 12000],
+      standard: [10000, 15000],
+      premium:  [14000, 18000],
+      luxury:   [16000, 20000],
+    },
+    quantityFn: (i) => i.waterSource === 'well' ? 1 : 0,
+    tags: ['site', 'infrastructure'],
+  },
+  {
+    id: 'fence_vinyl',
+    displayName: 'Vinyl Fence',
+    csiDivision: 'sitework',
+    unit: 'lf',
+    costPerUnit: {
+      builder:  [25, 35],
+      standard: [30, 40],
+      premium:  [38, 48],
+      luxury:   [45, 55],
+    },
+    quantityFn: (i) => i.fenceType === 'vinyl' ? lotPerimeter(i) : 0,
+    tags: ['site', 'fence'],
+  },
+  {
+    id: 'fence_aluminum',
+    displayName: 'Aluminum Fence',
+    csiDivision: 'sitework',
+    unit: 'lf',
+    costPerUnit: {
+      builder:  [30, 40],
+      standard: [38, 48],
+      premium:  [50, 60],
+      luxury:   [58, 70],
+    },
+    quantityFn: (i) => i.fenceType === 'aluminum' ? lotPerimeter(i) : 0,
+    tags: ['site', 'fence'],
+  },
+  {
+    id: 'fence_wood',
+    displayName: 'Wood Privacy Fence',
+    csiDivision: 'sitework',
+    unit: 'lf',
+    costPerUnit: {
+      builder:  [22, 32],
+      standard: [30, 42],
+      premium:  [40, 52],
+      luxury:   [48, 60],
+    },
+    quantityFn: (i) => i.fenceType === 'wood' ? lotPerimeter(i) : 0,
+    tags: ['site', 'fence'],
+  },
+  {
+    id: 'solar_partial',
+    displayName: 'Solar (Partial Array)',
+    csiDivision: 'specialties',
+    unit: 'fixed',
+    costPerUnit: {
+      builder:  [15000, 18000],
+      standard: [17000, 21000],
+      premium:  [20000, 23000],
+      luxury:   [22000, 25000],
+    },
+    quantityFn: (i) => i.solarPanels === 'partial' ? 1 : 0,
+    tags: ['specialty', 'solar'],
+  },
+  {
+    id: 'solar_full',
+    displayName: 'Solar (Full Roof Array)',
+    csiDivision: 'specialties',
+    unit: 'fixed',
+    costPerUnit: {
+      builder:  [30000, 35000],
+      standard: [34000, 40000],
+      premium:  [38000, 45000],
+      luxury:   [42000, 50000],
+    },
+    quantityFn: (i) => i.solarPanels === 'full' ? 1 : 0,
+    tags: ['specialty', 'solar'],
+  },
+  {
+    id: 'water_filtration',
+    displayName: 'Whole-Home Water Filtration',
+    csiDivision: 'mechanical',
+    unit: 'fixed',
+    costPerUnit: {
+      builder:  [3000, 4500],
+      standard: [4000, 5500],
+      premium:  [5500, 7000],
+      luxury:   [6500, 8000],
+    },
+    quantityFn: (i) => i.waterFiltration ? 1 : 0,
+    tags: ['mechanical', 'filtration'],
   },
 
   // ==========================================

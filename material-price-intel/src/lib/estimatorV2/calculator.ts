@@ -52,13 +52,27 @@ function resolveFinishTier(
   switch (itemId) {
     case 'kitchen_countertops':
     case 'kitchen_cabinets':
-    case 'kitchen_appliances':
       return input.kitchenTier;
+
+    case 'kitchen_appliances': {
+      const appMap: Record<string, FinishTier> = { builder: 'builder', mid: 'standard', pro: 'premium' };
+      return appMap[input.appliancePackage] ?? input.kitchenTier;
+    }
 
     case 'bath_countertops':
     case 'bath_vanities':
     case 'plumbing_fixtures':
       return input.bathroomTier;
+
+    case 'driveway': {
+      const drvMap: Record<string, FinishTier> = { shell: 'builder', concrete: 'standard', pavers: 'premium' };
+      return drvMap[input.drivewayType] ?? input.finishLevel;
+    }
+
+    case 'landscaping': {
+      const landMap: Record<string, FinishTier> = { sod: 'builder', basic: 'standard', full: 'premium' };
+      return landMap[input.landscapingTier] ?? input.finishLevel;
+    }
 
     default:
       return input.finishLevel;

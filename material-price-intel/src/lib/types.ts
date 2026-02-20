@@ -415,6 +415,14 @@ export type EstimateBreakdownItem = {
   finishLevel?: string;
 };
 
+export type SharedEstimate = {
+  id: string;
+  estimate_params: Record<string, unknown>;
+  estimate_low: number;
+  estimate_high: number;
+  created_at: string;
+};
+
 /** Room entry as tracked by the estimator wizard's room selection step. */
 export type SelectedRoom = {
   roomId: string;
@@ -655,6 +663,12 @@ export type Database = {
             referencedColumns: ["id"];
           },
         ];
+      };
+      shared_estimates: {
+        Row: SharedEstimate;
+        Insert: Pick<SharedEstimate, "estimate_params" | "estimate_low" | "estimate_high">;
+        Update: Partial<Omit<SharedEstimate, "id" | "created_at">>;
+        Relationships: [];
       };
     };
     Views: {

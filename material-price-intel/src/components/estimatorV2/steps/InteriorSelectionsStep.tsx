@@ -1,11 +1,11 @@
 import { motion } from 'framer-motion';
 import { Sofa, Check } from 'lucide-react';
 import type {
-  EstimatorV2Input, FinishTier, FlooringType, CountertopMaterial,
+  EstimatorV2Input, FinishTier, FlooringType, CountertopMaterial, AppliancePackage,
 } from '@/lib/estimatorV2/types';
 import {
   FINISH_TIER_LABELS, FINISH_TIER_ORDER,
-  FLOORING_META, COUNTERTOP_META,
+  FLOORING_META, COUNTERTOP_META, APPLIANCE_PACKAGE_META,
 } from '@/lib/estimatorV2/types';
 
 type Props = {
@@ -253,6 +253,29 @@ export function InteriorSelectionsStep({ input, updateInput }: Props) {
         options={COUNTERTOP_META}
         images={COUNTERTOP_IMAGES}
       />
+
+      {/* Kitchen Appliance Package */}
+      <div>
+        <SectionLabel>Kitchen Appliance Package</SectionLabel>
+        <div className="grid grid-cols-3 gap-2">
+          {(Object.entries(APPLIANCE_PACKAGE_META) as [AppliancePackage, { label: string }][]).map(
+            ([key, meta]) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => updateInput('appliancePackage', key)}
+                className={`py-2.5 px-3 rounded-lg text-center transition-all duration-200 ${
+                  input.appliancePackage === key
+                    ? 'bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)] shadow-lg shadow-[var(--ev2-gold-glow)]'
+                    : 'bg-[var(--ev2-surface)] text-[var(--ev2-text-muted)] border border-[var(--ev2-border)] hover:bg-[var(--ev2-surface-hover)] hover:text-[var(--ev2-text)]'
+                }`}
+              >
+                <p className="text-xs font-semibold">{meta.label}</p>
+              </button>
+            ),
+          )}
+        </div>
+      </div>
     </div>
   );
 }

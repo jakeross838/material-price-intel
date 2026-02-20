@@ -32,13 +32,13 @@ export function HeroReveal({ estimate }: Props) {
     if (confettiFired.current || prefersReducedMotion) return;
     confettiFired.current = true;
     const timer = setTimeout(() => {
-      const gold = '#c9a861';
-      const navy = '#162038';
+      const white = '#ffffff';
+      const blue = '#5b8497';
       confetti({
         particleCount: 80,
         spread: 70,
         origin: { y: 0.6 },
-        colors: [gold, navy, '#ddc48a', '#ffffff'],
+        colors: [white, blue, '#e8eff3', '#b0c4ce'],
         disableForReducedMotion: true,
       });
     }, 2000); // Fire after counter animation
@@ -113,6 +113,9 @@ export function HeroReveal({ estimate }: Props) {
           {estimate.input.stories} Story &bull;{' '}
           {estimate.input.bedrooms} Bed / {estimate.input.bathrooms} Bath &bull;{' '}
           {estimate.locationName}
+          {estimate.input.lotAddress && (
+            <> &bull; {estimate.input.lotAddress}</>
+          )}
         </span>
       </motion.div>
     </motion.div>

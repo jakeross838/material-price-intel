@@ -26,14 +26,22 @@ const LazyEstimatePageV2 = lazy(() =>
   import("./pages/EstimatePageV2").then((m) => ({ default: m.EstimatePageV2 }))
 );
 
+const LazySharedEstimatePage = lazy(() =>
+  import("./pages/SharedEstimatePage").then((m) => ({ default: m.SharedEstimatePage }))
+);
+
+const LazyCompareEstimatesPage = lazy(() =>
+  import("./pages/CompareEstimatesPage").then((m) => ({ default: m.CompareEstimatesPage }))
+);
+
 function EstimateV2Loader() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center">
+        <div className="min-h-screen bg-[#091e28] flex items-center justify-center">
           <div className="text-center space-y-3">
-            <div className="w-8 h-8 border-2 border-[#c9a861]/30 border-t-[#c9a861] rounded-full animate-spin mx-auto" />
-            <p className="text-sm text-[#8b8a85]">Loading estimator...</p>
+            <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto" />
+            <p className="text-sm text-[#8d9a9f]">Loading estimator...</p>
           </div>
         </div>
       }
@@ -47,6 +55,8 @@ function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/estimate/shared/:id" element={<Suspense fallback={<div className="min-h-screen bg-[#091e28] flex items-center justify-center"><div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" /></div>}><LazySharedEstimatePage /></Suspense>} />
+      <Route path="/estimate/compare" element={<Suspense fallback={<div className="min-h-screen bg-[#091e28] flex items-center justify-center"><div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" /></div>}><LazyCompareEstimatesPage /></Suspense>} />
       <Route path="/estimate" element={<EstimateV2Loader />} />
       <Route path="/estimate/v1" element={<EstimatePage />} />
       <Route path="/catalog" element={<CatalogPage />} />

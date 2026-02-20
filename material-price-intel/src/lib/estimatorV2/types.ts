@@ -24,6 +24,9 @@ export const FINISH_TIER_ORDER: FinishTier[] = ['builder', 'standard', 'premium'
 
 export type Stories = 1 | 2 | 3;
 export type GarageSpaces = 0 | 1 | 2 | 3;
+export type CeilingHeight = 9 | 10 | 12;
+export type SewerType = 'city' | 'septic';
+export type WaterSource = 'city' | 'well';
 
 // -------------------------------------------
 // Step 2: Style & Exterior
@@ -93,6 +96,14 @@ export const WINDOW_GRADE_META: Record<WindowGrade, { label: string; tier: Finis
 // Step 3: Interior
 // -------------------------------------------
 
+export type AppliancePackage = 'builder' | 'mid' | 'pro';
+
+export const APPLIANCE_PACKAGE_META: Record<AppliancePackage, { label: string }> = {
+  builder: { label: 'Builder Package' },
+  mid: { label: 'Mid-Range' },
+  pro: { label: 'Professional' },
+};
+
 export type FlooringType = 'lvp' | 'engineered' | 'solid_hardwood' | 'european_oak';
 
 export const FLOORING_META: Record<FlooringType, { label: string; tier: FinishTier; popular?: boolean }> = {
@@ -115,6 +126,30 @@ export const COUNTERTOP_META: Record<CountertopMaterial, { label: string; tier: 
 // Step 4: Special Features
 // -------------------------------------------
 
+export type SolarOption = 'none' | 'partial' | 'full';
+export type DrivewayType = 'concrete' | 'pavers' | 'shell';
+export type LandscapingTier = 'sod' | 'basic' | 'full';
+export type FenceType = 'none' | 'vinyl' | 'aluminum' | 'wood';
+
+export const DRIVEWAY_META: Record<DrivewayType, { label: string }> = {
+  shell: { label: 'Shell' },
+  concrete: { label: 'Concrete' },
+  pavers: { label: 'Pavers' },
+};
+
+export const LANDSCAPING_META: Record<LandscapingTier, { label: string }> = {
+  sod: { label: 'Sod Only' },
+  basic: { label: 'Basic' },
+  full: { label: 'Full Design' },
+};
+
+export const FENCE_META: Record<FenceType, { label: string }> = {
+  none: { label: 'None' },
+  vinyl: { label: 'Vinyl' },
+  aluminum: { label: 'Aluminum' },
+  wood: { label: 'Wood Privacy' },
+};
+
 export type PoolType = 'none' | 'standard' | 'infinity';
 export type ElevatorType = 'none' | '2stop' | '3stop';
 export type FireplaceType = 'none' | 'linear' | 'custom';
@@ -131,7 +166,13 @@ export type EstimatorV2Input = {
   bedrooms: number;
   bathrooms: number;
   garageSpaces: GarageSpaces;
+  lotSize: number;
+  ceilingHeight: CeilingHeight;
+  sewerType: SewerType;
+  waterSource: WaterSource;
+  floodZone: boolean;
   location: string;
+  lotAddress: string;
 
   // Step 2: Style & Exterior
   archStyle: ArchStyle;
@@ -146,6 +187,7 @@ export type EstimatorV2Input = {
   flooringType: FlooringType;
   countertopMaterial: CountertopMaterial;
   bathroomTier: FinishTier;
+  appliancePackage: AppliancePackage;
 
   // Step 4: Special Features
   pool: PoolType;
@@ -157,6 +199,11 @@ export type EstimatorV2Input = {
   seawall: boolean;
   deckSqft: number;
   screenedPorch: boolean;
+  solarPanels: SolarOption;
+  drivewayType: DrivewayType;
+  landscapingTier: LandscapingTier;
+  fenceType: FenceType;
+  waterFiltration: boolean;
 };
 
 // -------------------------------------------
@@ -169,7 +216,13 @@ export const DEFAULT_V2_INPUT: EstimatorV2Input = {
   bedrooms: 3,
   bathrooms: 2,
   garageSpaces: 2,
+  lotSize: 0.25,
+  ceilingHeight: 10,
+  sewerType: 'city',
+  waterSource: 'city',
+  floodZone: false,
   location: 'bradenton',
+  lotAddress: '',
 
   archStyle: 'coastal',
   claddingType: 'stucco',
@@ -182,6 +235,7 @@ export const DEFAULT_V2_INPUT: EstimatorV2Input = {
   flooringType: 'engineered',
   countertopMaterial: 'granite',
   bathroomTier: 'standard',
+  appliancePackage: 'mid',
 
   pool: 'none',
   elevator: 'none',
@@ -192,6 +246,11 @@ export const DEFAULT_V2_INPUT: EstimatorV2Input = {
   seawall: false,
   deckSqft: 0,
   screenedPorch: false,
+  solarPanels: 'none',
+  drivewayType: 'concrete',
+  landscapingTier: 'basic',
+  fenceType: 'none',
+  waterFiltration: false,
 };
 
 // -------------------------------------------

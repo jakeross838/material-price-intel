@@ -47,7 +47,7 @@ export function EstimatePageV2() {
   // Initialize from draft if available
   const [step, setStep] = useState(() => draft?.step ?? 0);
   const [direction, setDirection] = useState(1);
-  const [input, setInput] = useState<EstimatorV2Input>(() => draft?.input ?? { ...DEFAULT_V2_INPUT });
+  const [input, setInput] = useState<EstimatorV2Input>(() => ({ ...DEFAULT_V2_INPUT, ...(draft?.input ?? {}) }));
   const [showDraftBanner, setShowDraftBanner] = useState(!!draft);
 
   // Memoized estimate calculation (recalculates when input changes)

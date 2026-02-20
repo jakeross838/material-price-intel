@@ -126,6 +126,9 @@ function specialtyWeeks(input: EstimatorV2Input): number {
   if (input.seawall) weeks += 4;
   if (input.smartHome === 'full') weeks += 2;
   else if (input.smartHome === 'standard') weeks += 1;
+  if (input.solarPanels !== 'none') weeks += input.solarPanels === 'full' ? 2 : 1;
+  if (input.sewerType === 'septic') weeks += 1;
+  if (input.waterSource === 'well') weeks += 1;
   return weeks;
 }
 
@@ -147,9 +150,14 @@ export function calculateSchedule(input: EstimatorV2Input): ScheduleResult {
       duration += (input.stories - 1) * 1.5;
     }
 
-    // Elevated construction adds to foundation
-    if (input.elevatedConstruction && template.id === 'foundation') {
+    // Elevated construction or flood zone adds to foundation
+    if ((input.elevatedConstruction || input.floodZone) && template.id === 'foundation') {
       duration += 3;
+    }
+
+    // 12-ft ceilings add time to framing, insulation/drywall, interior finishes
+    if (input.ceilingHeight === 12 && ['framing', 'insulation_drywall', 'interior_finishes'].includes(template.id)) {
+      duration += 0.5;
     }
 
     // Specialty phase override

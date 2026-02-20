@@ -22,9 +22,9 @@ const ACHIEVEMENT_DEFS: AchievementDef[] = [
   {
     id: 'eco_warrior',
     label: 'Eco Warrior',
-    description: 'Premium insulation + high-efficiency HVAC = minimal carbon footprint',
+    description: 'Solar power + premium construction = minimal carbon footprint',
     icon: '🌿',
-    testFn: (i) => (i.finishLevel === 'premium' || i.finishLevel === 'luxury') && i.generator === false,
+    testFn: (i) => i.solarPanels !== 'none' && (i.finishLevel === 'premium' || i.finishLevel === 'luxury'),
   },
   {
     id: 'chefs_paradise',

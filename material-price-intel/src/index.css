@@ -137,27 +137,30 @@
 }
 
 /* ===========================================
-   Estimator V2 Dark Luxury Theme
+   Estimator V2 — Ross Built Brand Theme
+   Stone Blue + Sand palette from rossbuilt.com
    =========================================== */
 
 .estimator-v2 {
-  --ev2-navy-950: #0a0e1a;
-  --ev2-navy-900: #0f1629;
-  --ev2-navy-800: #162038;
-  --ev2-navy-700: #1e2d4a;
-  --ev2-navy-600: #2a3d5e;
-  --ev2-charcoal: #1a1d2e;
-  --ev2-gold: #c9a861;
-  --ev2-gold-light: #ddc48a;
-  --ev2-gold-dark: #a8893e;
-  --ev2-gold-glow: rgba(201, 168, 97, 0.15);
-  --ev2-text: #e8e4dc;
-  --ev2-text-muted: #8b8a85;
-  --ev2-text-dim: #5c5b57;
-  --ev2-surface: rgba(255, 255, 255, 0.04);
-  --ev2-surface-hover: rgba(255, 255, 255, 0.07);
-  --ev2-border: rgba(255, 255, 255, 0.08);
-  --ev2-border-gold: rgba(201, 168, 97, 0.3);
+  --ev2-navy-950: #091e28;
+  --ev2-navy-900: #0e2a38;
+  --ev2-navy-800: #153a4d;
+  --ev2-navy-700: #1f4f68;
+  --ev2-navy-600: #2d6a87;
+  --ev2-charcoal: #0c1f2a;
+  --ev2-gold: #ffffff;
+  --ev2-gold-light: #e8eff3;
+  --ev2-gold-dark: #b0c4ce;
+  --ev2-gold-glow: rgba(255, 255, 255, 0.12);
+  --ev2-text: #f0f4f6;
+  --ev2-text-muted: #8d9a9f;
+  --ev2-text-dim: #5a6b72;
+  --ev2-surface: rgba(255, 255, 255, 0.05);
+  --ev2-surface-hover: rgba(255, 255, 255, 0.09);
+  --ev2-border: rgba(255, 255, 255, 0.10);
+  --ev2-border-gold: rgba(255, 255, 255, 0.25);
+  --ev2-blue: #5b8497;
+  --ev2-blue-light: #7ea8b9;
 }
 
 /* ===========================================
