@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, Download } from 'lucide-react';
 import { Link } from 'react-router';
 import type { V2EstimateResult } from '@/lib/estimatorV2/types';
@@ -21,6 +21,15 @@ type Props = {
   estimate: V2EstimateResult;
 };
 
+const sectionCascade = {
+  hidden: { opacity: 0, y: 30 },
+  show: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.12, duration: 0.5, ease: 'easeOut' },
+  }),
+};
+
 export function ResultsPageV2({ estimate }: Props) {
   const [leadCaptured, setLeadCaptured] = useState(false);
   const midpoint = Math.round((estimate.totalLow + estimate.totalHigh) / 2);
@@ -30,15 +39,30 @@ export function ResultsPageV2({ estimate }: Props) {
   return (
     <div className="space-y-12 sm:space-y-16 pb-8">
       {/* Hero: animated counter + headline — always visible */}
-      <HeroReveal estimate={estimate} />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+      >
+        <HeroReveal estimate={estimate} />
+      </motion.div>
 
       {/* Lead capture form — shown before gate */}
-      {!leadCaptured && (
-        <LeadCaptureFormV2
-          estimate={estimate}
-          onLeadCaptured={() => setLeadCaptured(true)}
-        />
-      )}
+      <AnimatePresence>
+        {!leadCaptured && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20, height: 0, marginTop: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <LeadCaptureFormV2
+              estimate={estimate}
+              onLeadCaptured={() => setLeadCaptured(true)}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Gated content: blurred if not captured, full if captured */}
       <div className="relative">
@@ -58,41 +82,58 @@ export function ResultsPageV2({ estimate }: Props) {
           </div>
         )}
 
-        <div
-          className={`transition-all duration-700 ${
-            leadCaptured
-              ? 'filter-none'
-              : 'blur-md opacity-60 pointer-events-none select-none'
-          }`}
+        <motion.div
+          animate={leadCaptured ? { filter: 'blur(0px)', opacity: 1 } : { filter: 'blur(8px)', opacity: 0.6 }}
+          transition={{ duration: 0.7 }}
+          className={!leadCaptured ? 'pointer-events-none select-none' : ''}
         >
           <div className="space-y-12 sm:space-y-16">
             {/* Out-the-door table */}
-            <OutTheDoorTable estimate={estimate} />
+            <motion.div variants={sectionCascade} initial="hidden" animate={leadCaptured ? 'show' : 'hidden'} custom={0}>
+              <OutTheDoorTable estimate={estimate} />
+            </motion.div>
 
             {/* Cost bars by division */}
-            <CostBreakdownBars estimate={estimate} />
+            <motion.div variants={sectionCascade} initial="hidden" animate={leadCaptured ? 'show' : 'hidden'} custom={1}>
+              <CostBreakdownBars estimate={estimate} />
+            </motion.div>
 
             {/* Financing calculator */}
-            <FinancingCalculatorV2 outTheDoorMidpoint={midpoint} />
+            <motion.div variants={sectionCascade} initial="hidden" animate={leadCaptured ? 'show' : 'hidden'} custom={2}>
+              <FinancingCalculatorV2 outTheDoorMidpoint={midpoint} />
+            </motion.div>
 
             {/* Construction timeline */}
-            <ScheduleTimeline schedule={estimate.schedule} />
+            <motion.div variants={sectionCascade} initial="hidden" animate={leadCaptured ? 'show' : 'hidden'} custom={3}>
+              <ScheduleTimeline schedule={estimate.schedule} />
+            </motion.div>
 
             {/* Achievement badges */}
-            <AchievementBadges achievements={estimate.achievements} />
+            <motion.div variants={sectionCascade} initial="hidden" animate={leadCaptured ? 'show' : 'hidden'} custom={4}>
+              <AchievementBadges achievements={estimate.achievements} />
+            </motion.div>
 
             {/* Upsell suggestions */}
-            <UpsellCards estimate={estimate} />
+            <motion.div variants={sectionCascade} initial="hidden" animate={leadCaptured ? 'show' : 'hidden'} custom={5}>
+              <UpsellCards estimate={estimate} />
+            </motion.div>
 
             {/* Detailed line items */}
-            <DetailedBreakdown estimate={estimate} />
+            <motion.div variants={sectionCascade} initial="hidden" animate={leadCaptured ? 'show' : 'hidden'} custom={6}>
+              <DetailedBreakdown estimate={estimate} />
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Actions & CTA — visible after lead capture */}
       {leadCaptured && (
-        <div className="text-center space-y-5 py-8 border-t border-[var(--ev2-border)]">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.4 }}
+          className="text-center space-y-5 py-8 border-t border-[var(--ev2-border)]"
+        >
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 flex-wrap">
             <button
               type="button"
@@ -132,7 +173,7 @@ export function ResultsPageV2({ estimate }: Props) {
               &rarr;
             </Link>
           )}
-        </div>
+        </motion.div>
       )}
     </div>
   );

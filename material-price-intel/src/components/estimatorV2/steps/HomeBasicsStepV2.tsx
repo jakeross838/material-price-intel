@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Home, MapPin, Plus, Minus } from 'lucide-react';
 import type { EstimatorV2Input, Stories, GarageSpaces, CeilingHeight, SewerType, WaterSource } from '@/lib/estimatorV2/types';
 import { LOCATIONS } from '@/lib/estimatorV2/locations';
@@ -8,14 +8,24 @@ type Props = {
   updateInput: <K extends keyof EstimatorV2Input>(key: K, value: EstimatorV2Input[K]) => void;
 };
 
+const stagger = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.08 } },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
+};
+
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-3 mb-3">
+    <motion.div variants={fadeUp} className="flex items-center gap-3 mb-3">
       <h3 className="text-xs font-semibold text-[var(--ev2-text-dim)] uppercase tracking-wider whitespace-nowrap">
         {children}
       </h3>
       <div className="flex-1 h-px bg-gradient-to-r from-[var(--ev2-blue)]/30 to-transparent" />
-    </div>
+    </motion.div>
   );
 }
 
@@ -33,36 +43,47 @@ function Counter({
   onChange: (v: number) => void;
 }) {
   return (
-    <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--ev2-surface)] border border-[var(--ev2-border)]">
+    <motion.div
+      variants={fadeUp}
+      className="flex items-center justify-between p-3 rounded-xl bg-[var(--ev2-surface)] border border-[var(--ev2-border)]"
+    >
       <span className="text-sm font-medium text-[var(--ev2-text)]">{label}</span>
       <div className="flex items-center gap-3">
-        <button
+        <motion.button
           type="button"
           onClick={() => onChange(Math.max(min, value - 1))}
           disabled={value <= min}
+          whileTap={{ scale: 0.85 }}
           className="w-8 h-8 rounded-full flex items-center justify-center
             bg-[var(--ev2-navy-800)] text-[var(--ev2-text-muted)]
             hover:bg-[var(--ev2-navy-700)] hover:text-[var(--ev2-text)]
             disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
         >
           <Minus className="h-3.5 w-3.5" />
-        </button>
-        <span className="text-lg font-bold text-[var(--ev2-text)] tabular-nums w-8 text-center">
+        </motion.button>
+        <motion.span
+          key={value}
+          initial={{ scale: 1.3, opacity: 0.5 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+          className="text-lg font-bold text-[var(--ev2-text)] tabular-nums w-8 text-center"
+        >
           {value}
-        </span>
-        <button
+        </motion.span>
+        <motion.button
           type="button"
           onClick={() => onChange(Math.min(max, value + 1))}
           disabled={value >= max}
+          whileTap={{ scale: 0.85 }}
           className="w-8 h-8 rounded-full flex items-center justify-center
             bg-[var(--ev2-navy-800)] text-[var(--ev2-text-muted)]
             hover:bg-[var(--ev2-navy-700)] hover:text-[var(--ev2-text)]
             disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
         >
           <Plus className="h-3.5 w-3.5" />
-        </button>
+        </motion.button>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -76,22 +97,29 @@ function ToggleGroup<T extends string | number>({
   onChange: (v: T) => void;
 }) {
   return (
-    <div className="flex gap-2">
-      {options.map((opt) => (
-        <button
-          key={String(opt.value)}
-          type="button"
-          onClick={() => onChange(opt.value)}
-          className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-            value === opt.value
-              ? 'bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)] shadow-lg shadow-[var(--ev2-gold-glow)]'
-              : 'bg-[var(--ev2-surface)] text-[var(--ev2-text-muted)] border border-[var(--ev2-border)] hover:bg-[var(--ev2-surface-hover)] hover:text-[var(--ev2-text)]'
-          }`}
-        >
-          {opt.label}
-        </button>
-      ))}
-    </div>
+    <motion.div variants={fadeUp} className="flex gap-2">
+      {options.map((opt) => {
+        const isSelected = value === opt.value;
+        return (
+          <motion.button
+            key={String(opt.value)}
+            type="button"
+            onClick={() => onChange(opt.value)}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.95 }}
+            animate={isSelected ? { scale: [0.95, 1.05, 1] } : {}}
+            transition={{ duration: 0.25 }}
+            className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+              isSelected
+                ? 'bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)] shadow-lg shadow-[var(--ev2-gold-glow)]'
+                : 'bg-[var(--ev2-surface)] text-[var(--ev2-text-muted)] border border-[var(--ev2-border)] hover:bg-[var(--ev2-surface-hover)] hover:text-[var(--ev2-text)]'
+            }`}
+          >
+            {opt.label}
+          </motion.button>
+        );
+      })}
+    </motion.div>
   );
 }
 
@@ -99,26 +127,42 @@ export function HomeBasicsStepV2({ input, updateInput }: Props) {
   const sqftPercent = ((input.sqft - 1200) / (10000 - 1200)) * 100;
 
   return (
-    <div className="space-y-8">
+    <motion.div
+      className="space-y-8"
+      variants={stagger}
+      initial="hidden"
+      animate="show"
+    >
       {/* Header */}
-      <div className="text-center">
-        <div className="w-14 h-14 rounded-2xl bg-[var(--ev2-gold)]/10 flex items-center justify-center mx-auto mb-4">
+      <motion.div variants={fadeUp} className="text-center">
+        <motion.div
+          initial={{ scale: 0, rotate: -20 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
+          className="w-14 h-14 rounded-2xl bg-[var(--ev2-gold)]/10 flex items-center justify-center mx-auto mb-4"
+        >
           <Home className="h-7 w-7 text-[var(--ev2-gold)]" />
-        </div>
+        </motion.div>
         <h2 className="text-2xl font-bold text-[var(--ev2-text)]">Home Basics</h2>
         <p className="text-[var(--ev2-text-muted)] text-sm mt-1">
           Define the size and layout of your dream home
         </p>
-      </div>
+      </motion.div>
 
       {/* Square Footage */}
-      <div>
+      <motion.div variants={fadeUp}>
         <SectionLabel>Square Footage</SectionLabel>
         <div className="bg-[var(--ev2-surface)] rounded-xl border border-[var(--ev2-border)] p-4">
           <div className="flex items-baseline justify-between mb-3">
-            <span className="text-3xl font-bold text-[var(--ev2-text)] tabular-nums">
+            <motion.span
+              key={input.sqft}
+              initial={{ scale: 1.15, opacity: 0.6 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+              className="text-3xl font-bold text-[var(--ev2-text)] tabular-nums"
+            >
               {input.sqft.toLocaleString()}
-            </span>
+            </motion.span>
             <span className="text-sm text-[var(--ev2-text-dim)]">SF</span>
           </div>
           <input
@@ -142,10 +186,10 @@ export function HomeBasicsStepV2({ input, updateInput }: Props) {
             <span>10,000 SF</span>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Stories */}
-      <div>
+      <motion.div variants={fadeUp}>
         <SectionLabel>Stories</SectionLabel>
         <ToggleGroup<Stories>
           value={input.stories}
@@ -156,10 +200,10 @@ export function HomeBasicsStepV2({ input, updateInput }: Props) {
           ]}
           onChange={(v) => updateInput('stories', v)}
         />
-      </div>
+      </motion.div>
 
       {/* Bedrooms & Bathrooms */}
-      <div>
+      <motion.div variants={fadeUp}>
         <SectionLabel>Bedrooms & Bathrooms</SectionLabel>
         <div className="space-y-2">
           <Counter
@@ -177,10 +221,10 @@ export function HomeBasicsStepV2({ input, updateInput }: Props) {
             onChange={(v) => updateInput('bathrooms', v)}
           />
         </div>
-      </div>
+      </motion.div>
 
       {/* Garage */}
-      <div>
+      <motion.div variants={fadeUp}>
         <SectionLabel>Garage</SectionLabel>
         <ToggleGroup<GarageSpaces>
           value={input.garageSpaces}
@@ -192,18 +236,24 @@ export function HomeBasicsStepV2({ input, updateInput }: Props) {
           ]}
           onChange={(v) => updateInput('garageSpaces', v)}
         />
-      </div>
+      </motion.div>
 
       {/* Site & Lot */}
-      <div>
+      <motion.div variants={fadeUp}>
         <SectionLabel>Site & Lot</SectionLabel>
         <div className="space-y-4">
           {/* Lot Size */}
           <div className="bg-[var(--ev2-surface)] rounded-xl border border-[var(--ev2-border)] p-4">
             <div className="flex items-baseline justify-between mb-3">
-              <span className="text-3xl font-bold text-[var(--ev2-text)] tabular-nums">
+              <motion.span
+                key={input.lotSize}
+                initial={{ scale: 1.15, opacity: 0.6 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                className="text-3xl font-bold text-[var(--ev2-text)] tabular-nums"
+              >
                 {input.lotSize.toFixed(2)}
-              </span>
+              </motion.span>
               <span className="text-sm text-[var(--ev2-text-dim)]">acres</span>
             </div>
             <input
@@ -271,9 +321,12 @@ export function HomeBasicsStepV2({ input, updateInput }: Props) {
           {/* Flood Zone */}
           <div>
             <label className="block text-xs text-[var(--ev2-text-dim)] mb-1.5">Flood Zone</label>
-            <button
+            <motion.button
               type="button"
               onClick={() => updateInput('floodZone', !input.floodZone)}
+              whileTap={{ scale: 0.95 }}
+              animate={input.floodZone ? { scale: [0.95, 1.05, 1] } : {}}
+              transition={{ duration: 0.25 }}
               className={`w-full py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                 input.floodZone
                   ? 'bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)] shadow-lg shadow-[var(--ev2-gold-glow)]'
@@ -281,16 +334,16 @@ export function HomeBasicsStepV2({ input, updateInput }: Props) {
               }`}
             >
               {input.floodZone ? 'Yes — Flood Zone' : 'No Flood Zone'}
-            </button>
+            </motion.button>
             <p className="text-[10px] text-[var(--ev2-text-dim)] mt-1.5">
               Adds elevated construction & flood zone premiums
             </p>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Location */}
-      <div>
+      <motion.div variants={fadeUp}>
         <SectionLabel>
           <div className="flex items-center gap-1.5">
             <MapPin className="h-3.5 w-3.5" />
@@ -298,21 +351,25 @@ export function HomeBasicsStepV2({ input, updateInput }: Props) {
           </div>
         </SectionLabel>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {LOCATIONS.map((loc) => (
+          {LOCATIONS.map((loc) => {
+            const isLocSelected = input.location === loc.id;
+            return (
             <motion.button
               key={loc.id}
               type="button"
               onClick={() => updateInput('location', loc.id)}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.95 }}
+              animate={isLocSelected ? { scale: [0.95, 1.05, 1] } : {}}
+              transition={{ duration: 0.25 }}
               className={`relative p-3 rounded-xl text-left transition-all duration-200 ${
-                input.location === loc.id
-                  ? 'bg-[var(--ev2-gold-glow)] ring-2 ring-[var(--ev2-gold)]'
-                  : 'bg-[var(--ev2-surface)] border border-[var(--ev2-border)] hover:bg-[var(--ev2-surface-hover)]'
+                isLocSelected
+                  ? 'bg-[var(--ev2-gold-glow)] ring-2 ring-[var(--ev2-gold)] ev2-active-glow'
+                  : 'bg-[var(--ev2-surface)] border border-[var(--ev2-border)] hover:bg-[var(--ev2-surface-hover)] ev2-card-hover'
               }`}
             >
               <p className={`text-sm font-semibold leading-tight ${
-                input.location === loc.id ? 'text-[var(--ev2-text)]' : 'text-[var(--ev2-text-muted)]'
+                isLocSelected ? 'text-[var(--ev2-text)]' : 'text-[var(--ev2-text-muted)]'
               }`}>
                 {loc.label}
               </p>
@@ -322,7 +379,8 @@ export function HomeBasicsStepV2({ input, updateInput }: Props) {
                 </p>
               )}
             </motion.button>
-          ))}
+            );
+          })}
         </div>
         {input.location && (
           <p className="text-xs text-[var(--ev2-text-dim)] mt-2">
@@ -347,7 +405,7 @@ export function HomeBasicsStepV2({ input, updateInput }: Props) {
               transition-colors"
           />
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

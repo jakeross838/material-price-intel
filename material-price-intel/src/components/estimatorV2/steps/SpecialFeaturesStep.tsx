@@ -15,14 +15,24 @@ type Props = {
   updateInput: <K extends keyof EstimatorV2Input>(key: K, value: EstimatorV2Input[K]) => void;
 };
 
+const stagger = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.08 } },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
+};
+
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-3 mb-3">
+    <motion.div variants={fadeUp} className="flex items-center gap-3 mb-3">
       <h3 className="text-xs font-semibold text-[var(--ev2-text-dim)] uppercase tracking-wider whitespace-nowrap">
         {children}
       </h3>
       <div className="flex-1 h-px bg-gradient-to-r from-[var(--ev2-blue)]/30 to-transparent" />
-    </div>
+    </motion.div>
   );
 }
 
@@ -224,20 +234,30 @@ export function SpecialFeaturesStep({ input, updateInput }: Props) {
   const deckPercent = ((input.deckSqft) / 1500) * 100;
 
   return (
-    <div className="space-y-8">
+    <motion.div
+      className="space-y-8"
+      variants={stagger}
+      initial="hidden"
+      animate="show"
+    >
       {/* Header */}
-      <div className="text-center">
-        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[var(--ev2-blue)]/20 to-[var(--ev2-gold)]/10 flex items-center justify-center mx-auto mb-4">
+      <motion.div variants={fadeUp} className="text-center">
+        <motion.div
+          initial={{ scale: 0, rotate: -20 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
+          className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[var(--ev2-blue)]/20 to-[var(--ev2-gold)]/10 flex items-center justify-center mx-auto mb-4"
+        >
           <Sparkles className="h-7 w-7 text-[var(--ev2-gold)]" />
-        </div>
+        </motion.div>
         <h2 className="text-2xl font-bold text-[var(--ev2-text)]">Special Features</h2>
         <p className="text-[var(--ev2-text-muted)] text-sm mt-1">
           Add the features that make your home extraordinary
         </p>
-      </div>
+      </motion.div>
 
       {/* Group 1: Entertainment & Living */}
-      <div className="space-y-4">
+      <motion.div variants={fadeUp} className="space-y-4">
         <SectionLabel>Entertainment & Living</SectionLabel>
 
         <FeatureSelector<PoolType>
@@ -293,9 +313,15 @@ export function SpecialFeaturesStep({ input, updateInput }: Props) {
           <div className="bg-[var(--ev2-surface)] rounded-xl border border-[var(--ev2-border)] p-4">
             <div className="flex items-baseline justify-between mb-3">
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-[var(--ev2-text)] tabular-nums">
+                <motion.span
+                  key={input.deckSqft}
+                  initial={{ scale: 1.15, opacity: 0.6 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                  className="text-2xl font-bold text-[var(--ev2-text)] tabular-nums"
+                >
                   {input.deckSqft.toLocaleString()}
-                </span>
+                </motion.span>
                 <span className="text-sm text-[var(--ev2-text-dim)]">SF</span>
               </div>
               {input.deckSqft > 0 && (
@@ -326,10 +352,10 @@ export function SpecialFeaturesStep({ input, updateInput }: Props) {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Group 2: Infrastructure & Site */}
-      <div className="space-y-4">
+      <motion.div variants={fadeUp} className="space-y-4">
         <SectionLabel>Infrastructure & Site</SectionLabel>
 
         <FeatureSelector<SolarOption>
@@ -411,10 +437,10 @@ export function SpecialFeaturesStep({ input, updateInput }: Props) {
           active={input.seawall}
           onClick={() => updateInput('seawall', !input.seawall)}
         />
-      </div>
+      </motion.div>
 
       {/* Group 3: Smart & Access */}
-      <div className="space-y-4">
+      <motion.div variants={fadeUp} className="space-y-4">
         <SectionLabel>Smart & Access</SectionLabel>
 
         <FeatureSelector<SmartHomeLevel>
@@ -443,7 +469,7 @@ export function SpecialFeaturesStep({ input, updateInput }: Props) {
             { value: '3stop', label: '3-Stop', cost: 75000 },
           ]}
         />
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

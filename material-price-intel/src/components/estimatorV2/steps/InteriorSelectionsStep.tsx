@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Sofa, Check } from 'lucide-react';
 import type {
   EstimatorV2Input, FinishTier, FlooringType, CountertopMaterial, AppliancePackage,
@@ -13,14 +13,24 @@ type Props = {
   updateInput: <K extends keyof EstimatorV2Input>(key: K, value: EstimatorV2Input[K]) => void;
 };
 
+const stagger = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.08 } },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
+};
+
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-3 mb-3">
+    <motion.div variants={fadeUp} className="flex items-center gap-3 mb-3">
       <h3 className="text-xs font-semibold text-[var(--ev2-text-dim)] uppercase tracking-wider whitespace-nowrap">
         {children}
       </h3>
       <div className="flex-1 h-px bg-gradient-to-r from-[var(--ev2-blue)]/30 to-transparent" />
-    </div>
+    </motion.div>
   );
 }
 
@@ -74,25 +84,32 @@ function TierSelector({
         )}
       </div>
       <div className="grid grid-cols-4 gap-2">
-        {FINISH_TIER_ORDER.map((tier) => (
-          <button
+        {FINISH_TIER_ORDER.map((tier) => {
+          const isTierSelected = value === tier;
+          return (
+          <motion.button
             key={tier}
             type="button"
             onClick={() => onChange(tier)}
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.93 }}
+            animate={isTierSelected ? { scale: [0.93, 1.06, 1] } : {}}
+            transition={{ duration: 0.25 }}
             className={`py-2.5 px-2 rounded-lg text-center transition-all duration-200 ${
-              value === tier
+              isTierSelected
                 ? 'bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)] shadow-lg shadow-[var(--ev2-gold-glow)]'
                 : 'bg-[var(--ev2-surface)] text-[var(--ev2-text-muted)] border border-[var(--ev2-border)] hover:bg-[var(--ev2-surface-hover)]'
             }`}
           >
             <p className="text-xs font-semibold leading-tight">{FINISH_TIER_LABELS[tier]}</p>
             <p className={`text-[10px] mt-0.5 ${
-              value === tier ? 'text-[var(--ev2-navy-950)]/70' : 'text-[var(--ev2-text-dim)]'
+              isTierSelected ? 'text-[var(--ev2-navy-950)]/70' : 'text-[var(--ev2-text-dim)]'
             }`}>
               {TIER_PRICE_LABELS[tier]}
             </p>
-          </button>
-        ))}
+          </motion.button>
+          );
+        })}
       </div>
     </div>
   );
@@ -112,26 +129,30 @@ function MaterialSelector<T extends string>({
   images: Record<string, string>;
 }) {
   return (
-    <div>
+    <motion.div variants={fadeUp}>
       <SectionLabel>{label}</SectionLabel>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {(Object.entries(options) as [T, { label: string; tier: FinishTier; popular?: boolean }][]).map(
-          ([key, meta]) => (
+          ([key, meta]) => {
+            const isMatSelected = value === key;
+            return (
             <motion.button
               key={key}
               type="button"
               onClick={() => onChange(key)}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.94 }}
+              animate={isMatSelected ? { scale: [0.94, 1.05, 1] } : {}}
+              transition={{ duration: 0.25 }}
               className={`relative flex flex-col items-center p-3 rounded-xl text-center transition-all duration-200 ${
-                value === key
-                  ? 'ring-2 ring-[var(--ev2-gold)] bg-[var(--ev2-gold-glow)]'
-                  : 'bg-[var(--ev2-surface)] border border-[var(--ev2-border)] hover:bg-[var(--ev2-surface-hover)]'
+                isMatSelected
+                  ? 'ring-2 ring-[var(--ev2-gold)] bg-[var(--ev2-gold-glow)] ev2-active-glow'
+                  : 'bg-[var(--ev2-surface)] border border-[var(--ev2-border)] hover:bg-[var(--ev2-surface-hover)] ev2-card-hover'
               }`}
             >
               {/* Texture swatch */}
               <div className={`w-14 h-14 rounded-full overflow-hidden mb-2 transition-all duration-200 ${
-                value === key
+                isMatSelected
                   ? 'ring-2 ring-[var(--ev2-gold)] ring-offset-2 ring-offset-[var(--ev2-navy-950)] scale-110'
                   : 'opacity-70'
               }`}>
@@ -148,53 +169,75 @@ function MaterialSelector<T extends string>({
               <p className="text-[10px] text-[var(--ev2-text-dim)] capitalize mt-0.5">
                 {meta.tier}
               </p>
-              {meta.popular && (
+              {meta.popular && !isMatSelected && (
                 <span className="absolute top-1.5 right-1.5 inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-semibold bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)]">
                   Popular
                 </span>
               )}
-              {value === key && (
-                <div className="absolute top-1.5 left-1.5 w-5 h-5 rounded-full bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)] flex items-center justify-center">
-                  <Check className="h-3 w-3" strokeWidth={3} />
-                </div>
-              )}
+              <AnimatePresence>
+                {isMatSelected && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                    className="absolute top-1.5 left-1.5 w-5 h-5 rounded-full bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)] flex items-center justify-center"
+                  >
+                    <Check className="h-3 w-3" strokeWidth={3} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.button>
-          ),
+            );
+          },
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
 export function InteriorSelectionsStep({ input, updateInput }: Props) {
   return (
-    <div className="space-y-10">
+    <motion.div
+      className="space-y-10"
+      variants={stagger}
+      initial="hidden"
+      animate="show"
+    >
       {/* Header */}
-      <div className="text-center">
-        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[var(--ev2-blue)]/20 to-[var(--ev2-gold)]/10 flex items-center justify-center mx-auto mb-4">
+      <motion.div variants={fadeUp} className="text-center">
+        <motion.div
+          initial={{ scale: 0, rotate: -20 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
+          className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[var(--ev2-blue)]/20 to-[var(--ev2-gold)]/10 flex items-center justify-center mx-auto mb-4"
+        >
           <Sofa className="h-7 w-7 text-[var(--ev2-gold)]" />
-        </div>
+        </motion.div>
         <h2 className="text-2xl font-bold text-[var(--ev2-text)]">Interior Selections</h2>
         <p className="text-[var(--ev2-text-muted)] text-sm mt-1">
           Choose your finish level and key interior materials
         </p>
-      </div>
+      </motion.div>
 
       {/* Overall Finish Level */}
-      <div>
+      <motion.div variants={fadeUp}>
         <SectionLabel>Overall Finish Level</SectionLabel>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {FINISH_TIER_ORDER.map((tier) => (
+          {FINISH_TIER_ORDER.map((tier) => {
+            const isFinishSelected = input.finishLevel === tier;
+            return (
             <motion.button
               key={tier}
               type="button"
               onClick={() => updateInput('finishLevel', tier)}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.95 }}
+              animate={isFinishSelected ? { scale: [0.95, 1.04, 1] } : {}}
+              transition={{ duration: 0.25 }}
               className={`relative p-4 rounded-xl text-left transition-all duration-200 ${
-                input.finishLevel === tier
-                  ? 'ring-2 ring-[var(--ev2-gold)] bg-[var(--ev2-gold-glow)]'
-                  : 'bg-[var(--ev2-surface)] border border-[var(--ev2-border)] hover:bg-[var(--ev2-surface-hover)]'
+                isFinishSelected
+                  ? 'ring-2 ring-[var(--ev2-gold)] bg-[var(--ev2-gold-glow)] ev2-active-glow'
+                  : 'bg-[var(--ev2-surface)] border border-[var(--ev2-border)] hover:bg-[var(--ev2-surface-hover)] ev2-card-hover'
               }`}
             >
               <div className="flex items-center justify-between mb-2">
@@ -202,7 +245,7 @@ export function InteriorSelectionsStep({ input, updateInput }: Props) {
                   {FINISH_TIER_LABELS[tier]}
                 </p>
                 <span className={`text-xs font-semibold ${
-                  input.finishLevel === tier ? 'text-[var(--ev2-gold)]' : 'text-[var(--ev2-text-dim)]'
+                  isFinishSelected ? 'text-[var(--ev2-gold)]' : 'text-[var(--ev2-text-dim)]'
                 }`}>
                   {TIER_PRICE_LABELS[tier]}
                 </span>
@@ -210,18 +253,31 @@ export function InteriorSelectionsStep({ input, updateInput }: Props) {
               <p className="text-[11px] text-[var(--ev2-text-muted)] leading-relaxed">
                 {TIER_DESCRIPTIONS[tier]}
               </p>
-              {tier === 'standard' && (
+              {tier === 'standard' && !isFinishSelected && (
                 <span className="absolute top-2 right-2 inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-semibold bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)]">
                   Most Popular
                 </span>
               )}
+              <AnimatePresence>
+                {isFinishSelected && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                    className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)] flex items-center justify-center"
+                  >
+                    <Check className="h-3 w-3" strokeWidth={3} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.button>
-          ))}
+            );
+          })}
         </div>
-      </div>
+      </motion.div>
 
       {/* Kitchen & Bathroom Tier Overrides */}
-      <div className="bg-[var(--ev2-surface)] rounded-xl border border-[var(--ev2-border)] p-4 space-y-4">
+      <motion.div variants={fadeUp} className="bg-[var(--ev2-surface)] rounded-xl border border-[var(--ev2-border)] p-4 space-y-4">
         <p className="text-xs text-[var(--ev2-text-dim)]">
           Optionally upgrade specific rooms beyond your overall finish level:
         </p>
@@ -237,7 +293,7 @@ export function InteriorSelectionsStep({ input, updateInput }: Props) {
           onChange={(v) => updateInput('bathroomTier', v)}
           description="Vanities, fixtures, tile"
         />
-      </div>
+      </motion.div>
 
       {/* Flooring */}
       <MaterialSelector<FlooringType>
@@ -258,27 +314,34 @@ export function InteriorSelectionsStep({ input, updateInput }: Props) {
       />
 
       {/* Kitchen Appliance Package */}
-      <div>
+      <motion.div variants={fadeUp}>
         <SectionLabel>Kitchen Appliance Package</SectionLabel>
         <div className="grid grid-cols-3 gap-2">
           {(Object.entries(APPLIANCE_PACKAGE_META) as [AppliancePackage, { label: string }][]).map(
-            ([key, meta]) => (
-              <button
+            ([key, meta]) => {
+              const isAppSelected = input.appliancePackage === key;
+              return (
+              <motion.button
                 key={key}
                 type="button"
                 onClick={() => updateInput('appliancePackage', key)}
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.93 }}
+                animate={isAppSelected ? { scale: [0.93, 1.06, 1] } : {}}
+                transition={{ duration: 0.25 }}
                 className={`py-2.5 px-3 rounded-lg text-center transition-all duration-200 ${
-                  input.appliancePackage === key
+                  isAppSelected
                     ? 'bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)] shadow-lg shadow-[var(--ev2-gold-glow)]'
                     : 'bg-[var(--ev2-surface)] text-[var(--ev2-text-muted)] border border-[var(--ev2-border)] hover:bg-[var(--ev2-surface-hover)] hover:text-[var(--ev2-text)]'
                 }`}
               >
                 <p className="text-xs font-semibold">{meta.label}</p>
-              </button>
-            ),
+              </motion.button>
+              );
+            },
           )}
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
