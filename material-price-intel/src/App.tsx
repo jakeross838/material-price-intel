@@ -1,25 +1,19 @@
 import { lazy, Suspense } from "react";
-import { Routes, Route } from "react-router";
+import { Routes, Route, Navigate } from "react-router";
 import { AppLayout } from "./components/layout/AppLayout";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { LoginPage } from "./pages/LoginPage";
 import { DashboardPage } from "./pages/DashboardPage";
-import { UploadPage } from "./pages/UploadPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { QuoteDetailPage } from "./pages/QuoteDetailPage";
-import { MaterialsPage } from "./pages/MaterialsPage";
-import { QuotesListPage } from "./pages/QuotesListPage";
-import { SearchPage } from "./pages/SearchPage";
-import { ReportsPage } from "./pages/ReportsPage";
 import { ProjectsListPage } from "./pages/ProjectsListPage";
 import { ProjectCreatePage } from "./pages/ProjectCreatePage";
 import { ProjectDetailPage } from "./pages/ProjectDetailPage";
 import { EstimatePage } from "./pages/EstimatePage";
-import { AdminEstimatorPage } from "./pages/AdminEstimatorPage";
 import { CatalogPage } from "./pages/CatalogPage";
 import { CatalogDetailPage } from "./pages/CatalogDetailPage";
-import { AdminCatalogPage } from "./pages/AdminCatalogPage";
-import { AdminLeadsPage } from "./pages/AdminLeadsPage";
+import { PricingHubPage } from "./pages/PricingHubPage";
+import { AdminHubPage } from "./pages/AdminHubPage";
 
 // Lazy-load the V2 estimator (heavy: cost DB, framer-motion, confetti)
 const LazyEstimatePageV2 = lazy(() =>
@@ -64,21 +58,24 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="/" element={<DashboardPage />} />
-          <Route path="/upload" element={<UploadPage />} />
-          <Route path="/quotes" element={<QuotesListPage />} />
+          {/* Pricing Hub - consolidates quotes, materials, search, reports */}
+          <Route path="/pricing" element={<PricingHubPage />} />
           <Route path="/quotes/:id" element={<QuoteDetailPage />} />
-          <Route path="/materials" element={<MaterialsPage />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/reports" element={<ReportsPage />} />
+          {/* Legacy routes redirect to Pricing Hub with appropriate tab */}
+          <Route path="/quotes" element={<Navigate to="/pricing?tab=quotes" replace />} />
+          <Route path="/materials" element={<Navigate to="/pricing?tab=materials" replace />} />
+          <Route path="/search" element={<Navigate to="/pricing?tab=search" replace />} />
+          <Route path="/reports" element={<Navigate to="/pricing?tab=analytics" replace />} />
+          {/* Projects */}
           <Route path="/projects" element={<ProjectsListPage />} />
           <Route path="/projects/new" element={<ProjectCreatePage />} />
           <Route path="/projects/:id" element={<ProjectDetailPage />} />
-          <Route
-            path="/admin/estimator"
-            element={<AdminEstimatorPage />}
-          />
-          <Route path="/admin/catalog" element={<AdminCatalogPage />} />
-          <Route path="/admin/leads" element={<AdminLeadsPage />} />
+          {/* Admin Hub - consolidates catalog, estimator, leads */}
+          <Route path="/admin" element={<AdminHubPage />} />
+          {/* Legacy admin routes redirect to Admin Hub with appropriate tab */}
+          <Route path="/admin/catalog" element={<Navigate to="/admin?tab=catalog" replace />} />
+          <Route path="/admin/estimator" element={<Navigate to="/admin?tab=estimator" replace />} />
+          <Route path="/admin/leads" element={<Navigate to="/admin?tab=leads" replace />} />
         </Route>
       </Route>
       <Route path="*" element={<NotFoundPage />} />

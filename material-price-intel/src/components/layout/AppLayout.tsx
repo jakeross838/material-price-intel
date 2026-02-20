@@ -1,22 +1,13 @@
-import { Outlet, NavLink } from "react-router";
-import { LayoutDashboard, Upload, FileText, Layers, Search, BarChart3, FolderKanban, LogOut, Palette, Calculator, Users } from "lucide-react";
+import { Outlet, NavLink, Link } from "react-router";
+import { LayoutDashboard, DollarSign, FolderKanban, Settings, LogOut, Calculator } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/upload", label: "Upload", icon: Upload },
-  { to: "/quotes", label: "Quotes", icon: FileText },
-  { to: "/materials", label: "Materials", icon: Layers },
-  { to: "/search", label: "Search", icon: Search },
-  { to: "/reports", label: "Reports", icon: BarChart3 },
-  { to: "/projects", label: "Projects", icon: FolderKanban },
-];
-
-const adminItems = [
-  { to: "/admin/catalog", label: "Catalog", icon: Palette },
-  { to: "/admin/estimator", label: "Estimator", icon: Calculator },
-  { to: "/admin/leads", label: "Leads", icon: Users },
+  { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
+  { to: "/pricing", label: "Pricing", icon: DollarSign, end: false },
+  { to: "/projects", label: "Projects", icon: FolderKanban, end: false },
+  { to: "/admin", label: "Admin", icon: Settings, end: false },
 ];
 
 export function AppLayout() {
@@ -40,7 +31,7 @@ export function AppLayout() {
             <NavLink
               key={item.to}
               to={item.to}
-              end={item.to === "/"}
+              end={item.end}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   isActive
@@ -54,27 +45,17 @@ export function AppLayout() {
             </NavLink>
           ))}
 
-          {/* Admin section */}
+          {/* Public Estimator Link */}
           <div className="pt-4 mt-4 border-t border-border">
             <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
-              Admin
+              Public Tools
             </p>
-            {adminItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                  }`
-                }
-              >
-                <item.icon className="h-4 w-4" />
-                {item.label}
-              </NavLink>
-            ))}
+            <Button asChild variant="outline" className="w-full justify-start gap-3">
+              <Link to="/estimate">
+                <Calculator className="h-4 w-4" />
+                Estimate Calculator
+              </Link>
+            </Button>
           </div>
         </nav>
 

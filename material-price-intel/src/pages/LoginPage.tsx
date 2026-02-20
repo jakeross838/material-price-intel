@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
-import { Navigate, useNavigate } from "react-router";
+import { Navigate, useNavigate, Link } from "react-router";
+import { Calculator } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,7 +42,7 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-background gap-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">
@@ -85,6 +86,14 @@ export function LoginPage() {
           </form>
         </CardContent>
       </Card>
+
+      {/* Public Estimator Link */}
+      <Button asChild variant="outline" className="gap-2">
+        <Link to="/estimate">
+          <Calculator className="h-4 w-4" />
+          Open Estimate Calculator
+        </Link>
+      </Button>
     </div>
   );
 }

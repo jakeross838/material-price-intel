@@ -2,7 +2,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
 import {
-  Upload,
   FileText,
   AlertTriangle,
   CheckCircle,
@@ -16,6 +15,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { UploadWidget } from "@/components/dashboard";
+import { RecentUploads } from "@/components/documents/RecentUploads";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 import type { DocumentStatus, ProjectStatus } from "@/lib/types";
@@ -190,19 +191,11 @@ export function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Welcome header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-          <p className="text-muted-foreground mt-2">
-            Welcome, {user?.email}
-          </p>
-        </div>
-        <Button asChild>
-          <Link to="/upload">
-            <Upload className="mr-2 h-4 w-4" />
-            Upload Quote
-          </Link>
-        </Button>
+      <div>
+        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+        <p className="text-muted-foreground mt-2">
+          Welcome, {user?.email}
+        </p>
       </div>
 
       {/* Status overview cards */}
@@ -246,11 +239,12 @@ export function DashboardPage() {
         </div>
       </div>
 
-      {/* Needs attention section */}
-      <div>
-        <h3 className="text-lg font-semibold tracking-tight mb-3">
-          Needs Attention
-        </h3>
+      {/* Two column layout: Needs Attention + Upload */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <h3 className="text-lg font-semibold tracking-tight mb-3">
+            Needs Attention
+          </h3>
         {reviewNeeded && reviewNeeded.length > 0 ? (
           <Card>
             <CardContent className="p-0">
@@ -289,7 +283,21 @@ export function DashboardPage() {
             </CardContent>
           </Card>
         )}
+        </div>
+
+        {/* Upload Widget */}
+        <div className="space-y-4">
+          <div>
+            <h3 className="text-lg font-semibold tracking-tight mb-3">
+              Upload Quote
+            </h3>
+            <UploadWidget />
+          </div>
+        </div>
       </div>
+
+      {/* Recent Uploads - shows AI processing status */}
+      <RecentUploads />
 
       {/* Active projects section */}
       <div>
