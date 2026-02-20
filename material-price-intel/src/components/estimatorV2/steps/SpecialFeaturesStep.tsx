@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Sparkles, Waves, ArrowUpDown, Flame, Wifi, Zap,
   Anchor, TreePine, ScreenShare, UtensilsCrossed, Plus, Minus,
@@ -17,15 +17,40 @@ type Props = {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="text-xs font-semibold text-[var(--ev2-text-dim)] uppercase tracking-wider mb-3">
-      {children}
-    </h3>
+    <div className="flex items-center gap-3 mb-3">
+      <h3 className="text-xs font-semibold text-[var(--ev2-text-dim)] uppercase tracking-wider whitespace-nowrap">
+        {children}
+      </h3>
+      <div className="flex-1 h-px bg-gradient-to-r from-[var(--ev2-blue)]/30 to-transparent" />
+    </div>
   );
 }
 
 function fmtMonthly(amount: number): string {
   const monthly = Math.round(calculateMonthlyPayment(amount));
   return `+$${monthly.toLocaleString()}/mo`;
+}
+
+/** Animated checkmark that draws in */
+function AnimatedCheck() {
+  return (
+    <motion.svg
+      className="h-3 w-3"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={3}
+    >
+      <motion.path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M5 13l4 4L19 7"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+      />
+    </motion.svg>
+  );
 }
 
 /** Toggle card for boolean features */
@@ -49,35 +74,67 @@ function FeatureToggle({
       type="button"
       onClick={onClick}
       whileHover={{ scale: 1.01 }}
-      whileTap={{ scale: 0.99 }}
+      whileTap={{ scale: 0.97 }}
+      layout
       className={`w-full flex items-start gap-3 p-4 rounded-xl text-left transition-all duration-200 ${
         active
-          ? 'ring-2 ring-[var(--ev2-gold)] bg-[var(--ev2-gold-glow)]'
-          : 'bg-[var(--ev2-surface)] border border-[var(--ev2-border)] hover:bg-[var(--ev2-surface-hover)]'
+          ? 'ring-2 ring-[var(--ev2-gold)] bg-[var(--ev2-gold-glow)] ev2-active-glow'
+          : 'bg-[var(--ev2-surface)] border border-[var(--ev2-border)] hover:bg-[var(--ev2-surface-hover)] ev2-card-hover'
       }`}
     >
-      <div className={`w-10 h-10 rounded-xl shrink-0 flex items-center justify-center transition-colors ${
-        active ? 'bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)]' : 'bg-[var(--ev2-navy-800)] text-[var(--ev2-text-dim)]'
-      }`}>
+      <motion.div
+        animate={active
+          ? { scale: [1, 1.2, 1], rotate: [0, -10, 10, 0] }
+          : { scale: 1, rotate: 0 }
+        }
+        transition={{ duration: 0.4, ease: 'easeOut' }}
+        className={`w-10 h-10 rounded-xl shrink-0 flex items-center justify-center transition-colors ${
+          active
+            ? 'bg-gradient-to-br from-[var(--ev2-gold)] to-[var(--ev2-blue-light)] text-[var(--ev2-navy-950)]'
+            : 'bg-[var(--ev2-navy-800)] text-[var(--ev2-text-dim)]'
+        }`}
+      >
         <Icon className="h-5 w-5" />
-      </div>
+      </motion.div>
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <p className="text-sm font-semibold text-[var(--ev2-text)]">{label}</p>
-          <div className={`w-5 h-5 rounded-full shrink-0 flex items-center justify-center mt-0.5 transition-colors ${
-            active
-              ? 'bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)]'
-              : 'border border-[var(--ev2-border)]'
-          }`}>
-            {active && (
-              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            )}
-          </div>
+          <motion.div
+            animate={active
+              ? { scale: [0.8, 1.15, 1], backgroundColor: 'var(--ev2-gold)' }
+              : { scale: 1 }
+            }
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className={`w-5 h-5 rounded-full shrink-0 flex items-center justify-center mt-0.5 transition-colors ${
+              active
+                ? 'bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)]'
+                : 'border border-[var(--ev2-border)]'
+            }`}
+          >
+            <AnimatePresence>
+              {active && <AnimatedCheck />}
+            </AnimatePresence>
+          </motion.div>
         </div>
         <p className="text-xs text-[var(--ev2-text-muted)] mt-0.5">{description}</p>
-        <p className="text-[11px] text-[var(--ev2-gold)] font-medium mt-1">{monthlyEstimate}</p>
+        <AnimatePresence>
+          {active && (
+            <motion.p
+              initial={{ opacity: 0, height: 0, y: -5 }}
+              animate={{ opacity: 1, height: 'auto', y: 0 }}
+              exit={{ opacity: 0, height: 0, y: -5 }}
+              transition={{ duration: 0.2 }}
+              className="text-[11px] text-[var(--ev2-gold)] font-medium mt-1"
+            >
+              {monthlyEstimate}
+            </motion.p>
+          )}
+        </AnimatePresence>
+        {!active && (
+          <p className="text-[11px] text-[var(--ev2-text-dim)] font-medium mt-1">
+            {monthlyEstimate}
+          </p>
+        )}
       </div>
     </motion.button>
   );
@@ -99,43 +156,67 @@ function FeatureSelector<T extends string>({
   options: { value: T; label: string; cost: number }[];
   onChange: (v: T) => void;
 }) {
+  const isUpgraded = value !== options[0].value;
+
   return (
-    <div className="bg-[var(--ev2-surface)] rounded-xl border border-[var(--ev2-border)] p-4">
+    <motion.div
+      animate={isUpgraded
+        ? { borderColor: 'rgba(255,255,255,0.25)' }
+        : { borderColor: 'rgba(255,255,255,0.10)' }
+      }
+      className="bg-[var(--ev2-surface)] rounded-xl border p-4 transition-shadow duration-300"
+      style={isUpgraded ? { boxShadow: '0 0 20px rgba(91,132,151,0.1)' } : {}}
+    >
       <div className="flex items-center gap-3 mb-3">
-        <div className={`w-10 h-10 rounded-xl shrink-0 flex items-center justify-center transition-colors ${
-          value !== 'none' ? 'bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)]' : 'bg-[var(--ev2-navy-800)] text-[var(--ev2-text-dim)]'
-        }`}>
+        <motion.div
+          animate={isUpgraded
+            ? { scale: [1, 1.15, 1], rotate: [0, -8, 8, 0] }
+            : { scale: 1, rotate: 0 }
+          }
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          className={`w-10 h-10 rounded-xl shrink-0 flex items-center justify-center transition-colors ${
+            isUpgraded
+              ? 'bg-gradient-to-br from-[var(--ev2-gold)] to-[var(--ev2-blue-light)] text-[var(--ev2-navy-950)]'
+              : 'bg-[var(--ev2-navy-800)] text-[var(--ev2-text-dim)]'
+          }`}
+        >
           <Icon className="h-5 w-5" />
-        </div>
+        </motion.div>
         <div>
           <p className="text-sm font-semibold text-[var(--ev2-text)]">{label}</p>
           <p className="text-xs text-[var(--ev2-text-muted)]">{description}</p>
         </div>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        {options.map((opt) => (
-          <button
-            key={opt.value}
-            type="button"
-            onClick={() => onChange(opt.value)}
-            className={`py-2.5 px-3 rounded-lg text-center transition-all duration-200 ${
-              value === opt.value
-                ? 'bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)] shadow-lg shadow-[var(--ev2-gold-glow)]'
-                : 'bg-[var(--ev2-navy-800)] text-[var(--ev2-text-muted)] hover:bg-[var(--ev2-navy-700)] hover:text-[var(--ev2-text)]'
-            }`}
-          >
-            <p className="text-xs font-semibold">{opt.label}</p>
-            {opt.cost > 0 && (
-              <p className={`text-[10px] mt-0.5 ${
-                value === opt.value ? 'text-[var(--ev2-navy-950)]/70' : 'text-[var(--ev2-text-dim)]'
-              }`}>
-                {fmtMonthly(opt.cost)}
-              </p>
-            )}
-          </button>
-        ))}
+        {options.map((opt) => {
+          const isSelected = value === opt.value;
+          return (
+            <motion.button
+              key={opt.value}
+              type="button"
+              onClick={() => onChange(opt.value)}
+              whileTap={{ scale: 0.95 }}
+              animate={isSelected ? { scale: [0.95, 1.04, 1] } : { scale: 1 }}
+              transition={{ duration: 0.25 }}
+              className={`py-2.5 px-3 rounded-lg text-center transition-all duration-200 ${
+                isSelected
+                  ? 'bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)] shadow-lg shadow-[var(--ev2-gold-glow)]'
+                  : 'bg-[var(--ev2-navy-800)] text-[var(--ev2-text-muted)] hover:bg-[var(--ev2-navy-700)] hover:text-[var(--ev2-text)]'
+              }`}
+            >
+              <p className="text-xs font-semibold">{opt.label}</p>
+              {opt.cost > 0 && (
+                <p className={`text-[10px] mt-0.5 ${
+                  isSelected ? 'text-[var(--ev2-navy-950)]/70' : 'text-[var(--ev2-text-dim)]'
+                }`}>
+                  {fmtMonthly(opt.cost)}
+                </p>
+              )}
+            </motion.button>
+          );
+        })}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -146,7 +227,7 @@ export function SpecialFeaturesStep({ input, updateInput }: Props) {
     <div className="space-y-8">
       {/* Header */}
       <div className="text-center">
-        <div className="w-14 h-14 rounded-2xl bg-[var(--ev2-gold)]/10 flex items-center justify-center mx-auto mb-4">
+        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[var(--ev2-blue)]/20 to-[var(--ev2-gold)]/10 flex items-center justify-center mx-auto mb-4">
           <Sparkles className="h-7 w-7 text-[var(--ev2-gold)]" />
         </div>
         <h2 className="text-2xl font-bold text-[var(--ev2-text)]">Special Features</h2>

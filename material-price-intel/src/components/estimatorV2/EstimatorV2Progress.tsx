@@ -39,7 +39,7 @@ export function EstimatorV2Progress({ currentStep }: Props) {
                     w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
                     transition-colors duration-300
                     ${isActive
-                      ? 'bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)]'
+                      ? 'bg-[var(--ev2-gold)] text-[var(--ev2-navy-950)] shadow-[0_0_12px_rgba(91,132,151,0.3)]'
                       : isCompleted
                         ? 'bg-[var(--ev2-gold)]/20 text-[var(--ev2-gold)] border border-[var(--ev2-gold)]/40'
                         : 'bg-[var(--ev2-surface)] text-[var(--ev2-text-dim)] border border-[var(--ev2-border)]'}
@@ -68,7 +68,8 @@ export function EstimatorV2Progress({ currentStep }: Props) {
                   <div className="absolute inset-0 bg-[var(--ev2-border)]" />
                   {!isFuture && (
                     <motion.div
-                      className="absolute inset-y-0 left-0 bg-[var(--ev2-gold)]/50"
+                      className="absolute inset-y-0 left-0 ev2-progress-connector"
+                      style={{ height: '2px', top: '-0.5px' }}
                       initial={{ width: 0 }}
                       animate={{ width: '100%' }}
                       transition={{ duration: 0.5, delay: 0.1 }}
@@ -96,7 +97,7 @@ export function EstimatorV2Progress({ currentStep }: Props) {
               key={i}
               className={`h-1 rounded-full ${
                 i <= activeIndex
-                  ? 'bg-[var(--ev2-gold)]'
+                  ? 'bg-gradient-to-r from-[var(--ev2-blue)] to-[var(--ev2-gold)]'
                   : 'bg-[var(--ev2-surface)]'
               }`}
               initial={{ width: 8 }}

@@ -113,17 +113,12 @@ Deno.serve(async (req) => {
       );
     }
 
-    if (files.length > 5) {
-      return new Response(
-        JSON.stringify({ error: "Maximum 5 files allowed" }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
-    }
-
     const anthropic = new Anthropic();
+
+    // Supported types for Claude API
+    const IMAGE_TYPES = new Set([
+      "image/jpeg", "image/png", "image/gif", "image/webp",
+    ]);
 
     // Build content blocks: one document/image block per file, then the text prompt
     // deno-lint-ignore no-explicit-any
@@ -140,11 +135,15 @@ Deno.serve(async (req) => {
           },
         });
       } else {
+        // Force to a valid image media_type for Claude API
+        const mediaType = IMAGE_TYPES.has(file.media_type)
+          ? file.media_type
+          : "image/png";
         contentBlocks.push({
           type: "image",
           source: {
             type: "base64",
-            media_type: file.media_type,
+            media_type: mediaType,
             data: file.data,
           },
         });

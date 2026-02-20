@@ -164,6 +164,113 @@
 }
 
 /* ===========================================
+   Estimator V2 — Gradient & Animation Effects
+   =========================================== */
+
+/* Animated gradient sweep for borders and accents */
+@keyframes ev2-gradient-sweep {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Subtle shimmer for gold/accent elements */
+@keyframes ev2-shimmer {
+  0% { opacity: 0.5; transform: translateX(-100%); }
+  100% { opacity: 0; transform: translateX(100%); }
+}
+
+/* Soft pulsing glow */
+@keyframes ev2-glow-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+/* Floating ambient orb for background */
+@keyframes ev2-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -20px) scale(1.05); }
+  66% { transform: translate(-20px, 15px) scale(0.95); }
+}
+
+/* Gradient text utility */
+.ev2-gradient-text {
+  background: linear-gradient(135deg, #ffffff 0%, #5b8497 50%, #ffffff 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: ev2-gradient-sweep 6s ease infinite;
+}
+
+/* Animated top border for running total bar */
+.ev2-animated-border-top {
+  position: relative;
+}
+.ev2-animated-border-top::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(91, 132, 151, 0.3) 15%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(91, 132, 151, 0.3) 85%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: ev2-gradient-sweep 4s ease infinite;
+}
+
+/* Glow ring for active feature toggles */
+.ev2-active-glow {
+  box-shadow:
+    0 0 15px rgba(91, 132, 151, 0.15),
+    0 0 30px rgba(91, 132, 151, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Ambient background orbs */
+.ev2-ambient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  animation: ev2-float 20s ease-in-out infinite;
+}
+
+/* Progress bar gradient connector */
+.ev2-progress-connector {
+  background: linear-gradient(90deg,
+    rgba(91, 132, 151, 0.6),
+    rgba(255, 255, 255, 0.5)
+  );
+}
+
+/* Hero glow behind number */
+.ev2-hero-glow {
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(ellipse at center,
+    rgba(91, 132, 151, 0.12) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* Subtle card hover lift */
+.ev2-card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.ev2-card-hover:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* ===========================================
    Print styles for Selection Sheet
    =========================================== */
 

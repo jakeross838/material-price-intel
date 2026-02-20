@@ -15,17 +15,39 @@ type Props = {
 
 type UploadState = 'choice' | 'upload' | 'analyzing' | 'success' | 'error';
 
-async function readFileAsBase64(
+// Supported media types for Claude vision API
+const SUPPORTED_IMAGE_TYPES = new Set([
+  'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+]);
+const SUPPORTED_DOC_TYPES = new Set(['application/pdf']);
+
+function resolveMediaType(file: File): string {
+  if (file.type && (SUPPORTED_IMAGE_TYPES.has(file.type) || SUPPORTED_DOC_TYPES.has(file.type))) {
+    return file.type;
+  }
+  // Infer from extension when browser doesn't set type
+  const ext = file.name.split('.').pop()?.toLowerCase();
+  const extMap: Record<string, string> = {
+    jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png',
+    gif: 'image/gif', webp: 'image/webp', pdf: 'application/pdf',
+  };
+  return extMap[ext ?? ''] ?? 'image/png'; // default to png so Claude still tries
+}
+
+function readFileAsBase64(
   file: File,
 ): Promise<{ data: string; media_type: string }> {
-  const buffer = await file.arrayBuffer();
-  const uint8 = new Uint8Array(buffer);
-  let binary = '';
-  const chunkSize = 8192;
-  for (let i = 0; i < uint8.length; i += chunkSize) {
-    binary += String.fromCharCode(...uint8.subarray(i, i + chunkSize));
-  }
-  return { data: btoa(binary), media_type: file.type || 'application/octet-stream' };
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      // Strip "data:<mime>;base64," prefix
+      const base64 = dataUrl.split(',')[1] ?? '';
+      resolve({ data: base64, media_type: resolveMediaType(file) });
+    };
+    reader.onerror = () => reject(new Error(`Failed to read ${file.name}`));
+    reader.readAsDataURL(file);
+  });
 }
 
 export function GettingStartedStepV2({ onStartFromScratch, onFloorPlanExtracted }: Props) {
@@ -127,9 +149,9 @@ export function GettingStartedStepV2({ onStartFromScratch, onFloorPlanExtracted 
             className="group relative flex flex-col items-center text-center p-8 rounded-2xl
               bg-[var(--ev2-surface)] border border-[var(--ev2-border)]
               hover:border-[var(--ev2-gold)]/50 hover:bg-[var(--ev2-surface-hover)]
-              transition-all duration-200"
+              ev2-card-hover transition-all duration-200"
           >
-            <div className="w-16 h-16 rounded-2xl bg-[var(--ev2-gold)]/10 group-hover:bg-[var(--ev2-gold)]/20 flex items-center justify-center mb-4 transition-colors">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--ev2-blue)]/20 to-[var(--ev2-gold)]/10 group-hover:from-[var(--ev2-blue)]/30 group-hover:to-[var(--ev2-gold)]/20 flex items-center justify-center mb-4 transition-colors">
               <FileUp className="h-8 w-8 text-[var(--ev2-gold)]" />
             </div>
             <h3 className="text-lg font-bold text-[var(--ev2-text)] mb-2">
@@ -153,9 +175,9 @@ export function GettingStartedStepV2({ onStartFromScratch, onFloorPlanExtracted 
             className="group relative flex flex-col items-center text-center p-8 rounded-2xl
               bg-[var(--ev2-surface)] border border-[var(--ev2-border)]
               hover:border-[var(--ev2-gold)]/50 hover:bg-[var(--ev2-surface-hover)]
-              transition-all duration-200"
+              ev2-card-hover transition-all duration-200"
           >
-            <div className="w-16 h-16 rounded-2xl bg-[var(--ev2-gold)]/10 group-hover:bg-[var(--ev2-gold)]/20 flex items-center justify-center mb-4 transition-colors">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--ev2-gold)]/10 to-[var(--ev2-blue)]/20 group-hover:from-[var(--ev2-gold)]/20 group-hover:to-[var(--ev2-blue)]/30 flex items-center justify-center mb-4 transition-colors">
               <PenLine className="h-8 w-8 text-[var(--ev2-gold)]" />
             </div>
             <h3 className="text-lg font-bold text-[var(--ev2-text)] mb-2">
@@ -343,7 +365,7 @@ export function GettingStartedStepV2({ onStartFromScratch, onFloorPlanExtracted 
           Upload Your Floor Plans
         </h2>
         <p className="text-[var(--ev2-text-muted)] mt-2 text-sm">
-          Upload PDF blueprints or photos. Our AI will extract the details.
+          Upload any file — PDFs, images, screenshots, sketches. Our AI will extract the details.
         </p>
       </div>
 

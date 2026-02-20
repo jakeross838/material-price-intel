@@ -10,9 +10,12 @@ type Props = {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="text-xs font-semibold text-[var(--ev2-text-dim)] uppercase tracking-wider mb-3">
-      {children}
-    </h3>
+    <div className="flex items-center gap-3 mb-3">
+      <h3 className="text-xs font-semibold text-[var(--ev2-text-dim)] uppercase tracking-wider whitespace-nowrap">
+        {children}
+      </h3>
+      <div className="flex-1 h-px bg-gradient-to-r from-[var(--ev2-blue)]/30 to-transparent" />
+    </div>
   );
 }
 

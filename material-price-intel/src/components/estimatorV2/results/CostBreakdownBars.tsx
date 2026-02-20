@@ -52,7 +52,7 @@ export function CostBreakdownBars({ estimate }: Props) {
                 </div>
                 <div className="h-3 rounded-full bg-[var(--ev2-navy-800)] overflow-hidden">
                   <motion.div
-                    className="h-full rounded-full bg-gradient-to-r from-[var(--ev2-gold)]/80 to-[var(--ev2-gold)]"
+                    className="h-full rounded-full bg-gradient-to-r from-[var(--ev2-blue)]/60 via-[var(--ev2-gold)]/70 to-[var(--ev2-gold)]"
                     initial={{ width: 0 }}
                     animate={isVisible ? { width: `${widthPercent}%` } : { width: 0 }}
                     transition={{ duration: 0.8, delay: 0.1 * i, ease: 'easeOut' }}

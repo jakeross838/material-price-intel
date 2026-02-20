@@ -46,7 +46,7 @@ export function RunningTotalBar({ totalLow, totalHigh, sqft, visible }: Props) {
       transition={{ type: 'spring', stiffness: 200, damping: 25 }}
       className="fixed bottom-0 left-0 right-0 z-40"
     >
-      <div className="bg-[var(--ev2-navy-800)]/95 backdrop-blur-md border-t border-[var(--ev2-border-gold)]">
+      <div className="bg-[var(--ev2-navy-800)]/95 backdrop-blur-md ev2-animated-border-top">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           {/* Expanded details */}
           {expanded && (

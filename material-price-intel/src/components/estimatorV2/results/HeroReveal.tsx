@@ -67,9 +67,10 @@ export function HeroReveal({ estimate }: Props) {
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.5, duration: 0.8, ease: 'easeOut' }}
-        className="mb-4"
+        className="mb-4 relative"
       >
-        <p className="text-5xl sm:text-7xl font-bold text-[var(--ev2-text)] tabular-nums leading-none">
+        <div className="ev2-hero-glow" />
+        <p className="text-5xl sm:text-7xl font-bold tabular-nums leading-none ev2-gradient-text relative">
           <AnimatedCounter value={midpoint} duration={2.5} />
         </p>
       </motion.div>
@@ -106,7 +107,7 @@ export function HeroReveal({ estimate }: Props) {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.5, duration: 0.5 }}
-        className="mt-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--ev2-surface)] border border-[var(--ev2-border)]"
+        className="mt-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--ev2-surface)] border border-[var(--ev2-border)] shadow-[0_0_20px_rgba(91,132,151,0.08)]"
       >
         <span className="text-xs text-[var(--ev2-text-dim)]">
           {estimate.input.sqft.toLocaleString()} SF &bull;{' '}

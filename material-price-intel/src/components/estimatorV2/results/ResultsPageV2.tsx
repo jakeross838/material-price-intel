@@ -117,17 +117,21 @@ export function ResultsPageV2({ estimate }: Props) {
               Schedule a Consultation
             </a>
           </div>
-          {savedCount >= 2 && (
+          {savedCount >= 1 && (
             <Link
               to="/estimate/compare"
-              className="inline-flex items-center gap-2 text-sm font-medium text-[var(--ev2-gold)] hover:text-[var(--ev2-gold-light)] transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium
+                bg-[var(--ev2-surface)] border border-[var(--ev2-border)]
+                text-[var(--ev2-gold)] hover:text-[var(--ev2-gold-light)] hover:border-[var(--ev2-gold)]/30
+                transition-all duration-200"
             >
-              Compare ({savedCount}) saved estimates &rarr;
+              {savedCount >= 2
+                ? `Compare ${savedCount} saved estimates`
+                : `${savedCount} saved estimate — save another to compare`
+              }
+              &rarr;
             </Link>
           )}
-          <p className="text-xs text-[var(--ev2-text-dim)]">
-            Save your estimate to share or reference later
-          </p>
         </div>
       )}
     </div>

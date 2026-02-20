@@ -15,9 +15,12 @@ type Props = {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="text-xs font-semibold text-[var(--ev2-text-dim)] uppercase tracking-wider mb-3">
-      {children}
-    </h3>
+    <div className="flex items-center gap-3 mb-3">
+      <h3 className="text-xs font-semibold text-[var(--ev2-text-dim)] uppercase tracking-wider whitespace-nowrap">
+        {children}
+      </h3>
+      <div className="flex-1 h-px bg-gradient-to-r from-[var(--ev2-blue)]/30 to-transparent" />
+    </div>
   );
 }
 
@@ -168,7 +171,7 @@ export function InteriorSelectionsStep({ input, updateInput }: Props) {
     <div className="space-y-10">
       {/* Header */}
       <div className="text-center">
-        <div className="w-14 h-14 rounded-2xl bg-[var(--ev2-gold)]/10 flex items-center justify-center mx-auto mb-4">
+        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[var(--ev2-blue)]/20 to-[var(--ev2-gold)]/10 flex items-center justify-center mx-auto mb-4">
           <Sofa className="h-7 w-7 text-[var(--ev2-gold)]" />
         </div>
         <h2 className="text-2xl font-bold text-[var(--ev2-text)]">Interior Selections</h2>
